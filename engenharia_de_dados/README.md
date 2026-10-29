@@ -1,6 +1,6 @@
 ---
 title: "Engenharia de Dados"
-date: 2026-07-31
+date: 2026-10-29
 type: trilha
 status: active
 tags: [mentoria, trilha]
@@ -10,60 +10,76 @@ tags: [mentoria, trilha]
 
 > Arquivo gerado a partir do `trilha.yml`. Nao edite a mao: rode `gerar_trilha.py` novamente, senao a edicao se perde e o documento diverge.
 
-9 de 20 modulos publicados.
+9 de 21 modulos publicados.
 
 A ordem abaixo e a recomendada. Ela nao e obrigacao de percurso: cada
 mentorado tem um roteiro proprio, que seleciona e reordena modulos sem
 alterar este repositorio.
 
-## Bloco A, Fundamentos
+## Fundamentos
 
 | Modulo | Status | Lab |
 |---|---|---|
-| [Introducao a engenharia de dados e diagnostico](modulos/introducao-engenharia-dados/) | publicado | nao |
-| [SQL com foco em JOINs](modulos/sql-joins/) | publicado | nao |
+| [Introdução à engenharia de dados e diagnóstico](fundamentos/introducao/) | publicado | nao |
+| [SQL com foco em JOINs](fundamentos/sql/) | publicado | nao |
+| [Fontes, arquitetura e contratos de dados](fundamentos/fontes-e-contratos/) | publicado | nao |
+
+## Ambiente
+
+| Modulo | Status | Lab |
+|---|---|---|
 | Docker e ambiente local | planejado | sim |
+| [Cloud para dados](ambiente/cloud/) | publicado | nao |
+| [Infraestrutura como código](ambiente/infraestrutura-como-codigo/) | publicado | sim |
+| [Kubernetes para engenharia de dados](ambiente/kubernetes/) | publicado | sim |
 
-## Bloco B, Armazenamento
-
-| Modulo | Status | Lab |
-|---|---|---|
-| Object storage e data lake com MinIO | planejado | sim |
-| [Formatos de arquivo e tipos de tabela](modulos/formatos-e-tipos-de-tabela/) | rascunho | nao |
-| [Particionamento e performance de consultas](modulos/particionamento-performance/) | publicado | sim |
-| NoSQL, quando o relacional nao serve | planejado | nao |
-
-## Bloco C, Pipeline e ingestao
+## Armazenamento
 
 | Modulo | Status | Lab |
 |---|---|---|
-| [Orquestracao com Apache Airflow](modulos/orquestracao-airflow/) | rascunho | sim |
-| [Fontes, arquitetura e contratos de dados](modulos/fontes-arquitetura-contratos/) | publicado | nao |
-| [Change Data Capture](modulos/cdc/) | rascunho | sim |
-| Ingestao com Airbyte | planejado | sim |
+| Object storage e data lake | planejado | sim |
+| [Formatos de arquivo e tipos de tabela](armazenamento/formatos-e-tabelas/) | rascunho | nao |
+| [Particionamento e performance de consultas](armazenamento/particionamento/) | publicado | sim |
+| NoSQL, quando o relacional não serve | planejado | nao |
+
+## Ingestão
+
+| Modulo | Status | Lab |
+|---|---|---|
+| [Change Data Capture](ingestao/cdc/) | rascunho | sim |
+| [Streaming com Apache Kafka](ingestao/kafka/) | publicado | sim |
+| Ingestão com Airbyte | planejado | sim |
 | Web scraping | planejado | sim |
 
-## Bloco D, Transformacao
+## Processamento
 
 | Modulo | Status | Lab |
 |---|---|---|
-| [Transformacao com dbt](modulos/dbt/) | publicado | sim |
+| Processamento distribuído, Spark, PySpark e Databricks | planejado | sim |
 
-## Bloco E, Nuvem e escala
-
-| Modulo | Status | Lab |
-|---|---|---|
-| [Cloud para dados](modulos/cloud-para-dados/) | publicado | nao |
-| [Infraestrutura como codigo](modulos/infraestrutura-como-codigo/) | publicado | sim |
-| Processamento distribuido, Spark, PySpark e Databricks | planejado | sim |
-| [Streaming com Apache Kafka](modulos/streaming-kafka/) | publicado | sim |
-| [Kubernetes para engenharia de dados](modulos/kubernetes/) | publicado | sim |
-
-## Bloco F, Transversal e fecho
+## Modelagem e transformação
 
 | Modulo | Status | Lab |
 |---|---|---|
-| Governanca, qualidade e LGPD | planejado | nao |
+| [Transformação com dbt](modelagem/dbt/) | publicado | sim |
+
+## Orquestração
+
+| Modulo | Status | Lab |
+|---|---|---|
+| Fundamentos de orquestração | planejado | nao |
+| [Orquestração com Apache Airflow](orquestracao/airflow/) | rascunho | sim |
+
+## Qualidade e governança
+
+| Modulo | Status | Lab |
+|---|---|---|
+| Governança, qualidade e LGPD | planejado | nao |
+
+## Projeto
+
+| Modulo | Status | Lab |
+|---|---|---|
 | Projeto de engenharia | planejado | capstone |
 
 ## Como usar

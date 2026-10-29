@@ -1,6 +1,6 @@
 ---
 title: "Apostila completa, Engenharia de Dados"
-date: 2026-07-31
+date: 2026-10-29
 type: apostila
 status: active
 tags: [mentoria, apostila]
@@ -15,24 +15,24 @@ trilha. Para estudar um assunto isolado, va direto ao modulo.
 
 ## Sumario
 
-- [Capitulo 1, Introducao a engenharia de dados e diagnostico](#capitulo-1-introducao-a-engenharia-de-dados-e-diagnostico)
+- [Capitulo 1, Introdução à engenharia de dados e diagnóstico](#capitulo-1-introducao-a-engenharia-de-dados-e-diagnostico)
 - [Capitulo 2, SQL com foco em JOINs](#capitulo-2-sql-com-foco-em-joins)
-- [Capitulo 3, Formatos de arquivo e tipos de tabela](#capitulo-3-formatos-de-arquivo-e-tipos-de-tabela)
-- [Capitulo 4, Particionamento e performance de consultas](#capitulo-4-particionamento-e-performance-de-consultas)
-- [Capitulo 5, Orquestracao com Apache Airflow](#capitulo-5-orquestracao-com-apache-airflow)
-- [Capitulo 6, Fontes, arquitetura e contratos de dados](#capitulo-6-fontes-arquitetura-e-contratos-de-dados)
-- [Capitulo 7, Change Data Capture](#capitulo-7-change-data-capture)
-- [Capitulo 8, Transformacao com dbt](#capitulo-8-transformacao-com-dbt)
-- [Capitulo 9, Cloud para dados](#capitulo-9-cloud-para-dados)
-- [Capitulo 10, Infraestrutura como codigo](#capitulo-10-infraestrutura-como-codigo)
-- [Capitulo 11, Streaming com Apache Kafka](#capitulo-11-streaming-com-apache-kafka)
-- [Capitulo 12, Kubernetes para engenharia de dados](#capitulo-12-kubernetes-para-engenharia-de-dados)
+- [Capitulo 3, Fontes, arquitetura e contratos de dados](#capitulo-3-fontes-arquitetura-e-contratos-de-dados)
+- [Capitulo 4, Cloud para dados](#capitulo-4-cloud-para-dados)
+- [Capitulo 5, Infraestrutura como código](#capitulo-5-infraestrutura-como-codigo)
+- [Capitulo 6, Kubernetes para engenharia de dados](#capitulo-6-kubernetes-para-engenharia-de-dados)
+- [Capitulo 7, Formatos de arquivo e tipos de tabela](#capitulo-7-formatos-de-arquivo-e-tipos-de-tabela)
+- [Capitulo 8, Particionamento e performance de consultas](#capitulo-8-particionamento-e-performance-de-consultas)
+- [Capitulo 9, Change Data Capture](#capitulo-9-change-data-capture)
+- [Capitulo 10, Streaming com Apache Kafka](#capitulo-10-streaming-com-apache-kafka)
+- [Capitulo 11, Transformação com dbt](#capitulo-11-transformacao-com-dbt)
+- [Capitulo 12, Orquestração com Apache Airflow](#capitulo-12-orquestracao-com-apache-airflow)
 
 ---
 
-## Capitulo 1, Introducao a engenharia de dados e diagnostico
+## Capitulo 1, Introdução à engenharia de dados e diagnóstico
 
-Fonte: `modulos/introducao-engenharia-dados/apostila.md`
+Fonte: `fundamentos/introducao/apostila.md`
 
 ### Apostila, Introducao a engenharia de dados e diagnostico
 
@@ -711,7 +711,7 @@ Origem do acrônimo SMART, consultada em 2026-07-31:
 
 ## Capitulo 2, SQL com foco em JOINs
 
-Fonte: `modulos/sql-joins/apostila.md`
+Fonte: `fundamentos/sql/apostila.md`
 
 ### Apostila, SQL com foco em JOINs
 
@@ -1524,1802 +1524,9 @@ Ferramentas de prática, conferidas em 2026-07-31:
 
 ---
 
-## Capitulo 3, Formatos de arquivo e tipos de tabela
+## Capitulo 3, Fontes, arquitetura e contratos de dados
 
-Fonte: `modulos/formatos-e-tipos-de-tabela/apostila.md`
-
-### Apostila, Formatos de arquivo e tipos de tabela
-
-> Trilha de Engenharia de Dados. Conduzida por Iuri Zambotto.
-
-> Conteudo extraido da apostila consolidada anterior. As secoes marcadas
-> como pendentes ainda nao foram escritas no padrao unico.
-
-#### Sumario
-
-- [3.3 Formatos de arquivo: CSV, JSONL, Parquet e ORC](#33-formatos-de-arquivo-csv-jsonl-parquet-e-orc)
-- [3.4 Tipos de tabela: Hive, Iceberg e Delta Lake](#34-tipos-de-tabela-hive-iceberg-e-delta-lake)
-- [3.5 Camadas bronze, silver e gold](#35-camadas-bronze-silver-e-gold)
-- [3.6 Exercícios e entregáveis](#36-exercícios-e-entregáveis)
-
-#### Como usar esta apostila
-
-Leitura linear para aprender, sumario para revisar um ponto isolado.
-
-#### 3.3 Formatos de arquivo: CSV, JSONL, Parquet e ORC
-
-A escolha do formato de arquivo impacta diretamente o custo de processamento, a legibilidade, a capacidade de evolução do schema e a integração com diferentes ferramentas.
-
-**CSV, Comma-Separated Values**
-
-CSV é o mais simples e o mais universal. Qualquer ferramenta lê CSV: Python, Excel, R, Spark, bancos de dados, ferramentas SaaS. Não há dependência de ecossistema.
-
-Características:
-- Formato textual, legível por humanos.
-- Sem schema embutido: os tipos precisam ser inferidos ou declarados externamente.
-- Sem compressão nativa (pode ser comprimido externamente com gzip, bz2).
-- Parsing é sequencial e caro para datasets grandes (leitura linha por linha).
-- Não suporta tipos complexos (arrays, mapas, objetos aninhados) de forma nativa.
-
-Quando usar:
-- Ingestão inicial de dados de sistemas externos (arquivos de fornecedores, exports).
-- Troca simples de dados entre sistemas sem dependência de biblioteca.
-- Debugging e inspeção manual.
-
-**JSONL, JSON Lines**
-
-JSONL (também chamado de NDJSON, Newline-Delimited JSON) é um formato onde cada linha é um objeto JSON válido e independente. Diferente do JSON convencional (que é um único objeto ou array), JSONL é streamável: você pode processar um registro por vez sem ler o arquivo inteiro.
-
-Características:
-- Suporta tipos complexos nativamente (arrays, objetos aninhados).
-- Schema flexível: cada linha pode ter campos diferentes (schema-on-read).
-- Legível por humanos, mas mais verboso que CSV.
-- Custo de scan maior que Parquet/ORC para analytics (precisa parsear JSON por linha).
-- Ótimo para logs e eventos onde o schema pode variar.
-
-Quando usar:
-- Captura de eventos semiestruturados (logs de aplicação, eventos de API).
-- Ingestão na camada bronze quando o schema ainda não está estabilizado.
-- Integração com sistemas que produzem ou consomem JSON.
-
-**Parquet, formato colunar da Apache**
-
-Parquet é um formato binário e colunar. "Colunar" significa que os dados de cada coluna ficam armazenados juntos no arquivo, em vez de linha por linha.
-
-Isso tem uma consequência enorme em analytics: se você tem uma tabela com 100 colunas e sua query usa apenas 5, o Parquet permite ler apenas os blocos dessas 5 colunas. Em CSV, você leria tudo.
-
-Características:
-- Compressão eficiente (Snappy, Gzip, Zstd), reduz custo de armazenamento e I/O.
-- Leitura seletiva de colunas (column pruning).
-- Suporte a tipos complexos.
-- Schema embutido no arquivo (metadata).
-- Não é legível por humanos sem ferramentas.
-- Dificuldade de merge e update de registros individuais (arquivo imutável por natureza).
-
-Quando usar:
-- Camada silver e gold de um data lake.
-- Qualquer carga analítica com queries que selecionam subconjunto de colunas.
-- Quando custo de armazenamento e tempo de query são prioridades.
-
-**ORC, Optimized Row Columnar**
-
-ORC é outro formato colunar, nascido no ecossistema Apache Hive. Compartilha muitas características com Parquet, mas tem diferenças no modelo interno e em suporte de ferramentas.
-
-Características:
-- Colunar, como Parquet.
-- Estatísticas internas por stripe (blocos de dados): min, max, count. Permite bloom filters e predicate pushdown mais agressivos em algumas engines.
-- Compressão por coluna (Zlib, Snappy, LZO).
-- Schema embutido.
-- Forte integração com Hive, Spark e engines do ecossistema Hadoop.
-- Menor adoção fora do ecossistema Hadoop/Spark em comparação com Parquet.
-
-Quando usar:
-- Plataformas com Hive, HiveQL ou Presto/Trino com catálogo Hive.
-- Ambientes Databricks ou EMR onde ambos são suportados, a escolha depende do ecossistema da empresa.
-
-**Tabela comparativa**
-
-| Característica | CSV | JSONL | Parquet | ORC |
-|---|---|---|---|---|
-| Legível por humanos | sim | sim | não | não |
-| Schema embutido | não | parcial | sim | sim |
-| Tipos complexos | não | sim | sim | sim |
-| Compressão nativa | não | não | sim | sim |
-| Leitura colunar | não | não | sim | sim |
-| Custo de scan | alto | alto | baixo | baixo |
-| Facilidade de merge | alta | alta | baixa | baixa |
-| Ecossistema | universal | amplo | amplo | Hadoop+ |
-
-**Referência do livro (Cap. 8, Data Storage Design Patterns)**
-
-O padrão *Horizontal Partitioner* descrito no Cap. 8 complementa diretamente a escolha de formato. Particionar por data no Parquet, por exemplo, é o que permite ao motor de query ignorar partições inteiras e ler apenas o intervalo de tempo relevante. Sem particionamento, até o melhor formato colunar é forçado a escanear blocos desnecessários.
-
-#### 3.4 Tipos de tabela: Hive, Iceberg e Delta Lake
-
-Formatos de arquivo (Parquet, ORC) são diferentes de *table formats*. O table format é a camada que define como metadados, schema, transações e histórico são gerenciados por cima dos arquivos físicos.
-
-**Hive Table, o modelo original do data lake**
-
-O modelo Hive é o mais antigo e o mais simples. Uma tabela Hive é basicamente um diretório no HDFS ou S3 com arquivos de dados, e um catálogo (Hive Metastore) que mapeia o nome da tabela para o path físico, o schema e as partições.
-
-Como funciona:
-- Os arquivos físicos ficam em `s3://bucket/tabela/particao=data/arquivo.parquet`.
-- O Hive Metastore guarda o schema e o mapeamento.
-- Engines como Hive, Spark, Presto e Athena consultam o metastore para saber onde estão os dados.
-
-Limitações:
-- Sem transações ACID robustas nativamente. Dois jobs escrevendo na mesma partição ao mesmo tempo podem corromper dados.
-- Evolução de schema limitada: adicionar colunas é simples, mas renomear ou mudar tipos pode quebrar leitores existentes.
-- Sem time travel nativo.
-- Operações de update e delete são limitadas ou ausentes.
-
-Quando ainda faz sentido:
-- Pipelines simples de append-only onde não há necessidade de update ou delete.
-- Ambientes legados onde a migração para Iceberg ou Delta não vale o custo imediato.
-- Quando a engine disponível não suporta os novos formatos.
-
-**Apache Iceberg, o table format moderno e multi-engine**
-
-Iceberg foi criado pelo Netflix e Apache para resolver as limitações do Hive. É um table format aberto, desenhado para funcionar com múltiplas engines (Spark, Flink, Trino, Athena v3, Hive).
-
-Como funciona:
-- Cada escrita gera um novo *snapshot*. Um snapshot é um arquivo de metadados que aponta para os arquivos de dados que compõem o estado atual da tabela.
-- O histórico de snapshots permite *time travel*: você pode consultar o estado da tabela em qualquer ponto do passado dentro do período de retenção.
-- *Schema evolution* é um cidadão de primeira classe: adicionar, renomear e deletar colunas é suportado sem quebrar leitores que usam o schema antigo.
-- *Partition evolution*: você pode mudar o esquema de particionamento sem precisar reescrever os dados existentes.
-- Suporte a operações ACID: escritas concorrentes são seguras.
-
-Casos de uso ideais:
-- Data lakes multi-engine onde diferentes times usam Spark, Trino ou Athena para consultar os mesmos dados.
-- Tabelas que evoluem com frequência de schema.
-- Pipelines que precisam de time travel para auditoria ou correção de dados históricos.
-- Ambientes cloud onde o vendor-lock é uma preocupação.
-
-**Delta Lake, o table format do ecossistema Databricks**
-
-Delta Lake foi criado pela Databricks e é o table format nativo do ambiente Databricks. Funciona bem com Spark e Databricks, e tem suporte crescente em outras engines.
-
-Como funciona:
-- Usa um *transaction log* (`_delta_log/`) no diretório da tabela. Cada operação (write, delete, merge, optimize) gera um novo arquivo de log.
-- As operações são ACID: um MERGE que processa milhões de linhas é atômico.
-- *Time travel*: como o log é preservado por configuração, você pode fazer `SELECT * FROM tabela VERSION AS OF 5` ou `TIMESTAMP AS OF '2026-01-01'`.
-- `MERGE INTO` é especialmente performático em Delta Lake.
-- `OPTIMIZE` e `ZORDER BY` são operações de compactação e co-localização de dados que melhoram performance de queries.
-
-Casos de uso ideais:
-- Ambientes Databricks, onde Delta é nativo e tem suporte completo.
-- Pipelines com mutações frequentes (merge, update, delete) onde performance transacional é crítica.
-
-**Tabela comparativa**
-
-| Característica | Hive | Iceberg | Delta Lake |
-|---|---|---|---|
-| Transações ACID | limitado | sim | sim |
-| Schema evolution | básico | completo | completo |
-| Partition evolution | não | sim | não |
-| Time travel | não | sim | sim |
-| Multi-engine | sim | sim (melhor) | crescente |
-| Merge / upsert | limitado | sim | sim (otimizado) |
-| Vendor | Apache | Apache (open) | Databricks/Linux |
-| Melhor cenário | legado/simples | cloud multi-engine | Databricks |
-
-**Referência do livro (Cap. 4, Merger Pattern)**
-
-O padrão *Merger* descreve como aplicar incrementos (inserts + updates + soft deletes) de forma idempotente a um dataset existente. A operação `MERGE INTO` do Delta/Iceberg é a implementação nativa desse padrão.
-
-#### 3.5 Camadas bronze, silver e gold
-
-A arquitetura medallion (bronze/silver/gold) é um padrão de organização do data lake em camadas com diferentes níveis de curadoria.
-
-**Bronze, dados brutos, fidelidade máxima**
-
-A camada bronze recebe os dados como chegam da origem, com o mínimo de transformação possível. O objetivo é preservar a fidelidade dos dados originais.
-
-Características:
-- Formato preferido: JSONL ou CSV (mantém a estrutura original, legível).
-- Particionamento por data de ingestão, não de evento.
-- Dados podem ter inconsistências, nulos, duplicatas, tudo é preservado.
-- Sem remoção de campos, mesmo que sensíveis (com controle de acesso adequado).
-- Table format: Hive simples (append-only) ou Iceberg para capturar histórico.
-
-Analogia: é a "fita bruta" da gravação. Tudo que aconteceu está lá.
-
-**Silver, dados curados, prontos para análise**
-
-A camada silver aplica transformações de qualidade: limpeza de nulos, deduplicação, padronização de tipos, enriquecimento com dados de referência.
-
-Características:
-- Formato preferido: Parquet (leitura eficiente, schema embutido).
-- Particionamento por data de evento (não de ingestão).
-- Dados devem atender contratos de schema definidos.
-- Pode incluir campos derivados simples.
-- Table format: Parquet + Iceberg ou Delta, dependendo da necessidade de upsert.
-
-Analogia: é a "edição do corte", você removeu os erros, normalizou os dados, mas ainda não produziu o produto final.
-
-**Gold, dados agregados, prontos para consumo**
-
-A camada gold contém datasets prontos para consumo por analistas, dashboards e modelos. São as métricas, agregados e visões de negócio.
-
-Características:
-- Formato preferido: Parquet ou Delta/Iceberg.
-- Estrutura orientada ao caso de uso (tabela desnormalizada por produto, por região, por canal).
-- Alta qualidade garantida.
-- Pode ter SLA de atualização definido.
-
-Analogia: é o produto final, o relatório, o dashboard, o número que o stakeholder vai olhar.
-
-**Recomendação para o Projeto 1**
-
-| Camada | Formato | Table Format | Justificativa |
-|---|---|---|---|
-| Bronze | JSONL / CSV | Hive ou Iceberg | Fidelidade máxima, ingestão direta |
-| Silver | Parquet | Iceberg ou Delta | Analytics eficiente, schema estável, suporte a merge |
-| Gold | Parquet | Iceberg ou Delta | Performance de query, auditabilidade, SLA |
-
-**Referência do livro (Cap. 9, AWAP Pattern)**
-
-O padrão *Audit-Write-Audit-Publish* encaixa na transição silver → gold: antes de promover dados para a camada gold, você valida o dataset transformado. Se passar, promove. Se não passar, você tem opções: falha o pipeline, envia para dead-letter, ou promove com anotação de incompletude.
-
-**Referência do livro (Cap. 10, Flow Interruption Detector)**
-
-A camada bronze é especialmente vulnerável a interrupções de fluxo. O padrão *Flow Interruption Detector* descreve como detectar quando um job parou de escrever dados sem falhar explicitamente. Implementar um detector de freshness na camada bronze previne que o silêncio de um job com bug passe despercebido por horas ou dias.
-
-#### 3.6 Exercícios e entregáveis
-
-**Exercício 1, Matriz de decisão de orquestrador**
-
-Objetivo: aplicar os conceitos de CDC no contexto do Projeto 1.
-
-Dado um arquivo CSV com eventos CDC da tabela `events`:
-
-1. Abra o arquivo com pandas.
-2. Agrupe por `event_id`.
-3. Ordene por `cdc_event_ts` dentro de cada grupo.
-4. Implemente uma função que valida as regras de lifecycle: o primeiro evento deve ser `insert`; após `delete`, não pode haver mais eventos para aquele ID.
-5. Imprima o número de IDs com violação.
-
-Entregável: script Python + resultado da validação (número de violações esperado: 0 para o dataset gerado pelo `cdc_generator`).
-
----
-
-**Exercício 2, Blueprint de camadas bronze/silver/gold**
-
-Objetivo: definir o padrão de armazenamento do Projeto 1.
-
-Para cada camada, defina:
-- Formato de arquivo
-- Table format
-- Estratégia de particionamento
-- Política de retenção
-- Critério de promoção para a próxima camada
-
-Entregável: tabela de decisão por camada.
-
----
-
-**Exercício 3, Mini ADR de table format**
-
-Objetivo: documentar formalmente a decisão de table format para o Projeto 1.
-
-Escreva um mini ADR com:
-- **Contexto:** qual é o problema que motivou a decisão.
-- **Decisão:** qual table format foi escolhido.
-- **Alternativas consideradas:** Hive, Iceberg e Delta, com prós e contras de cada um para o contexto.
-- **Consequências:** o que fica mais fácil e o que fica mais difícil com a escolha feita.
-
-Entregável: documento de 1 a 2 páginas com as quatro seções preenchidas.
-
----
-
-
-#### Mini-desafio com solucao
-
-Pendente. Escrever enunciado, dicas e gabarito comentado.
-
-#### Rubrica de validacao da aprendizagem
-
-Pendente. Definir criterio, suficiente e excelente.
-
-#### Erros comuns e como corrigir
-
-Pendente. Levantar sintoma, causa e correcao.
-
-#### Plano de continuidade
-
-Pendente. Apontar o proximo modulo da trilha.
-
-#### Glossario
-
-Pendente. Listar os termos novos deste modulo.
-
-#### Referencias
-
-Pendente. Documentacao oficial com data de consulta.
-
-#### Fontes verificadas
-
-Pendente. Nenhuma afirmacao deste modulo foi conferida contra doc oficial.
-
----
-
-## Capitulo 4, Particionamento e performance de consultas
-
-Fonte: `modulos/particionamento-performance/apostila.md`
-
-### Apostila, particionamento e performance de consultas
-
-> Trilha de Engenharia de Dados. Conduzida por Iuri Zambotto e Paulo Shindi.
-
-#### Sumário
-
-- [0. Como usar esta apostila](#0-como-usar-esta-apostila)
-- [1. Objetivo pedagógico](#1-objetivo-pedagógico)
-- [2. Contexto de negócio](#2-contexto-de-negócio)
-- [3. Por que particionamento importa](#3-por-que-particionamento-importa)
-- [4. Como o particionamento físico funciona](#4-como-o-particionamento-físico-funciona)
-- [5. Partition pruning, o mecanismo central](#5-partition-pruning-o-mecanismo-central)
-- [6. Estratégias de particionamento](#6-estratégias-de-particionamento)
-- [7. Cardinalidade e escolha de chave de partição](#7-cardinalidade-e-escolha-de-chave-de-partição)
-- [8. Skew de partição](#8-skew-de-partição)
-- [9. Hot partitions](#9-hot-partitions)
-- [10. Custo contra performance](#10-custo-contra-performance)
-- [11. A stack do laboratório](#11-a-stack-do-laboratório)
-- [12. Laboratório](#12-laboratório)
-- [13. Análise do domínio de marketing](#13-análise-do-domínio-de-marketing)
-- [14. Exercícios e entregáveis](#14-exercícios-e-entregáveis)
-- [15. Mini-desafio com solução](#15-mini-desafio-com-solução)
-- [16. Rubrica de validação da aprendizagem](#16-rubrica-de-validação-da-aprendizagem)
-- [17. Erros comuns e como corrigir](#17-erros-comuns-e-como-corrigir)
-- [18. Plano de continuidade](#18-plano-de-continuidade)
-- [19. Glossário](#19-glossário)
-- [Referências](#referências)
-- [Fontes verificadas (2026-07-31)](#fontes-verificadas-2026-07-31)
-
-#### 0. Como usar esta apostila
-
-**Leitura linear.** As seções 3 a 5 constroem o mecanismo. Da 6 à 10 cada seção
-trata de uma decisão de projeto com consequência de custo. A 12 é o laboratório, e
-ele é o centro deste módulo.
-
-**Revisão pontual.** Pruning na 5, escolha de chave na 7, custo na 10,
-diagnóstico na 17.
-
-**Pré-requisitos.** Os módulos de object storage e de formatos de arquivo. Este
-material assume que você sabe o que é um bucket, o que é Parquet e por que formato
-colunar importa.
-
-**Este módulo tem laboratório, e ele foi executado.** MinIO, Hive Metastore e
-Trino, em Docker, sem nuvem. O `lab.json` registra cada laboratório com o comando
-que provou, a saída e a data.
-
-**Uma advertência sobre escala, e ela é o próprio conteúdo.** O laboratório roda
-com 15 partições e 12.000 linhas. Não é preguiça de dimensionamento: acima de
-cerca de 20 partições, o Hive Metastore desta pilha trava na fase de commit de um
-CTAS particionado. A medição está na seção 17, e ela é a demonstração literal do
-que a seção 10 ensina sobre overhead de metadados.
-
-**Versões.** Verificado com Trino 479, Hive 4.0.0, PostgreSQL 16, MinIO
-RELEASE.2025-02-03T21-03-04Z e Docker Compose v2.39.1, em 2026-07-31.
-
-#### 1. Objetivo pedagógico
-
-Ao terminar este módulo, você consegue:
-
-1. **Explicar** o que particionamento faz no nível de armazenamento, e por que o
-   engine consegue não ler o que não precisa.
-2. **Demonstrar** partition pruning num plano de execução real, e dizer quanto ele
-   economizou.
-3. **Escolher** chave e granularidade de partição a partir do padrão de acesso e
-   da cardinalidade, justificando pela pergunta que o negócio faz.
-4. **Prever** os três modos de falha de uma escolha errada: small files, skew e
-   hot partition.
-5. **Calcular** o impacto de custo de uma decisão de particionamento com o modelo
-   de cobrança por dado escaneado.
-6. **Reconhecer** o limite de metadados de um catálogo Hive, tendo visto ele
-   acontecer.
-
-#### 2. Contexto de negócio
-
-A startup fictícia de marketing e e-commerce da trilha já tem o dado bruto no
-object storage e já sabe consultar. O problema agora é o preço da resposta.
-
-O time de marketing pergunta, todos os dias: quantos cliques por campanha na
-última semana? Sem particionamento, cada uma dessas perguntas varre o histórico
-inteiro. A resposta é a mesma, o custo cresce todo mês, e ninguém percebe até a
-fatura chegar.
-
-**As caixas do pipeline, e onde estamos**
-
-```
-[Origem] -> [CDC] -> [Bronze] -> [Silver] -> [Gold] -> [Consumo]
-               ^
-               | (o orquestrador garante a ordem e os checks)
-```
-
-| Caixa | O que resolve |
-|---|---|
-| CDC | Representa mudança de forma auditável |
-| Bronze | Dado bruto, fidelidade máxima, sem transformação |
-| Silver | Dado limpo e padronizado, pronto para análise |
-| Gold | Métrica e tabela de consumo |
-| Engine de consulta | Valida e explora, sem armazenar |
-
-Este módulo mora entre bronze e silver: é ali que a decisão de particionamento é
-tomada, e é ela que decide o custo de tudo que vem depois.
-
-**A modelagem mínima que precede a decisão**
-
-Particionamento é decisão de armazenamento, e ela depende de saber o grão.
-
-| Entidade | Grão | Chave | Tipo de mudança | Partição sugerida |
-|---|---|---|---|---|
-| events | 1 evento | event_id | append-only | event_date |
-| campaigns | 1 campanha | campaign_id | upsert | created_date, se existir |
-| costs | 1 campanha por dia | (campaign_id, cost_date) | upsert | cost_date |
-| crm | 1 usuário | user_id | upsert | updated_at, se existir |
-
-Se houver dado pessoal, marque e restrinja o acesso antes de promover para silver
-ou gold. Isso é assunto do módulo de governança, e a decisão precisa ser tomada
-aqui, não lá.
-
-**As perguntas que guiam o módulo**
-
-- Qual coluna define o tempo do dado?
-- Qual coluna aparece no filtro das queries mais caras?
-- Qual o volume por partição que essa escolha produz?
-
-#### 3. Por que particionamento importa
-
-##### 3.1 O cenário sem partição
-
-**O que é**
-
-Imagine uma tabela de eventos com 5 bilhões de registros cobrindo três anos. Você
-precisa do total de cliques da última semana. Sem particionamento, a consulta
-varre os 5 bilhões para achar os que caem na janela. Isso é uma varredura completa:
-caro, lento, e crescendo linearmente com o volume.
-
-Em serviços que cobram por byte escaneado, isso aparece na fatura. A seção 10 faz
-a conta com número.
-
-**O que o particionamento faz**
-
-Particionar é organizar fisicamente o dado em subconjuntos, pelos valores de uma
-ou mais colunas. Quando a consulta filtra pela coluna de partição, o engine lê
-apenas as partições relevantes e ignora o resto.
-
-No exemplo: com os eventos particionados por data, a consulta da última semana lê
-7 partições de mais de mil. Em vez de 5 bilhões de registros, ela lê os da semana.
-A redução é de uma ou duas ordens de magnitude.
-
-##### 3.2 A decisão que mais mexe no custo
-
-**O equívoco comum**
-
-Tratar particionamento como detalhe de implementação. É frequentemente a decisão
-de projeto de dados com maior impacto direto em custo, e ela é tomada uma vez e
-paga todo mês.
-
-Uma escolha errada produz um destes três resultados:
-
-| Erro | Consequência |
-|---|---|
-| Partição por coluna que nenhuma consulta filtra | Toda consulta continua varrendo tudo |
-| Partição por coluna de altíssima cardinalidade | Dezenas de milhares de arquivos minúsculos |
-| Partição por coluna desbalanceada | Uma partição com ordens de magnitude mais dado que as outras |
-
-Os três têm nome, e as seções 7, 8 e 9 tratam de cada um.
-
-#### 4. Como o particionamento físico funciona
-
-##### 4.1 A metáfora do armário
-
-**O que é**
-
-Imagine 365 pastas, uma por dia do ano. Quando alguém pede os documentos de 15 de
-janeiro, você vai direto na pasta e pega. Você não abre as outras 364.
-
-É literalmente o que o particionamento faz no armazenamento.
-
-##### 4.2 Organização em prefixos
-
-**Como funciona na prática**
-
-No S3, e no MinIO que implementa a mesma API, o dado particionado fica em prefixos
-que seguem a convenção Hive:
-
-```
-s3://silver/marketing/events/
-  event_date=2025-01-10/
-    20260731_190000_00001_abcde_...
-  event_date=2025-01-11/
-    20260731_190000_00001_abcde_...
-```
-
-Cada subdiretório `event_date=<valor>` é uma partição, e os arquivos dentro dele
-contêm só os registros daquele dia. Os nomes de arquivo acima são do formato que o
-Trino gera de verdade, observado no laboratório.
-
-##### 4.3 O papel do catálogo
-
-**O que é**
-
-O object storage não sabe que aqueles prefixos são partições. Ele vê objetos com
-nomes. Quem dá significado é o Hive Metastore, que guarda:
-
-- que existe uma tabela `events_silver` no schema `marketing`;
-- onde ela está armazenada;
-- que a coluna de partição é `event_date`;
-- quais partições existem.
-
-Quando o Trino recebe uma consulta com filtro de data, ele pergunta ao metastore
-quais partições existem e quais casam com o filtro, **antes** de tocar qualquer
-arquivo.
-
-**O equívoco comum**
-
-Gravar arquivo direto no bucket e esperar que a consulta o encontre. Se a partição
-não foi registrada no metastore, ela não existe para o engine.
-
-O registro acontece de duas formas: o próprio Trino escrevendo, ou você mandando
-sincronizar. E aqui há uma pegadinha de dialeto que vale saber antes de procurar
-no lugar errado. O comando do Hive é `MSCK REPAIR TABLE`, e **o Trino não tem esse
-comando**. No Trino é um procedimento:
-
-<!-- verificacao: nivel 1, conferido na documentacao do conector Hive do Trino, nao executado, 2026-07-31 -->
-
-```sql
-CALL hive.system.sync_partition_metadata(
-    schema_name => 'marketing',
-    table_name => 'events_silver',
-    mode => 'ADD');
-```
-
-O modo `ADD` acrescenta as partições que existem no storage e não estão no
-catálogo. Há também `DROP` e `FULL`. Material que manda rodar `MSCK REPAIR TABLE`
-no Trino está misturando os dois dialetos.
-
-##### 4.4 A coluna de partição não vive dentro do arquivo
-
-**O que é**
-
-A coluna de partição em geral **não** é armazenada dentro dos arquivos Parquet. O
-valor está codificado no caminho do prefixo. Isso economiza espaço: `2025-01-10`
-não precisa aparecer em cada linha de um arquivo que já está dentro de
-`event_date=2025-01-10/`.
-
-**Como inspecionar**
-
-O plano de execução do Trino diz isso explicitamente. Observado no laboratório:
-
-<!-- verificacao: nivel 3, EXPLAIN executado no Trino 479, saida real, 2026-07-31 -->
-
-```
-event_id := event_id:string:REGULAR
-event_date:date:PARTITION_KEY
-```
-
-`event_id` é `REGULAR`, ou seja, lido do arquivo. `event_date` é `PARTITION_KEY`,
-ou seja, reconstruído a partir do caminho. É a prova da afirmação, na saída da
-própria ferramenta.
-
-#### 5. Partition pruning, o mecanismo central
-
-##### 5.1 O que é
-
-Partition pruning é o mecanismo pelo qual o engine identifica, a partir dos
-filtros, quais partições precisa ler, e descarta as demais antes de abrir arquivo.
-O nome vem de podar.
-
-##### 5.2 Como funciona, passo a passo
-
-Considere a consulta:
-
-<!-- verificacao: nivel 3, executada no Trino 479 contra a tabela do laboratorio, 2026-07-31 -->
-
-```sql
-SELECT campaign_id, COUNT(*) AS total_clicks
-FROM hive.marketing.events_silver
-WHERE event_date BETWEEN DATE '2025-01-10' AND DATE '2025-01-12'
-  AND stage = 'click'
-GROUP BY campaign_id;
-```
-
-O que o Trino faz:
-
-1. Analisa o predicado de `event_date`.
-2. Pergunta ao metastore quais partições existem e quais caem no intervalo.
-3. Recebe a lista das três partições.
-4. Envia requisições ao storage apenas para os arquivos dessas três.
-5. Aplica o filtro de `stage` **dentro** dos arquivos lidos, porque `stage` não é
-   coluna de partição.
-
-##### 5.3 O pruning só acontece na coluna de partição
-
-**O equívoco comum**
-
-Achar que qualquer filtro ativa o pruning. Só a coluna de partição elimina
-partição. Filtro em outra coluna é aplicado depois, dentro do que já foi lido.
-
-A implicação prática decide o projeto: **a coluna de partição deve ser a mais usada
-como filtro nas consultas mais frequentes e mais caras.**
-
-##### 5.4 Pruning e pushdown
-
-Existe otimização em mais de um nível, e vale saber a ordem:
-
-| Nível | O que elimina |
-|---|---|
-| Partition pruning | Partições inteiras, sem abrir arquivo |
-| File pruning | Arquivos individuais, em formatos como Iceberg |
-| Row group pruning | Blocos dentro do Parquet, por estatística de mínimo e máximo |
-
-Este módulo trata do primeiro. Ele é o que dá o maior ganho e o único que você
-controla ao decidir a chave de partição.
-
-##### 5.5 Como inspecionar, e o que o Trino 479 realmente imprime
-
-**Como inspecionar**
-
-Material mais antigo manda procurar a palavra `Constraint` na linha do
-`TableScan`. **O Trino 479 não imprime isso.** O que ele imprime é mais direto:
-a lista de partições que serão lidas.
-
-Com pruning, observado no laboratório:
-
-<!-- verificacao: nivel 3, EXPLAIN executado no Trino 479, saida real, 2026-07-31 -->
-
-```
-└─ TableScan[table = hive:marketing:events_silver]
-       Layout: [event_id:varchar]
-       event_id := event_id:string:REGULAR
-       event_date:date:PARTITION_KEY
-           :: [[2025-01-10]]
-```
-
-Uma partição na lista. Sem pruning, filtrando por uma coluna comum, o plano muda
-de forma e lista todas:
-
-<!-- verificacao: nivel 3, EXPLAIN executado no Trino 479, saida real, 2026-07-31 -->
-
-```
-└─ ScanFilterProject[table = hive:marketing:events_silver, filterPredicate = (channel = varchar 'organic')]
-       event_date:date:PARTITION_KEY
-           :: [[2025-01-01], [2025-01-02], ... [2025-01-15]]
-```
-
-Duas diferenças para ler no plano: o nó deixa de ser `TableScan` e passa a ser
-`ScanFilterProject` com `filterPredicate`, e a lista de partições passa de um
-valor para quinze.
-
-##### 5.6 Quanto isso economiza, medido
-
-**Como funciona na prática**
-
-Mesma tabela, mesmo dado, dois filtros. Números de `EXPLAIN ANALYZE` reais:
-
-| Medida | Com pruning | Sem pruning | Fator |
-|---|---|---|---|
-| Linhas lidas | 800 | 12.000 | 15x |
-| Bytes lidos | 50,92 kB | 761,21 kB | 15x |
-| Entrada física | 8,08 kB | 120,72 kB | 14,9x |
-| Splits | 1 | 15 | 15x |
-| CPU | 11,85 ms | 173,42 ms | 14,6x |
-| Tempo de I/O físico | 3,80 ms | 77,31 ms | 20x |
-
-O fator 15 não é coincidência: é a contagem de partições da tabela. Uma partição
-lida em vez de quinze. Numa tabela com três anos por dia, o mesmo raciocínio dá um
-fator na casa do milhar.
-
-Repare que a consulta sem pruning ainda devolve o resultado certo. Ela só custa
-quinze vezes mais para chegar nele.
-
-#### 6. Estratégias de particionamento
-
-##### 6.1 Por tempo
-
-**O que é**
-
-A estratégia mais comum em data lake. Faz sentido quando o dado tem dimensão
-temporal forte, as consultas filtram por período, e o dado chega de forma
-incremental sem atualizar partição antiga.
-
-**A granularidade decide tudo**
-
-| Granularidade | Problema |
-|---|---|
-| Por ano | Partição enorme, o pruning não ajuda consulta diária |
-| Por hora ou minuto | Excesso de partições e arquivos minúsculos |
-| Por dia | O equilíbrio mais comum em dado transacional |
-
-Hierarquia temporal também é possível, e é útil quando você filtra tanto por mês
-quanto por dia:
-
-```
-s3://bronze/events/
-  year=2026/month=01/day=10/
-  year=2026/month=01/day=11/
-```
-
-##### 6.2 Por chave de negócio
-
-Usado quando as consultas importantes filtram por uma dimensão como `country`,
-`channel` ou `campaign_id`.
-
-Particionar por país faz sentido se a maioria das consultas é por mercado, se os
-países têm volume parecido, e se o número deles é baixo e estável.
-
-##### 6.3 Híbrido, chave composta
-
-Combina tempo e chave de negócio:
-
-```
-s3://bronze/events/
-  event_date=2025-01-10/country=BR/
-  event_date=2025-01-10/country=US/
-```
-
-O ganho: consultas que filtram por data **e** país eliminam ainda mais partições.
-O risco: o número de combinações multiplica, e o número de partições explode.
-
-Este risco não é teórico neste laboratório. Veja a seção 17: 15 partições rodam em
-10 segundos, e 25 travam o metastore. Uma chave composta de 15 datas por 5 países
-já daria 75.
-
-##### 6.4 Não existe estratégia universalmente correta
-
-A decisão vem do padrão de acesso real. As quatro perguntas que a resolvem:
-
-- Qual coluna aparece mais nos filtros das consultas mais custosas?
-- Qual a cardinalidade dessa coluna?
-- Há risco de distribuição desigual?
-- Qual o volume por partição que isso produz?
-
-#### 7. Cardinalidade e escolha de chave de partição
-
-##### 7.1 O que é cardinalidade
-
-Cardinalidade é o número de valores distintos de uma coluna. `user_id` com milhões
-de usuários é alta. `country` com dez países é baixa.
-
-##### 7.2 Por que alta cardinalidade quebra
-
-**O que é**
-
-Particionar por `user_id` numa tabela de 100 milhões de usuários dá 100 milhões de
-partições, cada uma com pouquíssimos registros. Três problemas ao mesmo tempo:
-
-| Problema | Por quê |
-|---|---|
-| Small files | Cada partição gera arquivo minúsculo, e o storage tem custo fixo por arquivo |
-| Overhead de catálogo | O metastore guarda e indexa metadado de cada partição |
-| Pruning inútil | Eliminar poucas partições de milhões não reduz o scan de forma relevante |
-
-O segundo problema é o que a seção 17 mostra acontecendo, com número.
-
-##### 7.3 A faixa que funciona
-
-Não existe número mágico. A prática de mercado indica que partição funciona bem
-com cardinalidade entre 10 e 10.000 valores distintos. Abaixo de 10 o pruning é
-limitado; acima de 10.000 o risco de small files e de overhead cresce.
-
-Para coluna de alta cardinalidade que precisa ser filtrada com frequência, a
-resposta não é partição, é organização interna do arquivo, como clustering ou
-ordenação multidimensional, disponíveis em formatos de tabela mais novos.
-
-##### 7.4 O caso do domínio de marketing
-
-| Coluna | Cardinalidade estimada | Serve como partição? |
-|---|---|---|
-| `event_date` | 365 por ano | Sim, o padrão clássico |
-| `stage` | 4 a 10 | Sim, mas avaliar desequilíbrio |
-| `campaign_id` | 100 a 10.000 | Depende do volume por campanha |
-| `channel` | 5 a 50 | Sim, se o volume for equilibrado |
-| `user_id` | Milhões | Não |
-
-#### 8. Skew de partição
-
-##### 8.1 O que é
-
-Skew é o desequilíbrio de tamanho entre partições. Numa tabela particionada por
-`stage`, se a maioria dos eventos é impressão, aquela partição fica muito maior
-que as outras.
-
-O laboratório tem skew embutido de propósito: a campanha `cmp_001` concentra cerca
-de 35 por cento do tráfego. Se você particionasse por `campaign_id`, veria o
-efeito.
-
-##### 8.2 Por que é um problema
-
-Em engine distribuído, o trabalho é dividido entre workers. Se uma partição é
-muito maior, o worker dela termina muito depois dos outros, e o tempo total da
-consulta é o do mais lento. Isso se chama straggler.
-
-Além da consulta, o skew complica a operação: reprocessar a partição grande é
-desproporcionalmente caro, e estimar crescimento fica difícil.
-
-##### 8.3 Como detectar
-
-**Como inspecionar**
-
-O Trino expõe as partições como uma tabela de sistema:
-
-<!-- verificacao: nivel 3, executado no Trino 479 contra a tabela do laboratorio, 2026-07-31 -->
-
-```sql
-SELECT * FROM hive.marketing."events_silver$partitions";
-```
-
-Se os tamanhos variarem em ordens de magnitude, há skew. No console do MinIO, em
-`http://localhost:9001`, a comparação visual dos prefixos dá a mesma pista mais
-rápido.
-
-##### 8.4 O que fazer
-
-| Estratégia | Quando |
-|---|---|
-| Trocar a chave | O desequilíbrio é natural na coluna escolhida |
-| Sub-particionar | Uma segunda dimensão equilibra a distribuição |
-| Bucketing | Distribuir em N arquivos de tamanho parecido dentro da partição |
-| Aceitar | O desequilíbrio é inevitável, e você otimiza a consulta da partição grande |
-
-A última linha é uma resposta legítima, e dizer isso por escrito vale mais que
-uma otimização que não vai acontecer.
-
-#### 9. Hot partitions
-
-##### 9.1 O que é, e por que é diferente de skew
-
-Hot partition é uma partição que recebe volume desproporcional de **escritas
-simultâneas**. Acontece em tabela particionada por tempo quando vários processos
-escrevem no dia de hoje ao mesmo tempo.
-
-| Fenômeno | Natureza |
-|---|---|
-| Skew | Problema de leitura, a partição é grande |
-| Hot partition | Problema de escrita, a partição recebe muitos writers |
-
-##### 9.2 O caso clássico
-
-Num pipeline quase em tempo real, vários workers escrevem em
-`event_date=<hoje>` ao longo do dia. Cada microbatch gera um arquivo, e ao fim do
-dia a partição tem centenas ou milhares de arquivos pequenos.
-
-##### 9.3 Mitigação
-
-| Estratégia | Como |
-|---|---|
-| Compactação | Job periódico une os arquivos pequenos da partição em arquivos maiores |
-| Área de staging | Os jobs escrevem fora da partição final, e um merge periódico consolida |
-| Serialização pelo orquestrador | O orquestrador impede writers simultâneos na partição do dia |
-
-Formatos de tabela mais novos têm compactação nativa e transacional. No Hive
-clássico, que é o deste laboratório, o processo é manual.
-
-#### 10. Custo contra performance
-
-##### 10.1 O trade-off
-
-Particionar resolve um problema e cria outro. Menos dado lido por consulta, e mais
-metadado para gerenciar. Mais partições significa mais entradas no catálogo, e
-operações que percorrem o schema inteiro ficam mais lentas.
-
-Este módulo tem a demonstração literal disso na seção 17.
-
-##### 10.2 O problema dos small files
-
-**O que é**
-
-Cada arquivo no object storage tem custo fixo de operação. Se uma partição tem
-1.000 arquivos de 1 KB, o engine faz 1.000 requisições para ler 1 MB. Comparado a
-uma requisição para um arquivo de 1 MB, o desperdício é enorme.
-
-**A regra prática**
-
-Arquivos entre 128 MB e 1 GB são o alvo para consulta analítica em object storage.
-Abaixo de 10 MB o overhead começa a aparecer; abaixo de 1 MB é problema. Isso é
-heurística de mercado, não número de documentação.
-
-**A tensão com a granularidade**
-
-Particionar por hora dá 24 partições por dia; com volume baixo, cada uma tem
-poucos MB e você criou o problema de small files. Particionar por mês resolve os
-arquivos e mata o pruning diário.
-
-A conta que resolve: se você sabe o volume diário, sabe qual granularidade deixa
-cada partição com pelo menos alguns arquivos grandes.
-
-##### 10.3 A conta de custo, com o modelo por dado escaneado
-
-**Como funciona na prática**
-
-Serviços que consultam direto no object storage cobram por byte escaneado. A
-página de preço do Athena usa 5 dólares por terabyte como taxa ilustrativa do
-exemplo dela, e é essa taxa que os exercícios deste módulo usam.
-
-Suponha a tabela `events` com 730 dias, 10 milhões de registros por dia e 200
-bytes por registro em Parquet. Total de 1,46 TB.
-
-| Cenário | Volume lido por consulta | Custo por consulta |
-|---|---|---|
-| Sem partição, filtro de 7 dias | 1,46 TB | 7,30 dólares |
-| Particionado por dia, filtro de 7 dias | 7 de 730, cerca de 14 GB | 0,07 dólares |
-
-Cem consultas por dia é a diferença entre 730 dólares e 7 dólares por dia. A
-decisão foi tomada uma vez, no dia em que a tabela foi criada.
-
-##### 10.4 Overhead de catálogo
-
-O Hive Metastore guarda uma entrada no banco relacional para cada partição. Com
-milhares de partições, operações como listar partições e resolver schema ficam
-mais lentas.
-
-Formatos de tabela mais novos reduzem essa dependência ao manter o próprio
-catálogo em arquivos de manifesto no storage.
-
-#### 11. A stack do laboratório
-
-**MinIO, o object storage**
-
-Implementa a API do S3. Para qualquer cliente que use o SDK do S3, é
-indistinguível dele. Roda local, sem custo e sem conta em nuvem. O laboratório
-usa três buckets: `bronze`, `silver` e `gold`.
-
-**Hive Metastore, o catálogo**
-
-Serviço que guarda metadado de tabela: nome, schema, localização, colunas de
-partição e a lista de partições. Usa um banco relacional como backend, aqui um
-PostgreSQL.
-
-**Uma correção que vale registrar.** Na AWS, o Glue Data Catalog cumpre o mesmo
-**papel**, e é comum dizer que ele "fala o mesmo protocolo Thrift". Não fala. O
-Glue é acessado pela API da AWS, e no Trino isso é configuração diferente:
-
-| Catálogo | Configuração no Trino |
-|---|---|
-| Hive Metastore | `hive.metastore=thrift`, com `hive.metastore.uri` |
-| AWS Glue | `hive.metastore=glue`, com `hive.metastore.glue.region` |
-
-O que muda para você: trocar de um para o outro é mudança de configuração do
-conector, não apenas de endereço. O conceito de catálogo é o mesmo, o mecanismo de
-acesso não.
-
-**Trino, o engine de consulta**
-
-Engine SQL distribuído para consulta analítica sobre object storage. Ele não
-armazena nada: lê e processa. Conecta ao metastore via Thrift e ao MinIO via API
-do S3.
-
-**Como os três se conectam**
-
-```
-[Consulta] --> [Trino :8090]
-                    |
-                    |-- (1) metadado --> [Hive Metastore :9083] -> [PostgreSQL]
-                    |
-                    |-- (2) arquivos --> [MinIO :9000] -> [bronze/silver/gold]
-```
-
-O fluxo: a consulta chega ao Trino, ele pede o metadado ao metastore, decide quais
-partições ler com base nos predicados, lê os arquivos dessas partições no MinIO, e
-processa.
-
-**Onde o orquestrador entra**
-
-Nesta sessão o Airflow não sobe. O desenho do DAG é suficiente para conectar as
-caixas: gerar o dado, carregar no bronze, construir a silver particionada, e rodar
-as consultas de validação.
-
-#### 12. Laboratório
-
-O laboratório roda em Docker, sem nuvem. Os runbooks em
-`infrastructure/runbooks/` trazem o passo a passo, inclusive o reset de estado, que
-não é opcional e a seção 17 explica por quê.
-
-**Sobre a escala.** O gerador entrega 15 partições e 12.000 linhas por padrão.
-Esse número é um teto medido, não uma preferência. A seção 17 tem a tabela.
-
-##### Lab 0: Gerar o dado e carregar no bronze
-
-Pré-condição: Docker e Docker Compose v2, e cerca de 8 GB de memória livre.
-
-```bash
-cd engenharia_de_dados/modulos/particionamento-performance
-python3 scripts/gerar_dados.py --destino infrastructure/dados
-cd infrastructure
-docker compose up -d
-```
-
-Saída esperada do gerador:
-
-```
-events.csv: 12000 linhas
-events__cdc.csv: 15566 linhas
-janela: 2025-01-01 a 2025-01-15, 15 particoes de event_date
-```
-
-Depois, com a pilha de pé, envie os arquivos ao MinIO:
-
-```bash
-docker run --rm --network mentoria-sessao-04-particionamento_default \
-  -v "$PWD/dados":/data \
-  -e MC_HOST_local="http://minioadmin:minioadmin@minio:9000" \
-  minio/mc:RELEASE.2025-02-08T19-14-21Z \
-  cp /data/events.csv local/bronze/marketing/raw/events/
-```
-
-O gerador é determinístico, com semente fixa. Rodar duas vezes produz o mesmo
-arquivo, e é por isso que esta apostila pode publicar contagens e esperar que elas
-se reproduzam na sua máquina.
-
-##### Lab 1: Criar o schema e a tabela bronze
-
-```sql
-CREATE SCHEMA IF NOT EXISTS hive.marketing
-WITH (location = 's3://bronze/marketing/');
-```
-
-```sql
-CREATE TABLE hive.marketing.events_raw (
-    event_id VARCHAR, event_date VARCHAR, event_ts VARCHAR,
-    user_id VARCHAR, campaign_id VARCHAR, channel VARCHAR,
-    device VARCHAR, country VARCHAR, stage VARCHAR, revenue VARCHAR
-)
-WITH (
-    format = 'CSV',
-    external_location = 's3://bronze/marketing/raw/events/',
-    skip_header_line_count = 1
-);
-```
-
-Saída esperada da contagem: `12000`.
-
-O formato CSV no Hive aceita apenas `VARCHAR`. A tipagem entra na silver, via
-`CAST`. Isso não é limitação do laboratório, é como o formato funciona.
-
-##### Lab 2: Criar a silver particionada
-
-```sql
-CREATE TABLE hive.marketing.events_silver
-WITH (
-    format = 'PARQUET',
-    partitioned_by = ARRAY['event_date'],
-    external_location = 's3://silver/marketing/events/'
-) AS
-SELECT
-    event_id, user_id, campaign_id, channel, device, country, stage,
-    TRY_CAST(revenue AS DOUBLE) AS revenue,
-    CAST(event_date AS DATE) AS event_date
-FROM hive.marketing.events_raw;
-```
-
-Saída esperada: `CREATE TABLE: 12000 rows`, em cerca de 18 segundos.
-
-Repare que `event_date` é a **última** coluna do `SELECT`. A documentação do
-conector Hive registra que o Hive exige que as colunas de partição sejam as últimas
-colunas da tabela, e num CTAS é a ordem do `SELECT` que define a ordem da tabela.
-Por isso a coluna de partição vai no fim.
-
-##### Lab 3: Listar as partições
-
-```sql
-SELECT count(*) AS particoes FROM hive.marketing."events_silver$partitions";
-```
-
-Saída esperada: `15`.
-
-##### Lab 4: Ver o pruning acontecer
-
-```sql
-EXPLAIN ANALYZE
-SELECT event_id, user_id, campaign_id, channel
-FROM hive.marketing.events_silver
-WHERE event_date = DATE '2025-01-10';
-```
-
-Saída esperada, na linha de entrada do plano:
-
-```
-Input: 800 rows (50.92kB), Physical input: 8.08kB, Splits: 1
-```
-
-Um split, uma partição, 800 linhas.
-
-##### Lab 5: Ver a mesma consulta sem pruning
-
-```sql
-EXPLAIN ANALYZE
-SELECT event_id, user_id, campaign_id, channel
-FROM hive.marketing.events_silver
-WHERE channel = 'organic';
-```
-
-Saída esperada:
-
-```
-Input: 12000 rows (761.21kB), Filtered: 80.12%, Physical input: 120.72kB, Splits: 15
-```
-
-Quinze splits, a tabela inteira lida, e 80 por cento do que foi lido descartado
-pelo filtro. Compare com o Lab 4: mesma tabela, resultado correto nos dois, e
-quinze vezes o custo.
-
-Este é o laboratório central do módulo. Se você fizer só um, faça este junto com o
-Lab 4.
-
-##### Lab 6: Derrubar e resetar
-
-```bash
-docker compose down --volumes
-```
-
-A opção `--volumes` não é detalhe. Sem ela, o MinIO e o metastore guardam o estado
-da execução anterior, e o `CREATE TABLE IF NOT EXISTS` da próxima vez encontra a
-tabela já registrada, não faz nada, e devolve dado velho como se fosse novo. A
-seção 17 conta o caso real.
-
-#### 13. Análise do domínio de marketing
-
-Com a tabela criada, as perguntas típicas de um analista de marketing, e o que
-cada uma faz com as partições.
-
-**Cliques por campanha e por dia, a consulta frequente**
-
-```sql
-SELECT event_date, campaign_id, COUNT(*) AS total_clicks
-FROM hive.marketing.events_silver
-WHERE event_date BETWEEN DATE '2025-01-10' AND DATE '2025-01-12'
-  AND stage = 'click'
-GROUP BY event_date, campaign_id
-ORDER BY event_date, campaign_id;
-```
-
-Filtro de partição em `event_date`, filtro de coluna em `stage`. O Trino poda as
-partições fora do intervalo e depois aplica `stage` no que sobrou.
-
-**Usuários únicos por campanha**
-
-```sql
-SELECT campaign_id, COUNT(DISTINCT user_id) AS unique_users
-FROM hive.marketing.events_silver
-WHERE event_date = DATE '2025-01-10'
-GROUP BY campaign_id;
-```
-
-**O ponto de aprendizado**
-
-Todas as consultas de marketing são naturalmente filtradas por data. "Me dá os
-dados do dia X, da semana Y" é o padrão dominante em analytics. Por isso partição
-por data é a decisão padrão para tabela de evento, e a justificativa vem do padrão
-de acesso, não do hábito.
-
-**Quando particionar por campanha em vez de data**
-
-Se a consulta dominante fosse "todos os eventos da campanha A desde sempre",
-particionar por `campaign_id` faria mais sentido. Esse padrão é menos comum
-porque o número de campanhas é alto e variável, e porque campanha tem ciclo de
-vida curto enquanto a análise continua usando janela de tempo.
-
-#### 14. Exercícios e entregáveis
-
-**Exercício 1: Plano de particionamento**
-
-Objetivo: escolher chave e granularidade a partir do padrão de acesso.
-
-Contexto: quatro tabelas do projeto.
-
-| Tabela | Volume estimado | Consultas mais comuns |
-|---|---|---|
-| `events` | 10 M por dia | Por data, por campanha, por stage |
-| `campaigns` | 500 por mês | Por data de criação, por status |
-| `costs` | 1.000 por dia | Por data, por campanha |
-| `crm` | 200 K no total, atualizado diariamente | Por segmento, por data de atualização |
-
-Entregável: proposta por tabela com chave escolhida, justificativa pelo padrão de
-acesso e pela cardinalidade, granularidade, e riscos identificados entre small
-files, skew e hot partition.
-
-**Exercício 2: Análise de custo**
-
-Objetivo: ligar decisão técnica a linha de fatura.
-
-Contexto: os volumes do exercício 1, e a taxa ilustrativa de 5 dólares por
-terabyte escaneado.
-
-Entregável: tabela comparativa de custo mensal por tabela, nos dois cenários, com
-e sem partição, assumindo 100 consultas por dia. Diga também qual das quatro
-tabelas não vale particionar, e por quê.
-
-**Exercício 3: Medir o seu próprio pruning**
-
-Objetivo: usar o plano de execução como instrumento, não como enfeite.
-
-Contexto: a tabela do laboratório.
-
-Entregável: três consultas suas, uma com pruning, uma sem, e uma com filtro
-composto de partição e coluna comum. Para cada uma, o `Input`, o `Physical input`
-e o número de `Splits` do `EXPLAIN ANALYZE`, mais uma frase explicando o número.
-
-**Exercício 4: A última versão de cada evento**
-
-Objetivo: aplicar CDC sobre dado particionado.
-
-Contexto: o `events__cdc.csv` que o gerador produz tem um insert por evento, mais
-update ou delete para parte deles. São 15.566 linhas para 12.000 eventos.
-
-Entregável: uma tabela `events_latest` com a última versão de cada `event_id`,
-descartando o que foi deletado, particionada por `event_date`. A dica está em
-função de janela com `row_number()`. Diga quantas linhas sobraram e por quê.
-
-Este exercício não é um laboratório desta apostila porque não foi executado na
-verificação. Rodar é parte do exercício.
-
-**Exercício 5: Mini ADR da estratégia**
-
-Objetivo: registrar decisão de forma que outra pessoa entenda em seis meses.
-
-Entregável: um ADR curto com título, status, contexto, decisão, pelo menos duas
-alternativas consideradas com seus trade-offs, e consequências para o pipeline.
-
-#### 15. Mini-desafio com solução
-
-**Enunciado**
-
-O time quer acrescentar `country` à chave de partição, para acelerar as análises
-por mercado. São 5 países no dado do laboratório e 15 datas.
-
-Avalie a proposta. Se recomendar, diga o que muda. Se recusar, diga o que fazer no
-lugar.
-
-**Dicas**
-
-- Multiplique antes de opinar.
-- A seção 17 tem um número que decide.
-- Volume por partição é o critério que ninguém lembra de aplicar.
-
-**Gabarito comentado**
-
-Recuso, e por dois motivos independentes.
-
-O primeiro é aritmético e imediato: 15 datas por 5 países dá 75 partições. A
-medição da seção 17 mostra que este laboratório trava acima de cerca de 20. A
-proposta não roda no ambiente onde ela seria testada.
-
-O segundo é o que importa em produção, onde o catálogo aguenta. Com 12.000 linhas
-divididas em 75 partições, cada uma fica com cerca de 160 linhas, alguns kilobytes
-de Parquet. A regra da seção 10 pede partição com arquivos na casa das centenas de
-megabytes. Você teria criado o problema de small files para resolver um problema
-de pruning que talvez não exista.
-
-O que fazer no lugar, em ordem: primeiro, medir. Quantas das consultas realmente
-filtram por país? Se for uma minoria, `country` não deveria ser partição, deveria
-ser apenas uma coluna, e o filtro dela é aplicado depois do pruning por data, que
-já reduziu 15 vezes.
-
-Se a análise por mercado for dominante mesmo, a alternativa é ordenar o dado por
-`country` dentro de cada partição de data, para que a estatística de mínimo e
-máximo do Parquet permita pular blocos. Isso é pruning no nível de row group, da
-seção 5.4, e não cria partição nova nenhuma.
-
-**Interpretação**
-
-A resposta fraca aceita a proposta porque "mais pruning é melhor". A resposta boa
-multiplica 15 por 5 antes de responder. A excelente percebe que a pergunta certa
-não é "particionar por país?", é "quantas consultas filtram por país?", e que
-ninguém mediu isso.
-
-#### 16. Rubrica de validação da aprendizagem
-
-| Critério | Insuficiente | Suficiente | Excelente |
-|---|---|---|---|
-| Mecanismo | Descreve partição como pasta | Explica o papel do catálogo no pruning | Sabe que a coluna de partição não está no arquivo, e prova no plano |
-| Pruning | Acha que qualquer filtro poda | Sabe que só a coluna de partição poda | Lê o plano e diz quanto economizou |
-| Escolha de chave | Escolhe por hábito | Escolhe pelo padrão de acesso e cardinalidade | Calcula o volume por partição antes de decidir |
-| Modos de falha | Não distingue os três | Nomeia small files, skew e hot partition | Prevê qual deles a sua escolha vai produzir |
-| Custo | Trata como assunto financeiro | Faz a conta por dado escaneado | Ordena as decisões por impacto na fatura |
-| Limite de catálogo | Não sabe que existe | Sabe que muitas partições degradam | Reconhece a assinatura do travamento e sabe o teto do ambiente |
-| Honestidade técnica | Publica número que não mediu | Cita fonte e data | Declara o que não foi verificado |
-
-Checklist para a call:
-
-- [ ] Tabela silver particionada criada a partir do dado do MinIO.
-- [ ] Pruning demonstrado no `EXPLAIN ANALYZE`, com o número de splits.
-- [ ] Plano de particionamento das quatro tabelas do exercício 1.
-- [ ] Conta de custo feita para pelo menos uma tabela.
-- [ ] Explicou por que 75 partições é uma má ideia neste ambiente.
-
-#### 17. Erros comuns e como corrigir
-
-**A pilha trava e nenhum log diz nada**
-
-Sintoma: um `CREATE TABLE ... AS SELECT` particionado nunca termina. A query fica
-em `FINISHING`, e depois de um tempo o metastore para de responder até para um
-`SHOW SCHEMAS`, com `SocketTimeoutException`. CPU e memória ociosos nos quatro
-containers, e nenhum erro em nenhum log.
-
-Causa: a fase de commit de partições do metastore. A variável é a **contagem de
-partições**, não o volume de dado. Medido em 2026-07-31, mantendo as linhas fixas
-para isolar:
-
-| Partições | Linhas | Resultado |
-|---|---|---|
-| 5 | 1.000 | concluiu em 5 s |
-| 5 | 12.000 | concluiu em 11 s |
-| 15 | 12.000 | concluiu em 10 s |
-| 25 | 12.000 | travou |
-| 30 | 6.000 | travou |
-| 30 | 60.000 | travou |
-
-O volume de linhas variou 12 vezes sem efeito. Correção: ficar abaixo de cerca de
-20 partições por CTAS neste ambiente. É por isso que o gerador entrega 15 por
-padrão.
-
-Repare no que isso significa: a seção 10 desta apostila ensina que muitas
-partições sobrecarregam o catálogo. Este travamento é essa lição acontecendo no
-próprio laboratório, com número. É o material mais honesto do módulo.
-
-**O `IF NOT EXISTS` devolve dado de meses atrás**
-
-Sintoma: o `CREATE TABLE IF NOT EXISTS` responde `CREATE TABLE: 0 rows`, e a
-contagem depois não bate com a origem.
-
-Causa: os volumes do Docker persistem entre execuções. A tabela já estava
-registrada no metastore de uma sessão anterior, o comando não fez nada, e a
-consulta leu o dado antigo.
-
-Caso real: na verificação de 2026-07-31, o laboratório devolveu 2.000 linhas em 14
-partições quando a origem tinha 60.000 em 30. O dado era de 2026-03-18, e as 14 de
-30 partições eram justamente a assinatura do travamento acima, quatro meses antes.
-
-Correção: `docker compose down --volumes` ao terminar, como no Lab 6. Se
-desconfiar, conte as linhas e compare com o que o gerador reportou.
-
-**A partição existe no storage e a consulta não a encontra**
-
-Sintoma: os arquivos estão no bucket, e a consulta devolve vazio.
-
-Causa: a partição não foi registrada no catálogo. O storage não avisa o metastore.
-
-Correção: escrever pelo próprio engine, ou sincronizar com
-`CALL hive.system.sync_partition_metadata(..., mode => 'ADD')`. No Trino não existe
-`MSCK REPAIR TABLE`, que é o comando equivalente do Hive.
-
-**A consulta filtra e continua caríssima**
-
-Sintoma: você acrescentou `WHERE` e o custo não caiu.
-
-Causa: o filtro não é na coluna de partição. Ele é aplicado depois, no dado já
-lido.
-
-Correção: conferir o plano. Se o nó é `ScanFilterProject` com `filterPredicate` e a
-lista de `PARTITION_KEY` traz todas as partições, não houve pruning.
-
-**Muitos arquivos minúsculos**
-
-Sintoma: a consulta é lenta apesar do pruning funcionar.
-
-Causa: granularidade fina demais, ou muitos writers na mesma partição.
-
-Correção: compactar, e reavaliar a granularidade contra o volume diário real.
-
-**A coluna de partição na posição errada no CTAS**
-
-Sintoma: erro ao criar a tabela particionada.
-
-Causa: no Trino, num CTAS particionado, a coluna de partição precisa ser a última
-do `SELECT`.
-
-Correção: mover a coluna para o fim da lista, como está no Lab 2.
-
-#### 18. Plano de continuidade
-
-**Antes da próxima call**
-
-Faça os exercícios 1 e 3. O terceiro exige rodar o laboratório, e é o que fixa o
-plano de execução como instrumento.
-
-**O que estudar em seguida, dentro da trilha**
-
-O módulo de formatos e tipos de tabela é o par natural deste: formatos de tabela
-mais novos resolvem parte do que aqui é manual, da compactação ao catálogo. O
-módulo de cloud para dados retoma a conta de custo desta seção 10 com as classes
-de armazenamento.
-
-O módulo de transformação com dbt é onde essas decisões passam a viver em código
-versionado, com a materialização escolhida por custo e frequência.
-
-**O que aprofundar por conta**
-
-Rode o laboratório com 25 partições e veja o travamento com os seus olhos. Saber
-reconhecer a assinatura vale mais que evitar o caso.
-
-**O que não perseguir agora**
-
-Ajuste fino de configuração do metastore e bucketing no Hive. Os dois são
-trabalho de plataforma, e o retorno para você hoje é menor que dominar a escolha
-de chave.
-
-#### 19. Glossário
-
-| Termo | Significado |
-|---|---|
-| Bucketing | Distribuição do dado em N arquivos de tamanho parecido dentro da partição |
-| Cardinalidade | Número de valores distintos de uma coluna |
-| Catálogo | Serviço que guarda metadado de tabela e de partição |
-| Compactação | Processo que une arquivos pequenos de uma partição em arquivos maiores |
-| CTAS | `CREATE TABLE AS SELECT`, cria a tabela a partir do resultado de uma consulta |
-| Full scan | Varredura completa da tabela, sem eliminar partição |
-| Hot partition | Partição que recebe volume desproporcional de escritas simultâneas |
-| Partição | Subconjunto físico do dado, definido pelo valor de uma ou mais colunas |
-| Partition pruning | Eliminação de partições a partir dos filtros, antes de abrir arquivo |
-| Pushdown | Empurrar o filtro para o nível mais baixo possível de leitura |
-| Row group | Bloco interno de um arquivo Parquet, com estatística de mínimo e máximo |
-| Skew | Desequilíbrio de tamanho entre partições |
-| Small files | Excesso de arquivos minúsculos, que anula o ganho do particionamento |
-| Split | Unidade de trabalho de leitura que o engine distribui entre workers |
-| Straggler | Worker que termina muito depois dos outros e atrasa a consulta inteira |
-
-#### Referências
-
-Documentação oficial, consultada em 2026-07-31:
-
-- Conector Hive do Trino: https://trino.io/docs/current/connector/hive.html
-- Documentação do MinIO: https://min.io/docs/
-- Preço do Amazon Athena, origem da taxa ilustrativa por terabyte: https://aws.amazon.com/athena/pricing/
-
-Leitura complementar, não conferida nesta revisão:
-
-- Data Storage Design Patterns, capítulo sobre tabela particionada e o trade-off
-  entre granularidade e overhead.
-- Data Observability Design Patterns, capítulo sobre métricas operacionais de
-  partição, como tamanho e número de arquivos.
-
-#### Fontes verificadas (2026-07-31)
-
-- Toda a pilha do laboratório foi executada de verdade em 2026-07-31, com Trino
-  479, Hive 4.0.0, PostgreSQL 16, MinIO RELEASE.2025-02-03T21-03-04Z e Docker
-  Compose v2.39.1. Os laboratórios 0 a 6 estão registrados no `lab.json` com o
-  comando que provou cada um e a saída observada.
-- O ganho do partition pruning foi medido com `EXPLAIN ANALYZE` na mesma tabela,
-  variando apenas o filtro: com pruning, 800 linhas e 50,92 kB em 1 split; sem
-  pruning, 12.000 linhas e 761,21 kB em 15 splits. O fator 15 corresponde à
-  contagem de partições da tabela.
-- O plano de execução do Trino 479 classifica `event_date` como `PARTITION_KEY` e
-  `event_id` como `REGULAR`, o que confirma que a coluna de partição é
-  reconstruída do caminho e não lida do arquivo Parquet.
-- O Trino 479 **não** imprime `Constraint` no `TableScan`, ao contrário do que
-  material mais antigo afirma. Ele imprime a lista de partições sob
-  `event_date:date:PARTITION_KEY`, e troca o nó por `ScanFilterProject` quando o
-  filtro é de coluna comum. As duas saídas estão transcritas na seção 5.5, como
-  observadas.
-- O teto de partições deste ambiente foi medido isolando a variável: 5 partições
-  com 1.000 e com 12.000 linhas concluíram em 5 e 11 segundos; 15 partições com
-  12.000 linhas concluíram em 10 segundos; 25 partições com 12.000 linhas, 30 com
-  6.000 e 30 com 60.000 travaram na fase de commit, com o metastore deixando de
-  responder. O volume de linhas variou 12 vezes sem efeito.
-- O caso do `IF NOT EXISTS` devolvendo dado antigo foi observado: os volumes
-  persistidos de 2026-03-18 fizeram o comando responder `CREATE TABLE: 0 rows` e a
-  consulta devolver 2.000 linhas em 14 partições, quando a origem tinha 60.000 em
-  30 partições.
-- A taxa de 5 dólares por terabyte escaneado usada nas contas da seção 10 e do
-  exercício 2 é a taxa ilustrativa que a própria página de preço do Athena usa no
-  exemplo dela. O preço por região não foi conferido nesta data e não é afirmado
-  aqui. https://aws.amazon.com/athena/pricing/
-- A faixa de 128 MB a 1 GB por arquivo e a faixa de cardinalidade entre 10 e
-  10.000 valores são heurísticas de mercado, não números de documentação, e estão
-  declaradas como tal no texto.
-- A documentação do conector Hive do Trino registra que o Hive exige que as colunas
-  de partição sejam as últimas colunas da tabela. O CTAS do Lab 2 respeita isso, e
-  foi executado com sucesso. O comportamento ao inverter a ordem **não** foi
-  testado, e por isso esta apostila não afirma qual erro aparece.
-  https://trino.io/docs/current/connector/hive.html
-- O Trino não tem `MSCK REPAIR TABLE`. O equivalente é o procedimento
-  `system.sync_partition_metadata`, com modos `ADD`, `DROP` e `FULL`, sendo o `ADD`
-  o que acrescenta partições presentes no storage e ausentes no catálogo. Conferido
-  na documentação e não executado.
-  https://trino.io/docs/current/connector/hive.html
-- O AWS Glue Data Catalog **não** é acessado pelo protocolo Thrift do Hive
-  Metastore. No Trino, os dois são tipos distintos de metastore:
-  `hive.metastore=thrift`, com `hive.metastore.uri`, contra
-  `hive.metastore=glue`, com `hive.metastore.glue.region`. A versão anterior desta
-  apostila afirmava que o Glue era compatível com o mesmo protocolo Thrift na
-  porta 9083, e isso está errado.
-  https://trino.io/docs/current/object-storage/metastores.html
-- O exercício 4, de aplicar CDC sobre dado particionado, **não** foi executado na
-  verificação, e por isso não é um laboratório desta apostila. O arquivo de CDC que
-  o gerador produz tem 15.566 linhas para 12.000 eventos, número que foi conferido
-  na geração.
-
----
-
-## Capitulo 5, Orquestracao com Apache Airflow
-
-Fonte: `modulos/orquestracao-airflow/apostila.md`
-
-### Apostila, Orquestracao com Apache Airflow
-
-> Trilha de Engenharia de Dados. Conduzida por Iuri Zambotto.
-
-> Conteudo extraido da apostila consolidada anterior. As secoes marcadas
-> como pendentes ainda nao foram escritas no padrao unico.
-
-#### Sumario
-
-- [2.1 Por que orquestrar pipelines de dados](#21-por-que-orquestrar-pipelines-de-dados)
-- [2.2 Arquitetura do Apache Airflow](#22-arquitetura-do-apache-airflow)
-- [2.3 DAGs, tasks e dependências na prática](#23-dags-tasks-e-dependências-na-prática)
-- [2.4 Idempotência e retries](#24-idempotência-e-retries)
-- [2.5 Exercícios e entregáveis](#25-exercícios-e-entregáveis)
-
-#### Como usar esta apostila
-
-Leitura linear para aprender, sumario para revisar um ponto isolado.
-
-
-> Pré-requisito: Capítulo 1, o Airflow é a ferramenta que garante a execução confiável e ordenada do pipeline descrito no ciclo de vida dos dados da Sessão 01.
-
-#### 2.1 Por que orquestrar pipelines de dados
-
-**O que é orquestração de dados e por que ela existe**
-
-Um pipeline de dados raramente é uma tarefa única. Em geral, ele envolve sequências como: aguardar dados chegarem → extrair → transformar → carregar → notificar. Executar essas etapas manualmente ou via `cron` simples gera problemas clássicos:
-
-- **Ordem errada de execução.** Um job de transformação pode rodar antes dos dados de origem estarem completos, gerando resultados inválidos ou zerados.
-- **Duplicidade de dados.** Se o job travar e você rodar manualmente, os registros podem ser inseridos duas vezes sem que você perceba de imediato.
-- **Perda de rastreio.** Com scripts avulsos no cron, é difícil saber o que rodou quando, o que falhou e por quê. O histórico vira uma caixa-preta.
-- **Falta de dependências explícitas.** O cron não sabe que o job B só pode rodar depois que o job A terminar. Você precisa codificar isso manualmente, o que não escala.
-
-**A diferença entre agendar e orquestrar**
-
-Agendar é dizer "rode às 03h". Orquestrar é dizer "rode às 03h, mas só se o dado de ontem estiver disponível, e depois que esse job terminar, dispare os dois jobs seguintes em paralelo, e se qualquer um falhar, tente mais três vezes com espera exponencial".
-
-Orquestração resolve um problema de coordenação. Ela dá visibilidade, controle e auditoria ao fluxo de dados.
-
-**Quando faz sentido usar um orquestrador**
-
-Não todo pipeline precisa de Airflow. Um script simples que roda uma vez por dia sem dependências pode viver no cron sem problema. O orquestrador vale a pena quando:
-
-- Há dependências entre tarefas ou entre pipelines distintos.
-- O pipeline precisa ser reexecutado (backfill) de forma segura.
-- É necessário monitorar SLA e receber alertas.
-- A equipe precisa inspecionar histórico de execuções.
-- Há múltiplos autores de pipelines que precisam de um padrão comum.
-
-**Referência do livro (Cap. 6, Data Flow Design Patterns)**
-
-O padrão *Local Sequencer* descreve exatamente esse problema: quando um job monolítico cresce a ponto de ser ininteligível, a solução é decompô-lo em tarefas sequenciais com dependências explícitas. A separação melhora a leitura do pipeline, facilita retries pontuais e define fronteiras de reprocessamento claras.
-
-#### 2.2 Arquitetura do Apache Airflow
-
-Airflow é um orquestrador de workflows declarado em Python. Para trabalhar bem com ele, é fundamental conhecer seus componentes e o papel de cada um.
-
-**Os componentes principais**
-
-- **Webserver (API Server, a partir do Airflow 3.x).** É a interface visual e REST API. Você acessa a UI no `localhost:8081`, visualiza DAGs, loga nas tasks, força execuções manuais e monitora o estado dos pipelines. No Airflow 3.1.x (versão usada nesta trilha), o componente foi renomeado para `airflow-apiserver`.
-
-- **Scheduler.** É o componente mais crítico. Ele varre os arquivos de DAG, determina quais tasks precisam ser enfileiradas com base nas dependências e no cronograma, e delega a execução para os workers. O scheduler não executa código de negócio diretamente, apenas toma decisões de agendamento.
-
-- **Worker.** Executa o código das tasks. No modelo com Celery Executor, múltiplos workers podem rodar em paralelo, cada um em contêineres separados. No LocalExecutor (típico de ambientes de desenvolvimento), as tasks rodam em processos locais do scheduler.
-
-- **Triggerer.** Componente introduzido no Airflow 2.2 para suportar *deferrable operators*. Ele gerencia tarefas que ficam esperando um evento externo (como uma API responder ou um arquivo aparecer) sem bloquear um worker. É útil em pipelines com muitos sensors.
-
-- **Metastore (banco de dados).** O estado de todas as execuções é persistido em um banco relacional, geralmente PostgreSQL em produção. Inclui o histórico de DAG runs, o estado de cada task (queued, running, success, failed, skipped), logs resumidos e configurações.
-
-- **Redis (ou outro broker de mensagens).** Usado no modelo com Celery Executor para enfileirar tasks entre o scheduler e os workers. O scheduler coloca a task na fila; o worker consome.
-
-- **Init.** No Docker Compose local, o serviço `airflow-init` é um job de bootstrap que cria o banco, aplica migrações e cria o usuário admin. Roda uma única vez antes dos demais serviços subirem.
-
-**Fluxo de uma execução**
-
-1. O scheduler lê os arquivos `.py` da pasta `dags/`.
-2. Identifica que uma DAG deve rodar (por schedule ou trigger manual).
-3. Cria um *DAG run* no metastore e enfileira as tasks elegíveis.
-4. O worker pega a task da fila, executa o código Python correspondente e reporta o resultado ao metastore.
-5. O scheduler usa o resultado para determinar se a próxima task na dependência pode ser enfileirada.
-6. A UI exibe o estado em tempo quase real.
-
-**Por que o scheduler não executa tasks**
-
-Se o scheduler executasse tasks, uma task lenta ou que consome muita memória poderia travar o agendamento de todas as outras DAGs. A separação de responsabilidades é deliberada e essencial para escalabilidade.
-
-#### 2.3 DAGs, tasks e dependências na prática
-
-**O que é uma DAG**
-
-DAG significa *Directed Acyclic Graph*. No Airflow, é o objeto principal que representa um pipeline. Ele define as tasks e a ordem em que devem rodar. "Acíclico" significa que não pode haver ciclos: task A → task B → task A nunca é permitido.
-
-Exemplo mínimo de DAG em Python:
-
-```python
-from airflow import DAG
-from airflow.operators.python import PythonOperator
-from datetime import datetime
-
-def extract():
-    print("Extraindo dados...")
-
-def transform():
-    print("Transformando...")
-
-def load():
-    print("Carregando...")
-
-with DAG(
-    dag_id="pipeline_marketing",
-    start_date=datetime(2026, 1, 1),
-    schedule="@daily",
-    catchup=False,
-) as dag:
-    t1 = PythonOperator(task_id="extract", python_callable=extract)
-    t2 = PythonOperator(task_id="transform", python_callable=transform)
-    t3 = PythonOperator(task_id="load", python_callable=load)
-
-    t1 >> t2 >> t3
-```
-
-O operador `>>` define a dependência: `t1` deve terminar com sucesso antes de `t2` iniciar.
-
-**Tipos de operadores mais comuns**
-
-- `PythonOperator`: executa uma função Python.
-- `BashOperator`: executa um comando shell.
-- `PostgresOperator`: executa uma query SQL num banco PostgreSQL.
-- `FileSensor` / `ExternalTaskSensor`: espera uma condição externa antes de avançar.
-- `BranchPythonOperator`: avalia uma condição e decide qual branch seguir.
-
-**catchup e start_date**
-
-O `start_date` define quando a DAG começa a existir no tempo. Se `catchup=True` (padrão), o Airflow vai tentar rodar todos os intervalos entre `start_date` e hoje que ainda não foram executados, isso é backfill automático. Em ambientes de produção com dados reais, isso pode ser perigoso se o pipeline não for idempotente. Em desenvolvimento, use `catchup=False`.
-
-**Retries e políticas de falha**
-
-Cada task pode ter configuração individual de retries:
-
-```python
-t2 = PythonOperator(
-    task_id="transform",
-    python_callable=transform,
-    retries=3,
-    retry_delay=timedelta(minutes=5),
-    retry_exponential_backoff=True,
-)
-```
-
-Isso diz: se a task `transform` falhar, tente mais 3 vezes, com espera de 5 minutos entre as tentativas (e com backoff exponencial, o tempo entre retries cresce a cada tentativa).
-
-**Exemplo da DAG de marketing**
-
-A DAG didática desta sessão tem a seguinte sequência:
-
-```
-extract_costs -> extract_events -> build_daily_metrics -> publish_report
-```
-
-Cada task simula uma etapa real de um pipeline de marketing:
-
-- `extract_costs`: lê custos por campanha.
-- `extract_events`: lê eventos de usuários.
-- `build_daily_metrics`: agrega as métricas diárias.
-- `publish_report`: disponibiliza o relatório para consumo.
-
-**Referência do livro (Cap. 6, Local Sequencer)**
-
-Este pipeline segue o padrão *Local Sequencer*: tarefas encadeadas em sequência, onde cada uma depende da anterior. A vantagem prática é que, se `build_daily_metrics` falhar, o Airflow reexecuta apenas essa task, sem precisar refazer a extração, que pode ser cara ou ter janelas de tempo limitadas.
-
-#### 2.4 Idempotência e retries
-
-**O que é idempotência em dados**
-
-Uma operação é idempotente quando pode ser executada múltiplas vezes e sempre produz o mesmo resultado. Em dados, isso significa que rodar o mesmo pipeline duas vezes não duplica registros, não gera inconsistências, e produz exatamente o mesmo dataset que uma única execução produziria.
-
-Idempotência não é opcional em engenharia de dados: retries acontecem, falhas parciais acontecem, e backfills são necessários. Se o pipeline não for idempotente, cada retry pode ser uma bomba-relógio.
-
-**Por que duplicatas são o pior cenário**
-
-Quando um pipeline duplica dados, há dois caminhos possíveis:
-
-1. Duplicatas identificáveis: você tem chave primária, pode deduplicar. Caro, mas possível.
-2. Duplicatas não identificáveis: sem chave única, não há como saber qual registro é a repetição. Esse é o cenário descrito como pesadelo no Cap. 4 do livro de referência.
-
-**Padrões de idempotência (Cap. 4 do livro)**
-
-O livro apresenta três famílias principais:
-
-- **Fast Metadata Cleaner**: em vez de `DELETE FROM tabela WHERE ...` (caro em tabelas grandes), usa `TRUNCATE TABLE` ou `DROP + CREATE` por partição. Opera na camada de metadados, que é ordens de magnitude mais rápida que varrer dados.
-
-- **Data Overwrite**: quando não há camada de metadados (ex: object store puro), usa `INSERT OVERWRITE` ou equivalente. No Spark, isso é `input_data.write.mode('overwrite')`.
-
-- **Merger (UPSERT)**: para datasets incrementais onde não se tem o conjunto completo, usa a operação `MERGE INTO ... USING ...`. Aplica insert se o registro é novo, update se já existe. Deletes precisam ser expressos como soft deletes (campo `is_deleted`).
-
-**Idempotência aplicada ao Airflow**
-
-Na DAG de marketing, a task `publish_report` é o ponto mais sensível. Se ela rodar duas vezes, o relatório pode ser duplicado para os consumidores. A solução é garantir que o relatório seja identificado por data de execução (chave idempotente) e que a escrita seja overwrite por partição de data, e não append.
-
-**Retries e idempotência andam juntos**
-
-Configurar `retries=3` em uma task não idempotente é aumentar a probabilidade de problema, não de solução. Antes de habilitar retries, certifique-se de que a task pode ser reexecutada sem efeitos colaterais.
-
-#### 2.5 Exercícios e entregáveis
-
-**Exercício 1, Matriz de decisão de orquestrador**
-
-Objetivo: entender quando usar orquestrador vs. cron vs. sem automação.
-
-Construa uma tabela com pelo menos 5 cenários (reais ou hipotéticos) e, para cada um, justifique a escolha de ferramenta:
-
-| Cenário | Dependências? | Retries? | Backfill? | Ferramenta recomendada | Justificativa |
-|---|---|---|---|---|---|
-| ... | ... | ... | ... | ... | ... |
-
-Entregável: tabela preenchida com 5 cenários + 2 parágrafos de justificativa técnica.
-
----
-
-**Exercício 2, Blueprint de camadas bronze/silver/gold**
-
-Objetivo: definir o padrão de armazenamento do Projeto 1.
-
-Para cada camada, defina:
-- Formato de arquivo
-- Table format
-- Estratégia de particionamento
-- Política de retenção
-- Critério de promoção para a próxima camada
-
-Entregável: tabela de decisão por camada (os conceitos de table format e particionamento são detalhados nos capítulos 3 e 4).
-
----
-
-**Exercício 3, Mini ADR de table format**
-
-Objetivo: documentar formalmente a decisão de table format.
-
-Um ADR (Architecture Decision Record) é um documento curto que registra uma decisão técnica e suas justificativas. Escreva um mini ADR com:
-
-- **Contexto:** qual é o problema que motivou a decisão.
-- **Decisão:** qual table format foi escolhido.
-- **Alternativas consideradas:** Hive, Iceberg e Delta, com prós e contras de cada um para o contexto do Projeto 1.
-- **Consequências:** o que fica mais fácil e o que fica mais difícil com a escolha feita.
-
-Entregável: documento de 1 a 2 páginas com as quatro seções preenchidas.
-
----
-
-
-#### Mini-desafio com solucao
-
-Pendente. Escrever enunciado, dicas e gabarito comentado.
-
-#### Rubrica de validacao da aprendizagem
-
-Pendente. Definir criterio, suficiente e excelente.
-
-#### Erros comuns e como corrigir
-
-Pendente. Levantar sintoma, causa e correcao.
-
-#### Plano de continuidade
-
-Pendente. Apontar o proximo modulo da trilha.
-
-#### Glossario
-
-Pendente. Listar os termos novos deste modulo.
-
-#### Referencias
-
-Pendente. Documentacao oficial com data de consulta.
-
-#### Fontes verificadas
-
-Pendente. Nenhuma afirmacao deste modulo foi conferida contra doc oficial.
-
----
-
-## Capitulo 6, Fontes, arquitetura e contratos de dados
-
-Fonte: `modulos/fontes-arquitetura-contratos/apostila.md`
+Fonte: `fundamentos/fontes-e-contratos/apostila.md`
 
 ### Apostila, fontes, arquitetura e contratos de dados
 
@@ -4118,1379 +2325,9 @@ Documentação oficial, consultada em 2026-07-31:
 
 ---
 
-## Capitulo 7, Change Data Capture
+## Capitulo 4, Cloud para dados
 
-Fonte: `modulos/cdc/apostila.md`
-
-### Apostila, Change Data Capture
-
-> Trilha de Engenharia de Dados. Conduzida por Iuri Zambotto.
-
-> Conteudo extraido da apostila consolidada anterior. As secoes marcadas
-> como pendentes ainda nao foram escritas no padrao unico.
-
-#### Sumario
-
-- [3.1 Change Data Capture (CDC), conceito e lifecycle](#31-change-data-capture-cdc-conceito-e-lifecycle)
-- [3.2 CDC por ciclo de vida de ID, regras e pitfalls](#32-cdc-por-ciclo-de-vida-de-id-regras-e-pitfalls)
-
-#### Como usar esta apostila
-
-Leitura linear para aprender, sumario para revisar um ponto isolado.
-
-#### 3.1 Change Data Capture (CDC), conceito e lifecycle
-
-**O que é CDC e por que existe**
-
-Change Data Capture é o conjunto de técnicas para capturar e representar as mudanças que ocorrem em um banco de dados de origem. Em vez de ler a tabela inteira a cada ciclo (snapshot completo), o CDC captura apenas o que mudou: inserções, atualizações e deleções.
-
-O CDC nasce de uma necessidade real: dados mudam. Um usuário atualiza o endereço, uma campanha é cancelada, um pedido é deletado. Se você só tiver o snapshot mais recente, perdeu a história do que aconteceu. Se você capturar cada evento de mudança, tem uma trilha auditável e pode reconstruir qualquer estado anterior.
-
-**Métodos de captura**
-
-- **Log-based CDC**: lê o write-ahead log (WAL) do banco de dados. É o método mais confiável e menos intrusivo. Ferramentas como Debezium fazem isso para PostgreSQL, MySQL, MongoDB e outros. Cada operação DML (INSERT, UPDATE, DELETE) gera um evento no log.
-
-- **Trigger-based CDC**: triggers no banco disparam escrita em uma tabela de auditoria a cada mudança. Funciona, mas tem custo de escrita no próprio banco de origem.
-
-- **Timestamp-based CDC**: lê registros onde `updated_at > last_processed_time`. Simples de implementar, mas não captura deleções e depende de o campo de timestamp existir e ser confiável.
-
-- **Geração sintética**: para fins didáticos, geramos os eventos de CDC programaticamente com regras de lifecycle controladas. O módulo `cdc_generator` produz arquivos `*__cdc.csv` com essa abordagem.
-
-**Campos padrão de um evento CDC**
-
-Todo evento CDC carrega:
-
-- `cdc_op`: tipo da operação, `insert`, `update` ou `delete`.
-- `cdc_event_ts`: timestamp do evento.
-- `cdc_source_table`: tabela de origem.
-- Os dados do registro no estado em que estava no momento do evento.
-
-**A diferença entre append-only e upsert**
-
-Uma tabela append-only só recebe novos registros; registros passados nunca mudam. Exemplos: logs de acesso, eventos de clique, transações financeiras.
-
-Uma tabela com upsert recebe inserções e também atualizações de registros existentes. Exemplos: cadastro de clientes, status de pedidos, saldo de conta.
-
-O CDC é especialmente relevante para tabelas com upsert. Se você precisar reconstruir o estado atual de um cadastro de clientes, precisa saber não apenas o insert inicial, mas todos os updates subsequentes e, eventualmente, o delete.
-
-#### 3.2 CDC por ciclo de vida de ID, regras e pitfalls
-
-Esta é a regra mais importante desta sessão e precisa ser internalizada.
-
-**A regra do lifecycle por ID**
-
-Para cada identificador único (chave primária) numa tabela CDC, a sequência de eventos obedece a uma regra estrita:
-
-```
-insert → update* → delete?
-```
-
-Traduzindo:
-
-1. O ID aparece **uma única vez** com `cdc_op = insert`. Esse é o primeiro e único evento de criação.
-2. Após o insert, podem existir **zero ou mais** eventos com `cdc_op = update`. Cada update representa uma alteração no estado do registro.
-3. O `cdc_op = delete` é **terminal**: significa que o registro foi removido da origem. Após um delete, esse ID não pode mais aparecer em novos eventos de insert ou update.
-
-**Por que o delete é terminal**
-
-Quando um registro é deletado no banco de origem, ele deixa de existir. Qualquer tentativa de referenciar aquele ID depois disso é ou um erro na captura CDC ou uma reinserção (novo ciclo, novo contexto). Para fins de lifecycle, o delete é o fim de vida daquele ID específico.
-
-**Evidência real do dataset desta sessão**
-
-O arquivo `notes/relatorio-cdc-por-id.md` mostra os resultados do dataset `marketing`:
-
-| Tabela | IDs únicos | Inserts | Updates | Deletes | Violações |
-|---|---|---|---|---|---|
-| `users` | 80 | 80 | 0 | 37 | 0 |
-| `campaigns` | 4 | 4 | 0 | 0 | 0 |
-| `events` | 80 | 80 | 584 | 2 | 0 |
-| `costs` | 4 | 4 | 52 | 0 | 0 |
-| `crm` | 80 | 80 | 0 | 27 | 0 |
-
-Zero violações em todas as tabelas. Cada ID começa com `insert`, updates aparecem apenas entre o insert e o possível delete, e nenhum ID reaparece após o delete.
-
-Exemplos de sequências válidas:
-
-- `user_0001` na tabela `users`: `insert → delete` (vida curta)
-- `user_0001` na tabela `events`: `insert → update → update → ... → update` (criou e atualizou 8 vezes, ainda ativo)
-- `user_0009` na tabela `events`: `insert → update → update → update → delete`
-
-**Os pitfalls mais comuns em CDC**
-
-- **Insert duplicado.** Um evento de insert para um ID que já existe indica erro no pipeline CDC ou problema de deduplicação. O dado não pode ser confiado sem investigação.
-
-- **Update antes do insert.** Se um ID aparece primeiro com `update`, o evento de criação foi perdido. Isso pode acontecer em migrações parciais ou quando a captura CDC começou depois que o registro já existia.
-
-- **Evento após delete.** Se um ID que foi deletado reaparece com `update`, houve um problema sério: ou o delete foi registrado por engano, ou houve reinserção sem novo insert CDC. Ambos indicam inconsistência.
-
-- **Timestamp fora de ordem.** Eventos CDC devem ser processados em ordem temporal por ID. Se o `cdc_event_ts` estiver fora de sequência, o estado reconstruído será incorreto.
-
-- **Soft delete vs hard delete.** Nem todos os bancos geram eventos de delete explícito no CDC. Alguns sistemas usam soft delete: um campo `is_active = false` ou `deleted_at` é atualizado, e o registro permanece na tabela. Nesses casos, o CDC captura um `update`, não um `delete`. É importante saber qual estratégia o banco de origem usa.
-
-**Como validar o lifecycle no código**
-
-A validação implementada no `cdc_generator` segue esta lógica:
-
-1. Agrupar eventos por ID.
-2. Ordenar por `cdc_event_ts`.
-3. Verificar que o primeiro evento é sempre `insert`.
-4. Verificar que após qualquer `delete`, não existem mais eventos para aquele ID.
-5. Reportar qualquer violação.
-
-
-#### Mini-desafio com solucao
-
-Pendente. Escrever enunciado, dicas e gabarito comentado.
-
-#### Rubrica de validacao da aprendizagem
-
-Pendente. Definir criterio, suficiente e excelente.
-
-#### Erros comuns e como corrigir
-
-Pendente. Levantar sintoma, causa e correcao.
-
-#### Plano de continuidade
-
-Pendente. Apontar o proximo modulo da trilha.
-
-#### Glossario
-
-Pendente. Listar os termos novos deste modulo.
-
-#### Referencias
-
-Pendente. Documentacao oficial com data de consulta.
-
-#### Fontes verificadas
-
-Pendente. Nenhuma afirmacao deste modulo foi conferida contra doc oficial.
-
----
-
-## Capitulo 8, Transformacao com dbt
-
-Fonte: `modulos/dbt/apostila.md`
-
-### Apostila, dbt: transformação com SQL versionado e testado
-
-> Trilha de Engenharia de Dados. Conduzida por Iuri Zambotto e Paulo Shindi.
-
-#### Sumário
-
-- [0. Como usar esta apostila](#0-como-usar-esta-apostila)
-- [1. Objetivo pedagógico](#1-objetivo-pedagógico)
-- [2. Contexto de negócio](#2-contexto-de-negócio)
-- [3. O que o dbt é, e o que ele não é](#3-o-que-o-dbt-é-e-o-que-ele-não-é)
-- [4. Model, ref e o DAG](#4-model-ref-e-o-dag)
-- [5. Materializações](#5-materializações)
-- [6. Camadas: sources, staging e marts](#6-camadas-sources-staging-e-marts)
-- [7. Seeds e snapshots](#7-seeds-e-snapshots)
-- [8. Jinja e macros](#8-jinja-e-macros)
-- [9. Testes: genéricos, singulares e unitários](#9-testes-genéricos-singulares-e-unitários)
-- [10. Contratos, documentação e linhagem](#10-contratos-documentação-e-linhagem)
-- [11. Laboratório](#11-laboratório)
-- [12. Exercícios e entregáveis](#12-exercícios-e-entregáveis)
-- [13. Mini-desafio com solução](#13-mini-desafio-com-solução)
-- [14. Rubrica de validação da aprendizagem](#14-rubrica-de-validação-da-aprendizagem)
-- [15. Erros comuns e como corrigir](#15-erros-comuns-e-como-corrigir)
-- [16. Plano de continuidade](#16-plano-de-continuidade)
-- [17. Glossário](#17-glossário)
-- [Referências](#referências)
-- [Fontes verificadas (2026-07-31)](#fontes-verificadas-2026-07-31)
-
-#### 0. Como usar esta apostila
-
-**Leitura linear.** Seções 1 a 10 constroem o modelo mental. A seção 11 é o
-laboratório, e ela só faz sentido depois da 6. As seções 12 a 14 são o que você
-entrega e como isso é avaliado na call.
-
-**Revisão pontual.** Se você já usa dbt e veio atrás de um assunto específico,
-vá direto: materialização na 5, teste na 9, contrato na 10. A seção 15 é a que
-mais economiza tempo de quem já está com o projeto na mão.
-
-**Pré-requisitos.** SQL com JOIN e agregação, no nível do módulo de SQL da
-trilha. Docker rodando na sua máquina, no nível do módulo de Docker. Você não
-precisa saber Python, e não precisa de conta em nuvem.
-
-**Versões desta apostila.** Tudo foi verificado com dbt Core 1.12.0 e
-dbt-duckdb 1.10.1, em 2026-07-31. Onde a versão importa para o comportamento, a
-apostila diz qual.
-
-#### 1. Objetivo pedagógico
-
-Ao terminar este módulo, você consegue:
-
-1. **Explicar** por que o dbt existe e qual problema do ELT ele resolve, sem
-   recorrer a "porque é a ferramenta padrão".
-2. **Escrever** um model em SQL que o dbt materializa como view, table ou
-   incremental, e justificar a escolha por custo e frequência.
-3. **Conectar** models pelo `ref()` e ler o DAG resultante, entendendo por que a
-   ordem de execução não é escrita por você.
-4. **Organizar** um projeto em sources, staging e marts, dizendo o que entra em
-   cada camada e o que nunca entra.
-5. **Testar** dados com teste genérico, teste singular e unit test, sabendo qual
-   dos três responde a qual pergunta.
-6. **Declarar** um contrato de model e prever o que quebra quando o contrato é
-   violado.
-7. **Diagnosticar** as falhas mais comuns de um projeto dbt a partir da
-   mensagem de erro, sem tentativa e erro.
-
-O verbo de cada item é o que será cobrado. "Explicar" é oral, na call.
-"Escrever" e "testar" são código que roda.
-
-#### 2. Contexto de negócio
-
-A startup fictícia de marketing e e-commerce da trilha continua a mesma. Ela
-veicula campanhas pagas em Google Ads, Meta Ads e TikTok Ads, e nos módulos
-anteriores você já construiu a parte de baixo do pipeline: o object storage
-guardando o dado bruto, o particionamento decidindo o custo da leitura, o
-Airflow orquestrando a ingestão e o Kafka trazendo o evento quase em tempo real.
-
-O que ainda não existe é a camada que responde à pergunta do negócio. Hoje o
-analista abre o dado cru e escreve, de novo, o mesmo JOIN entre campanha,
-veiculação e conversão. Cada um escreve um pouco diferente. Quando a diretoria
-pergunta qual canal tem o melhor custo por conversão, chegam dois números.
-
-A pergunta deste módulo é essa: **quanto custou cada conversão, por canal e por
-dia, com um número só, calculado num lugar só.**
-
-O que este módulo acrescenta ao projeto:
-
-| Camada | Já existia | Este módulo acrescenta |
-|---|---|---|
-| Ingestão | Airflow, Kafka, MinIO | nada |
-| Armazenamento | Parquet particionado | nada |
-| Transformação | query solta de analista | models versionados, testados e documentados |
-| Consumo | planilha | uma tabela fato com uma definição única |
-
-#### 3. O que o dbt é, e o que ele não é
-
-##### 3.1 O recorte do dbt no ELT
-
-**O que é**
-
-O dbt é a camada de transformação de um pipeline ELT. Ele não extrai dado e não
-carrega dado: ele pega o que já está no banco e produz tabelas e views novas a
-partir de SELECT.
-
-A sigla ajuda a lembrar do recorte. No ETL clássico, você transforma antes de
-carregar, geralmente numa máquina intermediária. No ELT, você carrega primeiro e
-transforma dentro do próprio banco, usando o poder de processamento dele. O dbt
-é o "T" do ELT, e só ele.
-
-**Como funciona na prática**
-
-Você escreve um arquivo `.sql` com um SELECT. O dbt envolve esse SELECT no DDL
-apropriado e submete ao banco. Você nunca escreve `CREATE TABLE`, `DROP TABLE`
-nem `CREATE SCHEMA`.
-
-**O equívoco comum**
-
-Muita gente descreve o dbt como "um orquestrador". Ele ordena a execução dos
-próprios models, o que é diferente de orquestrar um pipeline. Ele não agenda,
-não tenta de novo com backoff, não observa fonte externa e não dispara alerta
-por si. Quem faz isso é o Airflow, do módulo de orquestração. Em produção os
-dois convivem: o Airflow chama o dbt.
-
-**Como inspecionar**
-
-O comando `dbt compile` mostra o SQL que seria enviado ao banco, sem enviar.
-É a forma mais direta de ver que o dbt é um gerador de SQL, não um motor de
-processamento.
-
-##### 3.2 Analytics engineering, a prática por trás da ferramenta
-
-O dbt trouxe para o trabalho analítico quatro coisas que a engenharia de
-software já tinha: versionamento, teste automatizado, documentação junto do
-código e integração contínua.
-
-O ganho não é a ferramenta, é a mudança de quem responde pela definição. Antes
-do dbt, "receita líquida" morava dentro de uma query no BI, de um Excel e da
-cabeça de duas pessoas. Depois, mora num arquivo com histórico no Git.
-
-##### 3.3 dbt Core, dbt Cloud e o motor Fusion
-
-| Sabor | O que é | Quando faz sentido |
-|---|---|---|
-| dbt Core | CLI open source, roda local ou em qualquer orquestrador | Todo projeto começa aqui, e muitos ficam |
-| dbt Cloud | Plataforma gerenciada, com IDE, agendador, documentação e CI | Time sem engenheiro de plataforma disponível |
-| Fusion | Motor escrito em Rust, com entendimento nativo de SQL por dialeto | Hoje é o padrão da instalação nova do dbt |
-
-O Fusion merece atenção porque o cenário mudou rápido. A documentação oficial
-descreve o Fusion como a experiência padrão ao instalar o dbt, construída sobre
-o runtime Apache 2.0 do dbt Core 2.0. Ao mesmo tempo, a página de versões do
-dbt Core lista o 2.0 como alpha, e o 1.12, de 2026-07-16, como a versão em
-suporte ativo.
-
-As duas coisas convivem, e a leitura honesta é: o Fusion é o caminho declarado,
-e a linha 1.x é a que está em suporte ativo hoje. O laboratório deste módulo fixa
-o dbt Core 1.12.0 por esse motivo. Quando você for escolher para um projeto real,
-confira as duas páginas na data da decisão, porque essa fronteira anda.
-
-Nada do que você aprende aqui muda de nome com o Fusion. Model, `ref`, teste,
-materialização e contrato são o framework, não o motor.
-
-#### 4. Model, ref e o DAG
-
-##### 4.1 O model é um SELECT
-
-**O que é**
-
-Um model é um arquivo `.sql` dentro de `models/`, com um SELECT. O nome do
-arquivo vira o nome do objeto no banco.
-
-**Como funciona na prática**
-
-Este é um model real do laboratório, o `stg_campanhas`:
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-core 1.12.0, 2026-07-31 -->
-
-```sql
-select
-    cast(campanha_id as integer)             as campanha_id,
-    trim(nome)                               as nome_campanha,
-    lower(trim(canal))                       as canal,
-    cast(data_inicio as date)                as data_inicio,
-    cast(orcamento_diario as decimal(10, 2)) as orcamento_diario
-from {{ source('bruto', 'campanhas') }}
-```
-
-O passo a passo do que acontece quando você roda `dbt run`:
-
-1. O dbt lê todos os arquivos do projeto e monta o manifesto, que é o mapa de
-   tudo que existe e de quem depende de quem.
-2. Ele resolve o `{{ source(...) }}` para o nome real da tabela ou do arquivo.
-3. Ele envolve o SELECT no DDL da materialização escolhida.
-4. Ele submete o SQL ao banco e registra o resultado.
-
-**O equívoco comum**
-
-Que o nome do model precisa ser declarado em algum lugar. Não precisa. O nome do
-arquivo é o nome do model, e é ele que o `ref()` procura. Renomear o arquivo
-renomeia o objeto e quebra todo `ref()` que apontava para o nome antigo.
-
-**Como inspecionar**
-
-O SQL final fica em `target/compiled/`. Abrir esse arquivo é o hábito que mais
-acelera o aprendizado no começo, porque ele elimina a dúvida sobre o que o Jinja
-virou.
-
-##### 4.2 ref, a função que constrói o grafo
-
-**O que é**
-
-`ref('nome_do_model')` é como um model aponta para outro. Ela devolve o nome
-qualificado do objeto no banco e, ao mesmo tempo, declara uma dependência.
-
-**Como funciona na prática**
-
-```sql
-select * from {{ ref('stg_eventos_campanha') }}
-```
-
-O dbt lê isso e conclui duas coisas: onde buscar o dado e que este model precisa
-rodar depois do `stg_eventos_campanha`. É a mesma linha respondendo às duas
-perguntas, e é por isso que o grafo nunca desatualiza em relação ao código.
-
-**O equívoco comum**
-
-Escrever o nome da tabela direto, porque "funciona igual". Funciona na primeira
-execução e falha na segunda. Sem o `ref()`, o dbt não sabe da dependência, roda
-os dois models na ordem errada e você recebe um erro de tabela inexistente que
-não tem relação aparente com o que você escreveu.
-
-O mesmo vale para o `source()`: ele marca a fronteira entre o que o dbt produz e
-o que ele apenas consome.
-
-**Como inspecionar**
-
-`dbt list --select stg_campanhas+` lista o model e tudo que depende dele. O `+`
-à direita significa descendentes, e à esquerda, ancestrais.
-
-##### 4.3 O DAG não é escrito, é derivado
-
-**O que é**
-
-O grafo acíclico dirigido do projeto é o conjunto de todas as dependências
-declaradas por `ref()` e `source()`. Ninguém escreve a ordem de execução.
-
-**O equívoco comum**
-
-Achar que existe um arquivo de ordenação para editar quando a execução sai
-errada. Não existe, e isso é a característica central. Se a ordem está errada,
-a dependência está errada, e o conserto é no `ref()`.
-
-**Como inspecionar**
-
-No laboratório, o `dbt build` imprime a ordem que ele escolheu, numerada. Foi
-assim que o Lab 2 mostrou os models de staging rodando antes do mart, sem que
-nada no projeto declare isso.
-
-#### 5. Materializações
-
-##### 5.1 As cinco materializações
-
-**O que é**
-
-A materialização decide como o resultado do SELECT é persistido. A
-documentação oficial lista cinco embutidas: `table`, `view`, `incremental`,
-`ephemeral` e `materialized view`. O padrão, quando você não declara nada, é
-`view`.
-
-| Materialização | O que o dbt faz | Custo de armazenamento | Custo de leitura |
-|---|---|---|---|
-| `view` | Cria uma view, recriada a cada execução | nenhum | paga a transformação a cada consulta |
-| `table` | Recria a tabela inteira a cada execução | tamanho do resultado | baixo |
-| `incremental` | Processa só o que chegou desde a última vez | tamanho do resultado | baixo |
-| `ephemeral` | Não cria objeto, injeta o SQL como CTE | nenhum | herdado de quem a consome |
-| `materialized view` | Delega ao banco a atualização da view | depende do banco | baixo |
-
-**Como funciona na prática**
-
-Você declara no bloco `config` do próprio model, ou por pasta no
-`dbt_project.yml`. O laboratório usa a segunda forma, porque a decisão é da
-camada, não do arquivo:
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-core 1.12.0, 2026-07-31 -->
-
-```yaml
-models:
-  campanhas:
-    staging:
-      +materialized: view
-    marts:
-      +materialized: table
-```
-
-**O equívoco comum**
-
-Marcar tudo como `table` porque "table é mais rápido". Rápido para ler, caro
-para construir. Uma camada de staging que só renomeia e converte tipo raramente
-justifica o custo de reescrever a tabela inteira a cada execução.
-
-A regra prática que funciona: staging em `view`, mart em `table`, e `incremental`
-apenas quando a tabela cheia começa a doer no tempo ou na fatura.
-
-##### 5.2 Incremental, o que muda de verdade
-
-**O que é**
-
-Um model incremental transforma todas as linhas na primeira execução e, nas
-seguintes, apenas as que você filtrar. O filtro é seu, não do dbt.
-
-**Como funciona na prática**
-
-Este é o `fct_custo_diario` do laboratório:
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt run --select fct_custo_diario, dbt-core 1.12.0, 2026-07-31 -->
-
-```sql
-{{ config(materialized="incremental", unique_key=["campanha_id", "data_evento"]) }}
-
-select
-    campanha_id,
-    data_evento,
-    sum(custo) as custo
-from {{ ref('stg_eventos_campanha') }}
-
-{% if is_incremental() %}
-    where data_evento > (
-        select coalesce(max(data_evento), date '1900-01-01') from {{ this }}
-    )
-{% endif %}
-
-group by campanha_id, data_evento
-```
-
-A macro `is_incremental()` devolve verdadeiro quando três condições valem ao
-mesmo tempo, segundo a documentação oficial: o model já existe como tabela no
-banco, a execução não passou `--full-refresh`, e o model está configurado como
-`incremental`.
-
-No Lab 4 você vê isso acontecer. Na primeira execução o bloco `{% if %}`
-desaparece do SQL compilado. Na segunda, ele aparece:
-
-<!-- verificacao: nivel 3, saida real de target/compiled na 2a execucao, 2026-07-31 -->
-
-```sql
-    where data_evento > (
-        select coalesce(max(data_evento), date '1900-01-01')
-        from "campanhas"."main"."fct_custo_diario"
-    )
-```
-
-**O equívoco comum**
-
-Achar que o `unique_key` faz o filtro. Ele não faz. O `unique_key` decide o que
-acontece com uma linha que já existe, atualizar em vez de duplicar. Quem decide
-o que sequer é lido é o `where` dentro do `is_incremental()`. Sem ele, o
-incremental lê tudo e só economiza escrita.
-
-**Como inspecionar**
-
-Rode o model duas vezes e compare `target/compiled/` entre as execuções. É a
-prova, não a explicação.
-
-#### 6. Camadas: sources, staging e marts
-
-##### 6.1 A fronteira do source
-
-**O que é**
-
-Um `source` declara uma tabela que o dbt lê mas não produz. É a fronteira do
-projeto.
-
-**Como funciona na prática**
-
-No laboratório, os arquivos brutos são CSV lidos diretamente pelo adapter:
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-duckdb 1.10.1, 2026-07-31 -->
-
-```yaml
-sources:
-  - name: bruto
-    meta:
-      external_location: "dados_brutos/{name}.csv"
-    tables:
-      - name: campanhas
-      - name: eventos_campanha
-      - name: conversoes
-```
-
-A chave `external_location` é específica do dbt-duckdb, e existe para que o
-adapter leia o arquivo no lugar de uma tabela do catálogo. Num data warehouse de
-nuvem você não usaria isso: as tabelas cruas já estariam carregadas, e o source
-apenas declararia schema e nome.
-
-**O equívoco comum**
-
-Usar `source()` para uma tabela que o próprio dbt cria. Isso desliga a
-dependência, e o resultado é o mesmo erro de ordem de execução da seção 4.2. A
-regra é curta: se o dbt cria, é `ref`. Se alguém entrega, é `source`.
-
-##### 6.2 Staging, uma fonte por model
-
-**O que é**
-
-A camada de staging tem um model por tabela de origem. Ela faz apenas o que é
-mecânico: renomear coluna, converter tipo, normalizar texto.
-
-**O equívoco comum**
-
-Colocar regra de negócio no staging. O sintoma aparece meses depois, quando dois
-marts precisam da mesma origem com regras diferentes e alguém decide duplicar o
-staging. A partir daí existem duas verdades.
-
-O teste mental: se a resposta a "por que essa linha está aqui" envolve uma
-decisão de negócio, a linha não é de staging.
-
-##### 6.3 Marts, o modelo que o negócio consome
-
-**O que é**
-
-O mart é o modelo final por domínio. É onde vive a regra de negócio, a junção
-entre fontes e o cálculo que a diretoria vai citar em reunião.
-
-**Como funciona na prática**
-
-O `fct_desempenho_campanha` junta veiculação, cadastro, conversão e o de para de
-canal, e produz o número que o módulo prometeu na seção 2. Rodado no Lab 3, ele
-responde:
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt show, saida real, 2026-07-31 -->
-
-```
-| grupo_de_canal |   custo | conversoes | custo_por_conversao |
-| -------------- | ------- | ---------- | ------------------- |
-| Social         | 4,747.9 |          7 |              678.27 |
-| Search         | 4,126.8 |          5 |              825.36 |
-```
-
-O dado é fictício, e o formato da resposta não é. É esse recorte que encerra a
-discussão de qual canal está mais caro.
-
-**O equívoco comum**
-
-Uma camada intermediária que ninguém consegue explicar. Modelos `int_` existem
-para reaproveitar junção usada por mais de um mart. Quando existe um `int_` com
-um consumidor só, ele geralmente é um mart mal nomeado.
-
-#### 7. Seeds e snapshots
-
-##### 7.1 Seed, o CSV que é código
-
-**O que é**
-
-Um seed é um arquivo CSV dentro de `seeds/`, carregado como tabela pelo comando
-`dbt seed`. Ele serve para dado pequeno, estável e versionado.
-
-**Como funciona na prática**
-
-O laboratório usa um de para de canal:
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt build, 2026-07-31 -->
-
-```csv
-canal,grupo_de_canal,e_pago
-google_ads,Search,true
-meta_ads,Social,true
-tiktok_ads,Social,true
-```
-
-**O equívoco comum**
-
-Usar seed para carregar dado de produção. Seed vive no Git, e Git não é lugar de
-volume nem de dado pessoal. O critério é: cabe numa revisão de pull request e
-muda por decisão humana? Então é seed.
-
-##### 7.2 Snapshot, o histórico que a origem não guarda
-
-**O que é**
-
-Um snapshot registra como uma linha era em cada momento. É a resposta ao problema
-de origem que sobrescreve o próprio dado, e implementa o padrão conhecido como
-dimensão de mudança lenta, ou SCD tipo 2.
-
-**Como funciona na prática**
-
-A partir do dbt Core 1.9 o snapshot é declarado em YAML:
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt snapshot, dbt-core 1.12.0, 2026-07-31 -->
-
-```yaml
-snapshots:
-  - name: snap_campanhas
-    relation: ref('stg_campanhas')
-    config:
-      unique_key: campanha_id
-      strategy: check
-      check_cols: ["orcamento_diario"]
-```
-
-Existem duas estratégias. A `timestamp` usa uma coluna de data de alteração da
-própria origem, e é a preferida quando ela existe. A `check` compara os valores
-das colunas listadas a cada execução, e é o que sobra quando a origem não traz
-data confiável.
-
-O dbt acrescenta colunas de controle, entre elas `dbt_scd_id`, `dbt_valid_from`,
-`dbt_valid_to` e `dbt_updated_at`. No Lab 5 você altera o orçamento de uma
-campanha e vê o resultado:
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt show, saida real, 2026-07-31 -->
-
-```
-| campanha_id | orcamento_diario |       dbt_valid_from |         dbt_valid_to |
-| ----------- | ---------------- | -------------------- | -------------------- |
-|           3 |              450 | 2026-07-31 16:22:... | 2026-07-31 16:23:... |
-|           3 |              500 | 2026-07-31 16:23:... |                      |
-```
-
-A linha antiga não foi apagada. Ela foi fechada, e a nova nasceu aberta. Quem
-consome a tabela hoje filtra `dbt_valid_to is null`; quem precisa saber qual era
-o orçamento em junho consulta pela data.
-
-**O equívoco comum**
-
-Rodar o snapshot uma vez por semana e esperar histórico diário. O snapshot só
-enxerga o que existe no instante em que roda. Mudança que aconteceu e voltou
-atrás entre duas execuções é invisível, para sempre. A frequência do snapshot é
-a resolução do seu histórico.
-
-#### 8. Jinja e macros
-
-##### 8.1 Jinja é a parte que roda antes do SQL
-
-**O que é**
-
-Jinja é a linguagem de template que o dbt usa. Ela é processada antes de o SQL
-chegar ao banco, e produz texto.
-
-Duas sintaxes bastam para começar: `{{ ... }}` insere um valor no texto, e
-`{% ... %}` executa lógica sem inserir nada.
-
-**O equívoco comum**
-
-Tratar Jinja como se fosse parte do SQL. O banco nunca vê Jinja. Isso explica
-por que um validador de SQL puro rejeita um model do dbt: para ele, `{{` não é
-sintaxe válida. Também explica por que erro de Jinja aparece na compilação, e
-erro de SQL aparece na execução.
-
-##### 8.2 Macro, a função que você escreve
-
-**O que é**
-
-Uma macro é um bloco reutilizável de Jinja e SQL, declarado em `macros/`.
-
-**Como funciona na prática**
-
-O laboratório tem uma macro pequena e útil, que evita divisão por zero:
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-core 1.12.0, 2026-07-31 -->
-
-```jinja
-{% macro razao_segura(numerador, denominador) %}
-    {{ numerador }} / nullif({{ denominador }}, 0)
-{% endmacro %}
-```
-
-E o mart a chama:
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt build, 2026-07-31 -->
-
-```sql
-cast(
-    {{ razao_segura('eventos.custo', 'conversoes_por_dia.conversoes') }}
-    as decimal(12, 2)
-) as custo_por_conversao
-```
-
-Os argumentos vão entre aspas porque a macro recebe o **texto** do nome da
-coluna, não o valor dela.
-
-**O equívoco comum**
-
-Criar macro cedo demais. Duas ocorrências de um trecho ainda são duas
-ocorrências. Na terceira, o padrão está claro e a macro nasce com o nome certo.
-Macro criada na primeira ocorrência costuma abstrair a coisa errada.
-
-**Como inspecionar**
-
-O `target/compiled/` mostra a macro já expandida. Se a expansão surpreende, o
-problema é a macro, não o model.
-
-#### 9. Testes: genéricos, singulares e unitários
-
-##### 9.1 Os três tipos, e a pergunta de cada um
-
-| Tipo | Pergunta que responde | Roda quando |
-|---|---|---|
-| Genérico | Este dado obedece a uma regra conhecida? | depois de o model existir |
-| Singular | Esta condição específica do meu negócio se sustenta? | depois de o model existir |
-| Unitário | Minha lógica está certa para uma entrada que eu escolhi? | antes de o model ser materializado |
-
-A diferença entre os dois primeiros e o terceiro é a que mais confunde. Teste
-genérico e singular olham o dado que existe. Unit test olha a lógica, com dado
-que você inventou de propósito.
-
-##### 9.2 Testes genéricos
-
-**O que é**
-
-O dbt traz quatro testes genéricos embutidos: `unique`, `not_null`,
-`accepted_values` e `relationships`.
-
-**Como funciona na prática**
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-core 1.12.0, 2026-07-31 -->
-
-```yaml
-models:
-  - name: stg_campanhas
-    columns:
-      - name: campanha_id
-        data_tests:
-          - unique
-          - not_null
-      - name: canal
-        data_tests:
-          - accepted_values:
-              arguments:
-                values: ["google_ads", "meta_ads", "tiktok_ads"]
-```
-
-Duas mudanças de sintaxe importam aqui, e as duas já pegaram gente de surpresa:
-
-1. A chave é `data_tests`, não `tests`. O nome antigo ainda aparece em muito
-   material na internet.
-2. Os argumentos do teste vivem dentro de `arguments`, disponível a partir da
-   versão 1.10.5. Versões anteriores esperavam o argumento no nível de cima.
-
-**O equívoco comum**
-
-Achar que teste genérico é enfeite de projeto maduro. O Lab 6 mostra o
-contrário: uma linha com canal desconhecido no CSV bruto derruba o build antes
-que o número errado chegue ao mart.
-
-**Como inspecionar**
-
-Quando um teste falha, o dbt informa o caminho do SQL compilado. Abrir esse
-arquivo e rodar a query mostra exatamente quais linhas quebraram a regra.
-
-##### 9.3 Testes singulares
-
-**O que é**
-
-Um teste singular é um arquivo `.sql` em `tests/` com uma query que precisa
-devolver zero linhas. Cada linha devolvida é uma violação.
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt build, 2026-07-31 -->
-
-```sql
-select
-    campanha_id,
-    data_evento,
-    custo
-from {{ ref('fct_desempenho_campanha') }}
-where custo < 0
-```
-
-A inversão de lógica é a fonte de erro mais comum aqui. Você escreve a query que
-encontra o **problema**, não a que confirma que está tudo bem.
-
-##### 9.4 Unit tests
-
-**O que é**
-
-Unit tests chegaram no dbt Core 1.8. Eles validam a lógica do model com entradas
-fixas, antes de materializar qualquer coisa.
-
-**Como funciona na prática**
-
-Este unit test do laboratório protege uma decisão de negócio real: dia sem
-conversão precisa ter custo por conversão nulo, e não zero.
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-core 1.12.0, 2026-07-31 -->
-
-```yaml
-unit_tests:
-  - name: test_dia_sem_conversao_nao_vira_zero
-    model: fct_desempenho_campanha
-    given:
-      - input: ref('stg_eventos_campanha')
-        rows:
-          - {evento_id: 1, campanha_id: 1, data_evento: "2026-06-01", impressoes: 100, cliques: 10, custo: 50.00}
-      - input: ref('stg_conversoes')
-        rows: []
-    expect:
-      rows:
-        - {campanha_id: 1, data_evento: "2026-06-01", conversoes: 0, custo_por_conversao: null}
-```
-
-Zero diria que a conversão saiu de graça, que é o contrário do que aconteceu.
-Nenhum dado real do laboratório expõe essa diferença hoje, e é exatamente por
-isso que ela precisa de um teste com dado inventado.
-
-**O equívoco comum**
-
-Escrever unit test para o que o banco já garante. Testar que `sum()` soma gasta
-tempo e não protege nada. Unit test vale para lógica sua: janela, regex, cálculo
-condicional, tratamento de nulo.
-
-Uma restrição prática: todo `ref()` e `source()` que o model usa precisa
-aparecer em `given`. Não dá para fornecer metade das entradas.
-
-#### 10. Contratos, documentação e linhagem
-
-##### 10.1 Contrato de model
-
-**O que é**
-
-Um contrato declara a forma que a saída do model precisa ter: nome e tipo de
-cada coluna, e restrições opcionais. Com `enforced: true`, o model falha ao
-construir quando a saída não bate.
-
-**Como funciona na prática**
-
-<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-core 1.12.0, 2026-07-31 -->
-
-```yaml
-models:
-  - name: fct_desempenho_campanha
-    config:
-      contract:
-        enforced: true
-    columns:
-      - name: campanha_id
-        data_type: integer
-        constraints:
-          - type: not_null
-      - name: custo
-        data_type: decimal(12,2)
-```
-
-O contrato faz duas coisas: uma checagem prévia comparando as colunas do SELECT
-com as declaradas, e a inclusão de tipos e restrições no DDL enviado ao banco.
-
-A segunda parte é visível. Depois do Lab 2, o DuckDB mostra a coluna como não
-anulável de verdade:
-
-<!-- verificacao: nivel 3, describe main.fct_desempenho_campanha, saida real, 2026-07-31 -->
-
-```
-│     column_name     │  column_type  │  null   │
-├─────────────────────┼───────────────┼─────────┤
-│ campanha_id         │ INTEGER       │ NO      │
-│ custo               │ DECIMAL(12,2) │ YES     │
-```
-
-A restrição não ficou só no YAML. Ela virou DDL.
-
-**O equívoco comum**
-
-Confundir contrato com teste. Teste roda depois e reprova o dado. Contrato roda
-junto da construção e reprova a **estrutura**. Uma coluna renomeada por engano
-passa em todos os testes de valor e é barrada pelo contrato.
-
-Vale saber o limite: contrato funciona em `table`, `view` com restrições
-limitadas, e `incremental`. Não funciona em `ephemeral` nem em `materialized
-view`.
-
-##### 10.2 Documentação e linhagem
-
-O `dbt docs generate` produz um site navegável com a descrição de cada model e
-coluna, mais o DAG clicável. A descrição vem do mesmo YAML onde vivem os testes,
-que é o ponto: documentação que mora longe do código envelhece sem que ninguém
-perceba.
-
-Este módulo não gera a documentação no laboratório. O comando existe e está na
-referência oficial citada no fim da apostila, e o exercício 4 pede que você o
-rode.
-
-#### 11. Laboratório
-
-O laboratório roda inteiro em Docker, com dbt Core 1.12.0, dbt-duckdb 1.10.1 e
-DuckDB 1.5.5. Nada sai da sua máquina, e não há credencial de nuvem envolvida.
-
-Os runbooks em `infrastructure/runbooks/` trazem o passo a passo completo. O
-resumo abaixo diz o que cada laboratório prova.
-
-##### Lab 0: Construir a imagem
-
-Pré-condição: Docker Engine 28 ou superior e Docker Compose v2.
-
-```bash
-cd engenharia_de_dados/modulos/dbt/infrastructure
-export DBT_UID=$(id -u)
-export DBT_GID=$(id -g)
-docker compose build
-```
-
-Saída esperada: ` mentoria-dbt:1.12.0  Built`.
-
-As duas variáveis existem por um motivo prático: sem elas o container escreve
-`target/` e `logs/` como root no seu disco, e você precisa de `sudo` para
-limpar depois.
-
-##### Lab 1: Conferir a conexão
-
-```bash
-docker compose run --rm dbt debug
-```
-
-Saída esperada: `Connection test: [OK connection ok]` e `All checks passed!`.
-
-O `dbt debug` confere projeto, perfil, dependências e conexão. Quando ele
-reclama, o problema está antes do seu SQL.
-
-##### Lab 2: Rodar o projeto inteiro
-
-```bash
-docker compose run --rm dbt build
-```
-
-Saída esperada: `Done. PASS=22 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=22`.
-
-Os 22 nós são 1 seed, 3 models de staging, 1 mart em `table`, 1 model
-incremental, 1 snapshot, 14 data tests e 1 unit test. O `dbt build` executa
-model, teste, snapshot e seed na ordem do DAG.
-
-Repare na ordem impressa: o unit test roda **antes** do model que ele testa, e
-os testes de staging rodam antes de o mart existir. Ninguém escreveu essa ordem.
-
-##### Lab 3: Ler o resultado
-
-```bash
-docker compose run --rm dbt show --inline "select grupo_de_canal, sum(custo) as custo, sum(conversoes) as conversoes, round(sum(custo) / nullif(sum(conversoes), 0), 2) as custo_por_conversao from {{ ref('fct_desempenho_campanha') }} group by grupo_de_canal order by custo_por_conversao"
-```
-
-Saída esperada: `Social` com custo por conversão 678.27 e `Search` com 825.36.
-
-Esta é a pergunta da seção 2 respondida com um número só.
-
-##### Lab 4: Ver o incremental funcionar
-
-Pré-condição: Lab 2 concluído.
-
-```bash
-docker compose run --rm dbt run --select fct_custo_diario
-sed -n '1,20p' projeto_dbt/target/compiled/campanhas/models/marts/fct_custo_diario.sql
-```
-
-Saída esperada: o SQL compilado da segunda execução traz a cláusula `where
-data_evento > (...)`, que não existia na primeira.
-
-##### Lab 5: Ver o snapshot registrar uma mudança
-
-Pré-condição: Lab 2 concluído.
-
-```bash
-sed -i 's/^3,Remarketing Carrinho,meta_ads,2026-06-03,450.00$/3,Remarketing Carrinho,meta_ads,2026-06-03,500.00/' projeto_dbt/dados_brutos/campanhas.csv
-docker compose run --rm dbt snapshot
-docker compose run --rm dbt show --inline "select campanha_id, orcamento_diario, dbt_valid_from, dbt_valid_to from {{ ref('snap_campanhas') }} where campanha_id = 3 order by dbt_valid_from"
-sed -i 's/^3,Remarketing Carrinho,meta_ads,2026-06-03,500.00$/3,Remarketing Carrinho,meta_ads,2026-06-03,450.00/' projeto_dbt/dados_brutos/campanhas.csv
-```
-
-Saída esperada: duas linhas para a campanha 3, a de 450 com `dbt_valid_to`
-preenchido e a de 500 com `dbt_valid_to` vazio.
-
-O último comando devolve o CSV ao estado original.
-
-##### Lab 6: Quebrar um teste de propósito
-
-```bash
-printf '6,Teste Linkedin,linkedin_ads,2026-06-07,200.00\n' >> projeto_dbt/dados_brutos/campanhas.csv
-docker compose run --rm dbt build --select stg_campanhas
-sed -i '$d' projeto_dbt/dados_brutos/campanhas.csv
-```
-
-Saída esperada:
-
-```
-[ERROR]: in test accepted_values_stg_campanhas_canal__google_ads__meta_ads__tiktok_ads
-  Got 1 result, configured to fail if != 0
-Done. PASS=6 WARN=0 ERROR=1 SKIP=0 NO-OP=0 REUSED=0 TOTAL=7
-```
-
-Este é o laboratório mais importante da lista. Ver o pipeline parar por causa de
-um dado ruim é o que transforma teste de dados de burocracia em rede de
-proteção.
-
-##### Lab 7: Derrubar o ambiente
-
-```bash
-docker compose run --rm dbt clean
-docker compose down --rmi local
-```
-
-A ordem importa. O `clean` precisa da imagem ainda de pé.
-
-#### 12. Exercícios e entregáveis
-
-**Exercício 1: Escolha de materialização**
-
-Objetivo: justificar materialização por custo e frequência, não por hábito.
-
-Contexto: os quatro models do laboratório, mais dois hipotéticos, uma tabela de
-eventos com 400 milhões de linhas atualizada de hora em hora, e um relatório
-executivo consultado três vezes por mês.
-
-Entregável: tabela com uma linha por model, contendo materialização escolhida,
-justificativa em uma frase e o que aconteceria com a escolha oposta.
-
-**Exercício 2: Um teste que pega um erro real**
-
-Objetivo: escrever teste a partir de uma falha plausível, não de uma lista.
-
-Contexto: o `fct_desempenho_campanha` do laboratório.
-
-Entregável: um teste genérico novo e um teste singular novo, os dois no projeto,
-mais a demonstração de cada um falhando. Para demonstrar a falha, altere o CSV
-bruto, rode, capture a saída e desfaça a alteração, como no Lab 6.
-
-**Exercício 3: Camada intermediária**
-
-Objetivo: reconhecer quando um `int_` se justifica.
-
-Contexto: suponha um segundo mart, `fct_funil_por_canal`, que precisa da mesma
-junção entre eventos, campanhas e de para de canal.
-
-Entregável: proposta de refatoração indicando o que vira `int_`, o que fica no
-mart, e o critério que você usou. Se a sua conclusão for que não vale a pena
-criar o `int_`, defenda isso, que também é resposta.
-
-**Exercício 4: Documentação e linhagem**
-
-Objetivo: usar o material de documentação que o projeto já produz.
-
-Contexto: o projeto do laboratório, depois do Lab 2.
-
-Entregável: as descrições de coluna do `fct_desempenho_campanha` preenchidas no
-YAML, mais a saída do comando de geração de documentação e uma observação sobre
-o que o DAG mostrou que você não esperava.
-
-#### 13. Mini-desafio com solução
-
-**Enunciado**
-
-O time de marketing pede uma tabela nova: receita por grupo de canal e semana,
-com a variação percentual em relação à semana anterior. A tabela vai para um
-painel executivo consultado algumas vezes por mês.
-
-Requisitos:
-
-1. Um model novo, com materialização justificada.
-2. Reaproveitar o que já existe, sem reescrever junção.
-3. Pelo menos um teste que proteja a conta.
-4. Tratar o caso da primeira semana, que não tem semana anterior.
-
-**Dicas**
-
-- A junção entre eventos, campanhas e canal já existe em algum lugar do projeto.
-- Variação percentual é uma divisão, e o projeto já tem uma macro para divisão
-  que pode dar zero no denominador.
-- A primeira semana é o mesmo problema do dia sem conversão da seção 9.4.
-
-**Gabarito comentado**
-
-Materialização `table`. O consumo é raro, então o custo de leitura importa pouco;
-o volume é pequeno, então `incremental` só acrescenta complexidade. `view`
-também funcionaria, e a diferença é irrelevante nessa escala. O que não se
-justifica é `incremental`, e a razão é que a complexidade tem um custo de
-manutenção que o ganho não paga.
-
-Reaproveitamento: o model parte de `ref('fct_desempenho_campanha')`, que já
-resolveu a junção. Partir do staging de novo criaria a segunda definição de
-receita, que é o problema que o módulo inteiro existe para evitar.
-
-Esqueleto da lógica:
-
-```sql
-with semanal as (
-    select
-        grupo_de_canal,
-        date_trunc('week', data_evento) as semana,
-        sum(receita) as receita
-    from {{ ref('fct_desempenho_campanha') }}
-    group by grupo_de_canal, date_trunc('week', data_evento)
-)
-
-select
-    grupo_de_canal,
-    semana,
-    receita,
-    lag(receita) over (partition by grupo_de_canal order by semana) as receita_anterior,
-    {{ razao_segura(
-        'receita - lag(receita) over (partition by grupo_de_canal order by semana)',
-        'lag(receita) over (partition by grupo_de_canal order by semana)'
-    ) }} as variacao
-from semanal
-```
-
-<!-- verificacao: nivel 1, esqueleto didatico conferido contra a doc de macros e de window function, nao executado no laboratorio, 2026-07-31 -->
-
-Este bloco é esqueleto de resposta, não código do laboratório. Ele foi conferido
-contra a documentação de macro do dbt, e não foi executado. Rodá-lo é parte do
-desafio.
-
-Primeira semana: o `lag` devolve nulo, o `nullif` dentro da macro impede o erro
-de divisão, e o resultado é nulo. Nulo é a resposta certa aqui, porque não houve
-variação a medir. Preencher com zero afirmaria estabilidade que não existiu.
-
-Teste que protege a conta: um teste singular que devolve as linhas onde
-`variacao` é nula e `receita_anterior` não é. Se isso acontecer, a macro está
-errada, não o dado.
-
-**Interpretação**
-
-O que separa a boa resposta da resposta correta é o item 2. Quem parte do mart
-existente entendeu que o valor do dbt está na definição única. Quem reescreve a
-junção produziu SQL que funciona e um problema de governança.
-
-#### 14. Rubrica de validação da aprendizagem
-
-| Critério | Insuficiente | Suficiente | Excelente |
-|---|---|---|---|
-| Papel do dbt | Descreve como orquestrador ou como banco | Situa como camada de transformação do ELT | Explica a fronteira com o Airflow e por que os dois convivem |
-| ref e DAG | Escreve nome de tabela direto | Usa `ref` e `source` corretamente | Diagnostica erro de ordem de execução a partir da mensagem |
-| Materialização | Usa `table` em tudo | Escolhe por custo e frequência, e justifica | Sabe quando `incremental` não compensa e defende a escolha |
-| Camadas | Mistura regra de negócio no staging | Separa staging de mart com critério | Argumenta quando um `int_` se justifica e quando não |
-| Testes | Só usa `not_null` e `unique` | Usa os três tipos na situação certa | Escreve teste a partir de uma falha real observada |
-| Contrato | Confunde com teste de dado | Declara contrato e prevê o que ele barra | Explica o limite por materialização |
-| Diagnóstico | Tenta e erra até funcionar | Lê a mensagem e vai ao ponto | Usa `target/compiled/` como primeiro passo |
-
-A avaliação é feita na call, sobre o código que você entregou nos exercícios.
-
-#### 15. Erros comuns e como corrigir
-
-**O seed não encontra o próprio CSV**
-
-Sintoma: `IO Error: No files found that match the pattern`, com um caminho
-absoluto que não existe dentro do container.
-
-Causa: o `target/` foi escrito por uma execução fora do Docker. O manifesto
-guardou o caminho da máquina de fora, e o parse parcial reaproveitou.
-
-Correção: `dbt clean` e rodar de novo. Esse erro apareceu de verdade na
-construção deste laboratório, na primeira vez em que o projeto rodou no host e
-depois no container.
-
-**Model roda antes da dependência**
-
-Sintoma: erro de tabela ou view inexistente, num model que estava funcionando.
-
-Causa: nome de tabela escrito direto em vez de `ref()`. Sem o `ref()` não existe
-aresta no grafo, e sem aresta não existe ordem.
-
-Correção: trocar por `ref()`. Confirmar com `dbt list --select <model>+`.
-
-**O incremental não economiza nada**
-
-Sintoma: o tempo de execução não cai depois da primeira vez.
-
-Causa: falta o bloco `{% if is_incremental() %}` com o filtro. O `unique_key`
-sozinho evita duplicata, não evita leitura.
-
-Correção: acrescentar o filtro e comparar `target/compiled/` entre duas
-execuções.
-
-**O teste passa e o número está errado**
-
-Sintoma: todos os testes verdes, e o negócio aponta um valor que não fecha.
-
-Causa: os testes existentes cobrem forma, não regra. `not_null` e `unique` não
-sabem o que é uma conversão.
-
-Correção: escrever teste singular a partir da regra de negócio, e unit test para
-a lógica que o dado atual não exercita, como o caso do dia sem conversão.
-
-**`tests:` não funciona como o tutorial mostra**
-
-Sintoma: o teste declarado no YAML é ignorado, ou o parse reclama.
-
-Causa: material antigo. A chave é `data_tests`, e o argumento do teste vive
-dentro de `arguments` a partir da versão 1.10.5.
-
-Correção: conferir a sintaxe na documentação da sua versão, e a versão com
-`dbt --version`.
-
-**Arquivos root no seu diretório**
-
-Sintoma: `target/` e `logs/` que você não consegue apagar sem `sudo`.
-
-Causa: container rodando como root sobre um volume montado.
-
-Correção: exportar `DBT_UID` e `DBT_GID` antes do `docker compose`, como no
-Lab 0.
-
-**O `dbt debug` reclama de git**
-
-Sintoma: `Could not find command, ensure it is in the user's PATH: "git"`.
-
-Causa: imagem base enxuta sem git. O dbt usa git para baixar pacote.
-
-Correção: instalar git na imagem. O `Dockerfile` do laboratório já faz isso, e
-esse erro foi a razão.
-
-#### 16. Plano de continuidade
-
-**Antes da próxima call**
-
-Termine os exercícios 1 e 2. Eles são a base da conversa.
-
-**O que estudar em seguida, dentro da trilha**
-
-O próximo bloco é Nuvem e escala. O módulo de cloud para dados mostra onde esse
-projeto dbt rodaria de verdade, com o data warehouse no lugar do DuckDB. O de
-infraestrutura como código trata de como esse ambiente nasce sem ninguém clicar
-em console.
-
-O módulo de orquestração com Airflow, que você já viu, ganha um recorte novo
-depois deste: em produção o `dbt build` é uma tarefa chamada pelo agendador, e a
-integração entre os dois DAGs é um assunto por si.
-
-**O que aprofundar por conta**
-
-Pacotes do ecossistema, a começar por `dbt_utils`, que resolve problema comum
-com macro pronta. Depois, integração contínua: rodar apenas o que mudou num pull
-request é o ganho que mais aparece quando o projeto passa de algumas dezenas de
-models.
-
-**O que não perseguir agora**
-
-Semantic layer e exposures são úteis e não mudam nada até o projeto ter
-consumidor de verdade. Deixe para quando existir painel apontando para o mart.
-
-#### 17. Glossário
-
-| Termo | Significado |
-|---|---|
-| Adapter | Biblioteca que traduz o SQL do dbt para um banco específico |
-| Contrato | Declaração da forma da saída de um model, verificada na construção |
-| DAG | Grafo de dependências entre models, derivado dos `ref` e `source` |
-| Data test | Teste que avalia o dado depois de o model existir |
-| Ephemeral | Materialização que não cria objeto, injetada como CTE |
-| Incremental | Materialização que processa apenas o recorte filtrado por você |
-| Jinja | Linguagem de template processada antes de o SQL chegar ao banco |
-| Macro | Bloco reutilizável de Jinja e SQL, declarado em `macros/` |
-| Manifesto | Arquivo em `target/` com o mapa completo do projeto |
-| Mart | Camada final, por domínio de negócio |
-| Materialização | Estratégia de persistência do resultado de um model |
-| Model | Arquivo `.sql` com um SELECT que o dbt transforma em objeto no banco |
-| ref | Função que aponta para outro model e cria a dependência |
-| SCD tipo 2 | Padrão que guarda cada versão de uma linha ao longo do tempo |
-| Seed | CSV versionado, carregado como tabela por `dbt seed` |
-| Snapshot | Captura periódica que registra mudança de linha ao longo do tempo |
-| source | Função e declaração de tabela que o dbt lê mas não produz |
-| Staging | Camada de limpeza mecânica, um model por origem |
-| Unit test | Teste da lógica do model com entradas fixas, antes de materializar |
-
-#### Referências
-
-Documentação oficial do dbt, consultada em 2026-07-31:
-
-- Materializações: https://docs.getdbt.com/docs/build/materializations
-- Models incrementais: https://docs.getdbt.com/docs/build/incremental-models
-- Snapshots: https://docs.getdbt.com/docs/build/snapshots
-- Jinja e macros: https://docs.getdbt.com/docs/build/jinja-macros
-- Data tests: https://docs.getdbt.com/reference/resource-properties/data-tests
-- Unit tests: https://docs.getdbt.com/docs/build/unit-tests
-- Contratos de model: https://docs.getdbt.com/docs/collaborate/govern/model-contracts
-- Comandos: https://docs.getdbt.com/reference/dbt-commands
-- Comando build: https://docs.getdbt.com/reference/commands/build
-- Versões do dbt Core: https://docs.getdbt.com/docs/dbt-versions/core
-- Motor Fusion: https://docs.getdbt.com/docs/fusion/about-fusion
-- Adapter dbt-duckdb: https://github.com/duckdb/dbt-duckdb
-
-#### Fontes verificadas (2026-07-31)
-
-- O dbt tem cinco materializações embutidas, `table`, `view`, `incremental`,
-  `ephemeral` e `materialized view`, e o padrão é `view`.
-  https://docs.getdbt.com/docs/build/materializations
-- `is_incremental()` é verdadeiro quando o model já existe como tabela, a
-  execução não passou `--full-refresh` e o model é `incremental`.
-  https://docs.getdbt.com/docs/build/incremental-models
-- O snapshot é declarado em YAML com `relation`, `unique_key`, `strategy` e
-  `check_cols`, e o dbt acrescenta `dbt_scd_id`, `dbt_valid_from`,
-  `dbt_valid_to` e `dbt_updated_at`. https://docs.getdbt.com/docs/build/snapshots
-- Os quatro testes genéricos embutidos são `unique`, `not_null`,
-  `accepted_values` e `relationships`, declarados sob `data_tests`.
-  https://docs.getdbt.com/reference/resource-properties/data-tests
-- A chave `arguments` para argumento de teste genérico está disponível a partir
-  da versão 1.10.5, e versões anteriores usam o argumento no nível de cima.
-  https://docs.getdbt.com/reference/resource-properties/data-tests
-- Unit tests foram introduzidos no dbt Core 1.8, exigem todos os `ref` e
-  `source` do model em `given`, e não suportam `materialized view`.
-  https://docs.getdbt.com/docs/build/unit-tests
-- Contrato com `enforced: true` faz checagem prévia das colunas e inclui tipos e
-  restrições no DDL, e falha o build quando violado. Ele suporta `table`,
-  `view` com restrições limitadas e `incremental`, e não suporta `ephemeral`
-  nem `materialized view`.
-  https://docs.getdbt.com/docs/collaborate/govern/model-contracts
-- O `dbt build` executa models, tests, snapshots, seeds e funções definidas pelo
-  usuário, em ordem do DAG. https://docs.getdbt.com/reference/commands/build
-- O dbt Core 1.12 foi lançado em 2026-07-16 e está em suporte ativo; o 1.11 é de
-  2025-12-19 e o dbt Core 2.0 aparece como alpha.
-  https://docs.getdbt.com/docs/dbt-versions/core
-- O motor Fusion é escrito em Rust e é descrito como a experiência padrão da
-  instalação do dbt, sobre o runtime Apache 2.0 do dbt Core 2.0.
-  https://docs.getdbt.com/docs/fusion/about-fusion
-- O dbt-duckdb 1.10.1 foi publicado em 2026-02-17, exige Python 3.10 ou
-  superior, `dbt-core>=1.8.0` e `duckdb>=1.0.0`.
-  https://pypi.org/project/dbt-duckdb/
-- O dbt-duckdb lê arquivo externo como source pela chave `external_location`
-  declarada em `meta`. https://github.com/duckdb/dbt-duckdb
-- As saídas de laboratório citadas nesta apostila, incluindo
-  `PASS=22 WARN=0 ERROR=0`, o SQL compilado do incremental, as duas linhas do
-  snapshot e a coluna `campanha_id` como não anulável, foram capturadas em
-  execução real com dbt Core 1.12.0, dbt-duckdb 1.10.1 e DuckDB 1.5.5. O
-  registro completo, com comando e nível, está em `lab.json`.
-
----
-
-## Capitulo 9, Cloud para dados
-
-Fonte: `modulos/cloud-para-dados/apostila.md`
+Fonte: `ambiente/cloud/apostila.md`
 
 ### Apostila, cloud para dados: o que muda quando o dado sai da sua máquina
 
@@ -6367,9 +3204,9 @@ Dados de mercado, consultados em 2026-07-31:
 
 ---
 
-## Capitulo 10, Infraestrutura como codigo
+## Capitulo 5, Infraestrutura como código
 
-Fonte: `modulos/infraestrutura-como-codigo/apostila.md`
+Fonte: `ambiente/infraestrutura-como-codigo/apostila.md`
 
 ### Apostila, infraestrutura como código para plataforma de dados
 
@@ -6994,7 +3831,7 @@ Verificado com Terraform v1.15.8, TFLint v0.64.0 e provider `hashicorp/aws`
 Pré-condição: Terraform 1.9 ou superior e TFLint 0.60 ou superior.
 
 ```bash
-cd engenharia_de_dados/modulos/infraestrutura-como-codigo/infrastructure
+cd engenharia_de_dados/ambiente/infraestrutura-como-codigo/infrastructure
 terraform version
 tflint --version
 ```
@@ -7002,7 +3839,7 @@ tflint --version
 ##### Lab 1: Rodar o gate completo
 
 ```bash
-cd engenharia_de_dados/modulos/infraestrutura-como-codigo
+cd engenharia_de_dados/ambiente/infraestrutura-como-codigo
 python3 scripts/verificar_iac.py
 ```
 
@@ -7012,7 +3849,7 @@ Saída esperada: seis linhas começando com `OK` e a linha final
 ##### Lab 2: Rodar cada passo à mão
 
 ```bash
-cd engenharia_de_dados/modulos/infraestrutura-como-codigo/infrastructure
+cd engenharia_de_dados/ambiente/infraestrutura-como-codigo/infrastructure
 terraform fmt -check -recursive
 cd ambientes/dev
 terraform init -backend=false -input=false
@@ -7409,342 +4246,9 @@ armazenamento citadas nas validações:
 
 ---
 
-## Capitulo 11, Streaming com Apache Kafka
+## Capitulo 6, Kubernetes para engenharia de dados
 
-Fonte: `modulos/streaming-kafka/apostila.md`
-
-### Apostila, Streaming com Apache Kafka
-
-> Trilha de Engenharia de Dados. Conduzida por Iuri Zambotto com Paulo Shindi.
-
-#### Sumario
-
-- [0. Como usar esta apostila](#0-como-usar-esta-apostila)
-- [1. Objetivo pedagogico](#1-objetivo-pedagogico)
-- [2. Contexto de negocio](#2-contexto-de-negocio)
-- [3. O log particionado](#3-o-log-particionado)
-- [4. Chave, particao e ordem](#4-chave-particao-e-ordem)
-- [5. Grupo de consumo e offset](#5-grupo-de-consumo-e-offset)
-- [6. Semanticas de entrega](#6-semanticas-de-entrega)
-- [7. Laboratorio](#7-laboratorio)
-- [8. Exercicios e entregaveis](#8-exercicios-e-entregaveis)
-- [9. Mini-desafio com solucao](#9-mini-desafio-com-solucao)
-- [10. Rubrica de validacao da aprendizagem](#10-rubrica-de-validacao-da-aprendizagem)
-- [11. Erros comuns e como corrigir](#11-erros-comuns-e-como-corrigir)
-- [12. Plano de continuidade](#12-plano-de-continuidade)
-- [13. Glossario](#13-glossario)
-- [Referencias](#referencias)
-- [Fontes verificadas](#fontes-verificadas)
-
-#### 0. Como usar esta apostila
-
-Leitura linear para aprender, sumario para revisar um ponto isolado.
-
-O laboratorio da secao 7 foi executado de ponta a ponta e as saidas registradas sao reais, nao
-ilustrativas. Cada `Lab N` existe no `lab.json` deste modulo, com o comando e a saida esperada.
-
-Pre-requisito: o modulo de Docker e ambiente local. Voce precisa conseguir subir um Compose.
-
-#### 1. Objetivo pedagogico
-
-Ao terminar este modulo voce consegue:
-
-- explicar por que o Kafka e um log particionado e nao uma fila;
-- prever em qual particao uma mensagem vai cair, a partir da chave;
-- dizer o que o Kafka garante sobre ordem, e o que ele nao garante;
-- ler o offset de um grupo de consumo e interpretar o lag;
-- escolher a semantica de entrega adequada, sabendo onde a garantia termina.
-
-#### 2. Contexto de negocio
-
-A startup de marketing do Projeto 1 acompanha campanhas pagas. Ate aqui o pipeline era batch:
-o dado chegava de hora em hora e o relatorio fechava no dia seguinte.
-
-Surgiu uma pergunta que o batch nao responde: quando uma campanha comeca a queimar orcamento
-sem converter, quanto tempo o time leva para perceber? Com carga de hora em hora, ate uma hora.
-Com o orcamento diario de uma campanha grande, uma hora e dinheiro.
-
-Streaming entra aqui para reduzir a latencia entre o evento acontecer e alguem poder agir. Nao
-para substituir o batch, que continua fazendo o fechamento correto.
-
-#### 3. O log particionado
-
-**O que e**
-
-Um topico do Kafka nao e uma fila. E um **log**: uma sequencia de registros que so cresce no
-fim, dividida em particoes, e da qual ninguem remove nada ao ler.
-
-Essa diferenca muda tudo. Numa fila, ler consome. No Kafka, ler apenas move um marcador de
-posicao, e o mesmo registro pode ser lido de novo, por outro consumidor ou pelo mesmo mais tarde.
-
-**Por que particionar**
-
-A particao e a unidade de paralelismo. Um topico com 3 particoes pode ser lido por ate 3
-consumidores do mesmo grupo em paralelo. Com 1 particao, so um consumidor trabalha, por mais
-que voce suba dez.
-
-**O que o Lab 3 mostra**
-
-Ao descrever o topico, cada particao aparece com um `Leader`. O lider e o broker responsavel
-por aquela particao: toda escrita e leitura passa por ele. Em cluster de um no so, o lider e
-sempre o mesmo, e por isso o laboratorio nao demonstra failover.
-
-#### 4. Chave, particao e ordem
-
-**A regra**
-
-Quando a mensagem tem chave, o Kafka escolhe a particao por hash da chave. Mesma chave, mesma
-particao, sempre. Sem chave, a distribuicao e circular entre as particoes.
-
-**O que isso garante**
-
-Ordem **dentro da particao**, e so. O Kafka nao garante ordem global no topico, e nao tem como:
-particoes sao independentes e escritas em paralelo.
-
-Na pratica isso e suficiente quase sempre, porque o que importa e a ordem dos eventos **do
-mesmo titular**. Se todos os eventos do usuario `u1` caem na mesma particao, a sequencia
-`click`, depois `purchase`, chega nessa ordem.
-
-**O equivoco comum**
-
-Achar que aumentar particoes so melhora. Aumentar particoes aumenta paralelismo e **redistribui
-as chaves**: uma chave que caia na particao 1 com 3 particoes pode cair na 4 com 6. Eventos
-antigos ficam onde estavam, e a ordem por chave se quebra na fronteira da mudanca.
-
-Por isso o numero de particoes e decisao de projeto, nao de ajuste fino.
-
-**O que o Lab 5 mostra**
-
-A saida real do laboratorio:
-
-```
-Partition:0	u2	{"user_id":"u2","evento":"view"}
-Partition:1	u1	{"user_id":"u1","evento":"click"}
-Partition:1	u1	{"user_id":"u1","evento":"purchase"}
-```
-
-As duas mensagens de `u1` cairam na particao 1, e nessa ordem. A de `u2` foi para a 0. A regra
-de hash da chave nao e teoria, esta ali.
-
-#### 5. Grupo de consumo e offset
-
-**O que e um grupo**
-
-Consumidores que compartilham o mesmo `group.id` dividem as particoes entre si. Cada particao
-e lida por exatamente um membro do grupo, o que da paralelismo sem duplicar processamento.
-
-Consumidores de grupos diferentes leem o mesmo topico de forma independente. E por isso que o
-mesmo fluxo alimenta o time de analytics e o de operacoes sem um atrapalhar o outro.
-
-**Offset**
-
-O offset e a posicao do grupo em cada particao. Ele fica guardado no proprio Kafka, num topico
-interno, e nao no consumidor. Se o consumidor morre e volta, retoma de onde parou.
-
-**Lag**
-
-Lag e a diferenca entre o fim do log e a posicao do grupo. Lag zero significa que o grupo leu
-tudo. Lag crescendo significa que a producao esta mais rapida que o consumo, e e a metrica que
-merece alerta.
-
-**O que o Lab 6 mostra**
-
-```
-GROUP           TOPIC         PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG
-time-analytics  eventos-mkt   0          1               1               0
-time-analytics  eventos-mkt   1          2               2               0
-```
-
-O grupo commitou 1 mensagem na particao 0 e 2 na particao 1, que e exatamente a distribuicao
-observada no Lab 5. Lag zero nas duas.
-
-Repare que a particao 2 nao aparece: nenhuma mensagem caiu nela, entao o grupo nao tem offset
-commitado ali.
-
-#### 6. Semanticas de entrega
-
-| Semantica | O que garante | Custo |
-|---|---|---|
-| At-most-once | Nunca duplica, pode perder | Commit antes de processar |
-| At-least-once | Nunca perde, pode duplicar | Commit depois de processar |
-| Exactly-once | Cada evento uma vez, **dentro do Kafka** | Producer idempotente e transacao |
-
-**Onde a garantia termina**
-
-O exactly-once do Kafka e `read-process-write`: consumir de um topico, processar, produzir em
-outro e commitar o offset, tudo ou nada. E atomico **dentro do Kafka**.
-
-Seu S3, seu Postgres e sua tabela Iceberg nao participam dessa transacao. No instante em que o
-dado atravessa essa borda, voce voltou para at-least-once.
-
-Na pratica, o caminho mais simples e mais barato e assumir at-least-once e tornar a duplicata
-inofensiva no destino, com chave de negocio explicita e escrita idempotente.
-
-**CDC nao mora aqui**
-
-Change Data Capture aparece com frequencia junto de Kafka, via Debezium. O **conceito** de CDC
-pertence ao modulo `cdc`, que cobre captura log-based sem broker. Este modulo trata apenas do
-**transporte**: como o evento de mudanca viaja pelo Kafka depois de capturado.
-
-#### 7. Laboratorio
-
-Todos os passos abaixo foram executados em 2026-07-30 e as saidas sao reais. O manifesto
-`lab.json` deste modulo registra comando e saida esperada de cada um.
-
-Antes de comecar, leia `infrastructure/runbooks/00_pre_requisitos.md`.
-
-- **Lab 1**, subir a stack do Kafka
-- **Lab 2**, criar o topico com 3 particoes
-- **Lab 3**, inspecionar particoes e lider
-- **Lab 4**, produzir eventos com chave
-- **Lab 5**, consumir e observar a particao de cada chave
-- **Lab 6**, inspecionar offset do grupo de consumo
-- **Lab 7**, derrubar a stack
-
-Os scripts Python em `scripts/producers/` e `scripts/consumers/` cobrem os mesmos conceitos com
-a biblioteca cliente, para quem quiser ir alem do CLI.
-
-#### 8. Exercicios e entregaveis
-
-**Exercicio 1: prever a particao**
-
-Objetivo: aplicar a regra de hash da chave.
-
-Contexto: o topico `eventos-mkt` tem 3 particoes. Voce vai produzir eventos das chaves `u1`,
-`u2`, `u3` e `u4`.
-
-Entregavel: antes de rodar, escreva sua previsao de qual chave cai em qual particao. Depois
-rode o Lab 4 e o Lab 5 com essas chaves e compare. Explique os acertos e os erros.
-
----
-
-**Exercicio 2: o efeito de mudar particoes**
-
-Objetivo: entender por que o numero de particoes e decisao de projeto.
-
-Contexto: partindo do topico com 3 particoes ja populado, aumente para 6 com
-`kafka-topics.sh --alter --partitions 6`.
-
-Entregavel: produza de novo as mesmas chaves, consuma tudo desde o inicio e mostre uma chave
-cujos eventos ficaram divididos entre duas particoes. Explique o impacto na ordem.
-
----
-
-**Exercicio 3: lag sob pressao**
-
-Objetivo: ler o lag como metrica operacional.
-
-Contexto: produza 1000 eventos e consuma com um unico consumidor lento, com pausa artificial
-entre mensagens.
-
-Entregavel: tabela com o lag medido em tres momentos, e uma frase dizendo o que voce alertaria
-em producao e a partir de qual limiar.
-
----
-
-**Exercicio 4: escolher a semantica**
-
-Objetivo: decidir com criterio, nao por reflexo.
-
-Contexto: dois casos. O primeiro contabiliza cliques para cobranca de anunciante. O segundo
-atualiza um painel de monitoramento que refaz o calculo a cada minuto.
-
-Entregavel: para cada caso, a semantica escolhida, a justificativa e o que precisa existir no
-destino para que a escolha se sustente.
-
-#### 9. Mini-desafio com solucao
-
-**Enunciado**
-
-O time de operacoes reclama que o painel mostra o evento de `purchase` de um usuario **antes**
-do `click` que o originou. Os dois eventos sao produzidos pelo mesmo servico, na ordem certa,
-para o mesmo topico. O topico tem 6 particoes.
-
-Por que isso acontece, e como corrigir sem mudar o numero de particoes?
-
-**Dicas antes do gabarito**
-
-- O Kafka garante ordem em que escopo?
-- O que decide a particao de uma mensagem?
-- O produtor esta enviando chave?
-
-**Gabarito comentado**
-
-Os eventos estao sendo produzidos **sem chave**. Sem chave, o Kafka distribui de forma circular
-entre as 6 particoes, entao `click` e `purchase` do mesmo usuario caem em particoes diferentes.
-
-Particoes sao lidas em paralelo e independentes entre si. O Kafka garante ordem **apenas dentro
-da particao**, entao nada impede o consumidor de processar a particao que tem o `purchase`
-antes da que tem o `click`. Nao ha bug: e o comportamento correto de um log particionado.
-
-A correcao e produzir com `user_id` como chave. A partir dai, todos os eventos do mesmo usuario
-caem na mesma particao e chegam na ordem em que foram produzidos.
-
-Cuidado ao aplicar: a correcao vale para os eventos **novos**. Os que ja estao no topico
-continuam onde foram gravados, e a ordem so se restabelece na janela posterior a mudanca.
-
-#### 10. Rubrica de validacao da aprendizagem
-
-| Criterio | Insuficiente | Suficiente | Excelente |
-|---|---|---|---|
-| Ordem | Diz que o Kafka garante ordem | Diz que garante dentro da particao | Explica por que ordem global e impossivel com particoes paralelas |
-| Chave | Nao relaciona chave e particao | Sabe que a chave decide a particao | Antecipa o efeito de mudar o numero de particoes sobre a ordem |
-| Offset | Confunde offset com posicao do consumidor | Sabe que o offset e do grupo e vive no Kafka | Interpreta lag como sinal operacional e propoe limiar |
-| Semantica | Escolhe exactly-once por reflexo | Escolhe com base no caso | Aponta onde a garantia termina e o que fazer no destino |
-| Laboratorio | Nao roda | Reproduz os labs | Modifica o cenario e explica a saida diferente |
-
-#### 11. Erros comuns e como corrigir
-
-| Sintoma | Causa | Correcao |
-|---|---|---|
-| Eventos do mesmo usuario fora de ordem | Produzir sem chave | Usar a chave de negocio como chave da mensagem |
-| Subir varios consumidores e so um trabalhar | Mais consumidores que particoes no grupo | Aumentar particoes no projeto, ou aceitar o teto |
-| Consumidor nao ve mensagem antiga | Grupo novo comeca do fim por padrao | Usar `--from-beginning` ou configurar `auto.offset.reset` |
-| Script no host nao conecta | Listener anunciado errado | Conferir `KAFKA_ADVERTISED_LISTENERS`, o EXTERNAL precisa anunciar `localhost:9092` |
-| Lag cresce sem parar | Consumo mais lento que producao | Paralelizar por particao ou otimizar o processamento |
-| Reprocessar duplica no destino | Confiar no exactly-once atravessando a borda | Escrita idempotente com chave de negocio no destino |
-
-#### 12. Plano de continuidade
-
-Proximo passo natural na trilha e o modulo `kubernetes`, que cobre como esse tipo de servico
-roda em producao com limite de recurso e reinicio controlado.
-
-Para aprofundar o assunto deste modulo: `cdc`, que e o dono do conceito de Change Data Capture,
-e trata da captura que muitas vezes alimenta um topico como este.
-
-#### 13. Glossario
-
-| Termo | Significado |
-|---|---|
-| Broker | Servidor que armazena e serve as particoes |
-| Topico | Nome logico do log, dividido em particoes |
-| Particao | Unidade de paralelismo e de ordem, um log que so cresce no fim |
-| Offset | Posicao de um grupo dentro de uma particao |
-| Grupo de consumo | Conjunto de consumidores que divide as particoes entre si |
-| Lag | Distancia entre o fim do log e a posicao do grupo |
-| KRaft | Modo de consenso do Kafka que dispensa o ZooKeeper |
-| Listener | Endereco e protocolo pelo qual o broker aceita conexao |
-
-#### Referencias
-
-- Documentacao do Apache Kafka, secao de design e de consumidores. https://kafka.apache.org/documentation/
-- Imagem oficial `apache/kafka` no Docker Hub. https://hub.docker.com/r/apache/kafka
-
-#### Fontes verificadas
-
-Verificado em 2026-07-30, com Kafka 3.9.0 em modo KRaft, via Docker Compose 2.39.1.
-
-- A saida de particao por chave da secao 4 e a execucao real do Lab 5 neste ambiente.
-- A tabela de offset e lag da secao 5 e a execucao real do Lab 6 neste ambiente.
-- As imagens `apache/kafka:3.9.0` e `provectuslabs/kafka-ui:v0.7.2` foram confirmadas no
-  registry com `docker manifest inspect` na mesma data.
-- O manifesto `lab.json` deste modulo registra nivel 3 para os sete laboratorios.
-
----
-
-## Capitulo 12, Kubernetes para engenharia de dados
-
-Fonte: `modulos/kubernetes/apostila.md`
+Fonte: `ambiente/kubernetes/apostila.md`
 
 ### Apostila, Kubernetes para engenharia de dados
 
@@ -8467,7 +4971,7 @@ Kubernetes no trabalho, um comando no contexto errado não tem desfazer.
 Pré-condição: Docker, kind 0.32.0 ou superior, kubectl 1.35 ou superior.
 
 ```bash
-cd engenharia_de_dados/modulos/kubernetes/infrastructure
+cd engenharia_de_dados/ambiente/kubernetes/infrastructure
 export KUBECONFIG="$PWD/kubeconfig-mentoria"
 kind create cluster --config kind-cluster.yaml
 kubectl get nodes
@@ -8875,3 +5379,3499 @@ Outras fontes oficiais, consultadas em 2026-07-31:
 - A falha de `chown` citada na seção 12 foi observada de verdade durante a
   construção deste laboratório, na versão que usava a imagem oficial do nginx com
   todas as capacidades removidas.
+
+---
+
+## Capitulo 7, Formatos de arquivo e tipos de tabela
+
+Fonte: `armazenamento/formatos-e-tabelas/apostila.md`
+
+### Apostila, Formatos de arquivo e tipos de tabela
+
+> Trilha de Engenharia de Dados. Conduzida por Iuri Zambotto.
+
+> Conteudo extraido da apostila consolidada anterior. As secoes marcadas
+> como pendentes ainda nao foram escritas no padrao unico.
+
+#### Sumario
+
+- [3.3 Formatos de arquivo: CSV, JSONL, Parquet e ORC](#33-formatos-de-arquivo-csv-jsonl-parquet-e-orc)
+- [3.4 Tipos de tabela: Hive, Iceberg e Delta Lake](#34-tipos-de-tabela-hive-iceberg-e-delta-lake)
+- [3.5 Camadas bronze, silver e gold](#35-camadas-bronze-silver-e-gold)
+- [3.6 Exercícios e entregáveis](#36-exercícios-e-entregáveis)
+
+#### Como usar esta apostila
+
+Leitura linear para aprender, sumario para revisar um ponto isolado.
+
+#### 3.3 Formatos de arquivo: CSV, JSONL, Parquet e ORC
+
+A escolha do formato de arquivo impacta diretamente o custo de processamento, a legibilidade, a capacidade de evolução do schema e a integração com diferentes ferramentas.
+
+**CSV, Comma-Separated Values**
+
+CSV é o mais simples e o mais universal. Qualquer ferramenta lê CSV: Python, Excel, R, Spark, bancos de dados, ferramentas SaaS. Não há dependência de ecossistema.
+
+Características:
+- Formato textual, legível por humanos.
+- Sem schema embutido: os tipos precisam ser inferidos ou declarados externamente.
+- Sem compressão nativa (pode ser comprimido externamente com gzip, bz2).
+- Parsing é sequencial e caro para datasets grandes (leitura linha por linha).
+- Não suporta tipos complexos (arrays, mapas, objetos aninhados) de forma nativa.
+
+Quando usar:
+- Ingestão inicial de dados de sistemas externos (arquivos de fornecedores, exports).
+- Troca simples de dados entre sistemas sem dependência de biblioteca.
+- Debugging e inspeção manual.
+
+**JSONL, JSON Lines**
+
+JSONL (também chamado de NDJSON, Newline-Delimited JSON) é um formato onde cada linha é um objeto JSON válido e independente. Diferente do JSON convencional (que é um único objeto ou array), JSONL é streamável: você pode processar um registro por vez sem ler o arquivo inteiro.
+
+Características:
+- Suporta tipos complexos nativamente (arrays, objetos aninhados).
+- Schema flexível: cada linha pode ter campos diferentes (schema-on-read).
+- Legível por humanos, mas mais verboso que CSV.
+- Custo de scan maior que Parquet/ORC para analytics (precisa parsear JSON por linha).
+- Ótimo para logs e eventos onde o schema pode variar.
+
+Quando usar:
+- Captura de eventos semiestruturados (logs de aplicação, eventos de API).
+- Ingestão na camada bronze quando o schema ainda não está estabilizado.
+- Integração com sistemas que produzem ou consomem JSON.
+
+**Parquet, formato colunar da Apache**
+
+Parquet é um formato binário e colunar. "Colunar" significa que os dados de cada coluna ficam armazenados juntos no arquivo, em vez de linha por linha.
+
+Isso tem uma consequência enorme em analytics: se você tem uma tabela com 100 colunas e sua query usa apenas 5, o Parquet permite ler apenas os blocos dessas 5 colunas. Em CSV, você leria tudo.
+
+Características:
+- Compressão eficiente (Snappy, Gzip, Zstd), reduz custo de armazenamento e I/O.
+- Leitura seletiva de colunas (column pruning).
+- Suporte a tipos complexos.
+- Schema embutido no arquivo (metadata).
+- Não é legível por humanos sem ferramentas.
+- Dificuldade de merge e update de registros individuais (arquivo imutável por natureza).
+
+Quando usar:
+- Camada silver e gold de um data lake.
+- Qualquer carga analítica com queries que selecionam subconjunto de colunas.
+- Quando custo de armazenamento e tempo de query são prioridades.
+
+**ORC, Optimized Row Columnar**
+
+ORC é outro formato colunar, nascido no ecossistema Apache Hive. Compartilha muitas características com Parquet, mas tem diferenças no modelo interno e em suporte de ferramentas.
+
+Características:
+- Colunar, como Parquet.
+- Estatísticas internas por stripe (blocos de dados): min, max, count. Permite bloom filters e predicate pushdown mais agressivos em algumas engines.
+- Compressão por coluna (Zlib, Snappy, LZO).
+- Schema embutido.
+- Forte integração com Hive, Spark e engines do ecossistema Hadoop.
+- Menor adoção fora do ecossistema Hadoop/Spark em comparação com Parquet.
+
+Quando usar:
+- Plataformas com Hive, HiveQL ou Presto/Trino com catálogo Hive.
+- Ambientes Databricks ou EMR onde ambos são suportados, a escolha depende do ecossistema da empresa.
+
+**Tabela comparativa**
+
+| Característica | CSV | JSONL | Parquet | ORC |
+|---|---|---|---|---|
+| Legível por humanos | sim | sim | não | não |
+| Schema embutido | não | parcial | sim | sim |
+| Tipos complexos | não | sim | sim | sim |
+| Compressão nativa | não | não | sim | sim |
+| Leitura colunar | não | não | sim | sim |
+| Custo de scan | alto | alto | baixo | baixo |
+| Facilidade de merge | alta | alta | baixa | baixa |
+| Ecossistema | universal | amplo | amplo | Hadoop+ |
+
+**Referência do livro (Cap. 8, Data Storage Design Patterns)**
+
+O padrão *Horizontal Partitioner* descrito no Cap. 8 complementa diretamente a escolha de formato. Particionar por data no Parquet, por exemplo, é o que permite ao motor de query ignorar partições inteiras e ler apenas o intervalo de tempo relevante. Sem particionamento, até o melhor formato colunar é forçado a escanear blocos desnecessários.
+
+#### 3.4 Tipos de tabela: Hive, Iceberg e Delta Lake
+
+Formatos de arquivo (Parquet, ORC) são diferentes de *table formats*. O table format é a camada que define como metadados, schema, transações e histórico são gerenciados por cima dos arquivos físicos.
+
+**Hive Table, o modelo original do data lake**
+
+O modelo Hive é o mais antigo e o mais simples. Uma tabela Hive é basicamente um diretório no HDFS ou S3 com arquivos de dados, e um catálogo (Hive Metastore) que mapeia o nome da tabela para o path físico, o schema e as partições.
+
+Como funciona:
+- Os arquivos físicos ficam em `s3://bucket/tabela/particao=data/arquivo.parquet`.
+- O Hive Metastore guarda o schema e o mapeamento.
+- Engines como Hive, Spark, Presto e Athena consultam o metastore para saber onde estão os dados.
+
+Limitações:
+- Sem transações ACID robustas nativamente. Dois jobs escrevendo na mesma partição ao mesmo tempo podem corromper dados.
+- Evolução de schema limitada: adicionar colunas é simples, mas renomear ou mudar tipos pode quebrar leitores existentes.
+- Sem time travel nativo.
+- Operações de update e delete são limitadas ou ausentes.
+
+Quando ainda faz sentido:
+- Pipelines simples de append-only onde não há necessidade de update ou delete.
+- Ambientes legados onde a migração para Iceberg ou Delta não vale o custo imediato.
+- Quando a engine disponível não suporta os novos formatos.
+
+**Apache Iceberg, o table format moderno e multi-engine**
+
+Iceberg foi criado pelo Netflix e Apache para resolver as limitações do Hive. É um table format aberto, desenhado para funcionar com múltiplas engines (Spark, Flink, Trino, Athena v3, Hive).
+
+Como funciona:
+- Cada escrita gera um novo *snapshot*. Um snapshot é um arquivo de metadados que aponta para os arquivos de dados que compõem o estado atual da tabela.
+- O histórico de snapshots permite *time travel*: você pode consultar o estado da tabela em qualquer ponto do passado dentro do período de retenção.
+- *Schema evolution* é um cidadão de primeira classe: adicionar, renomear e deletar colunas é suportado sem quebrar leitores que usam o schema antigo.
+- *Partition evolution*: você pode mudar o esquema de particionamento sem precisar reescrever os dados existentes.
+- Suporte a operações ACID: escritas concorrentes são seguras.
+
+Casos de uso ideais:
+- Data lakes multi-engine onde diferentes times usam Spark, Trino ou Athena para consultar os mesmos dados.
+- Tabelas que evoluem com frequência de schema.
+- Pipelines que precisam de time travel para auditoria ou correção de dados históricos.
+- Ambientes cloud onde o vendor-lock é uma preocupação.
+
+**Delta Lake, o table format do ecossistema Databricks**
+
+Delta Lake foi criado pela Databricks e é o table format nativo do ambiente Databricks. Funciona bem com Spark e Databricks, e tem suporte crescente em outras engines.
+
+Como funciona:
+- Usa um *transaction log* (`_delta_log/`) no diretório da tabela. Cada operação (write, delete, merge, optimize) gera um novo arquivo de log.
+- As operações são ACID: um MERGE que processa milhões de linhas é atômico.
+- *Time travel*: como o log é preservado por configuração, você pode fazer `SELECT * FROM tabela VERSION AS OF 5` ou `TIMESTAMP AS OF '2026-01-01'`.
+- `MERGE INTO` é especialmente performático em Delta Lake.
+- `OPTIMIZE` e `ZORDER BY` são operações de compactação e co-localização de dados que melhoram performance de queries.
+
+Casos de uso ideais:
+- Ambientes Databricks, onde Delta é nativo e tem suporte completo.
+- Pipelines com mutações frequentes (merge, update, delete) onde performance transacional é crítica.
+
+**Tabela comparativa**
+
+| Característica | Hive | Iceberg | Delta Lake |
+|---|---|---|---|
+| Transações ACID | limitado | sim | sim |
+| Schema evolution | básico | completo | completo |
+| Partition evolution | não | sim | não |
+| Time travel | não | sim | sim |
+| Multi-engine | sim | sim (melhor) | crescente |
+| Merge / upsert | limitado | sim | sim (otimizado) |
+| Vendor | Apache | Apache (open) | Databricks/Linux |
+| Melhor cenário | legado/simples | cloud multi-engine | Databricks |
+
+**Referência do livro (Cap. 4, Merger Pattern)**
+
+O padrão *Merger* descreve como aplicar incrementos (inserts + updates + soft deletes) de forma idempotente a um dataset existente. A operação `MERGE INTO` do Delta/Iceberg é a implementação nativa desse padrão.
+
+#### 3.5 Camadas bronze, silver e gold
+
+A arquitetura medallion (bronze/silver/gold) é um padrão de organização do data lake em camadas com diferentes níveis de curadoria.
+
+**Bronze, dados brutos, fidelidade máxima**
+
+A camada bronze recebe os dados como chegam da origem, com o mínimo de transformação possível. O objetivo é preservar a fidelidade dos dados originais.
+
+Características:
+- Formato preferido: JSONL ou CSV (mantém a estrutura original, legível).
+- Particionamento por data de ingestão, não de evento.
+- Dados podem ter inconsistências, nulos, duplicatas, tudo é preservado.
+- Sem remoção de campos, mesmo que sensíveis (com controle de acesso adequado).
+- Table format: Hive simples (append-only) ou Iceberg para capturar histórico.
+
+Analogia: é a "fita bruta" da gravação. Tudo que aconteceu está lá.
+
+**Silver, dados curados, prontos para análise**
+
+A camada silver aplica transformações de qualidade: limpeza de nulos, deduplicação, padronização de tipos, enriquecimento com dados de referência.
+
+Características:
+- Formato preferido: Parquet (leitura eficiente, schema embutido).
+- Particionamento por data de evento (não de ingestão).
+- Dados devem atender contratos de schema definidos.
+- Pode incluir campos derivados simples.
+- Table format: Parquet + Iceberg ou Delta, dependendo da necessidade de upsert.
+
+Analogia: é a "edição do corte", você removeu os erros, normalizou os dados, mas ainda não produziu o produto final.
+
+**Gold, dados agregados, prontos para consumo**
+
+A camada gold contém datasets prontos para consumo por analistas, dashboards e modelos. São as métricas, agregados e visões de negócio.
+
+Características:
+- Formato preferido: Parquet ou Delta/Iceberg.
+- Estrutura orientada ao caso de uso (tabela desnormalizada por produto, por região, por canal).
+- Alta qualidade garantida.
+- Pode ter SLA de atualização definido.
+
+Analogia: é o produto final, o relatório, o dashboard, o número que o stakeholder vai olhar.
+
+**Recomendação para o Projeto 1**
+
+| Camada | Formato | Table Format | Justificativa |
+|---|---|---|---|
+| Bronze | JSONL / CSV | Hive ou Iceberg | Fidelidade máxima, ingestão direta |
+| Silver | Parquet | Iceberg ou Delta | Analytics eficiente, schema estável, suporte a merge |
+| Gold | Parquet | Iceberg ou Delta | Performance de query, auditabilidade, SLA |
+
+**Referência do livro (Cap. 9, AWAP Pattern)**
+
+O padrão *Audit-Write-Audit-Publish* encaixa na transição silver → gold: antes de promover dados para a camada gold, você valida o dataset transformado. Se passar, promove. Se não passar, você tem opções: falha o pipeline, envia para dead-letter, ou promove com anotação de incompletude.
+
+**Referência do livro (Cap. 10, Flow Interruption Detector)**
+
+A camada bronze é especialmente vulnerável a interrupções de fluxo. O padrão *Flow Interruption Detector* descreve como detectar quando um job parou de escrever dados sem falhar explicitamente. Implementar um detector de freshness na camada bronze previne que o silêncio de um job com bug passe despercebido por horas ou dias.
+
+#### 3.6 Exercícios e entregáveis
+
+**Exercício 1, Matriz de decisão de orquestrador**
+
+Objetivo: aplicar os conceitos de CDC no contexto do Projeto 1.
+
+Dado um arquivo CSV com eventos CDC da tabela `events`:
+
+1. Abra o arquivo com pandas.
+2. Agrupe por `event_id`.
+3. Ordene por `cdc_event_ts` dentro de cada grupo.
+4. Implemente uma função que valida as regras de lifecycle: o primeiro evento deve ser `insert`; após `delete`, não pode haver mais eventos para aquele ID.
+5. Imprima o número de IDs com violação.
+
+Entregável: script Python + resultado da validação (número de violações esperado: 0 para o dataset gerado pelo `cdc_generator`).
+
+---
+
+**Exercício 2, Blueprint de camadas bronze/silver/gold**
+
+Objetivo: definir o padrão de armazenamento do Projeto 1.
+
+Para cada camada, defina:
+- Formato de arquivo
+- Table format
+- Estratégia de particionamento
+- Política de retenção
+- Critério de promoção para a próxima camada
+
+Entregável: tabela de decisão por camada.
+
+---
+
+**Exercício 3, Mini ADR de table format**
+
+Objetivo: documentar formalmente a decisão de table format para o Projeto 1.
+
+Escreva um mini ADR com:
+- **Contexto:** qual é o problema que motivou a decisão.
+- **Decisão:** qual table format foi escolhido.
+- **Alternativas consideradas:** Hive, Iceberg e Delta, com prós e contras de cada um para o contexto.
+- **Consequências:** o que fica mais fácil e o que fica mais difícil com a escolha feita.
+
+Entregável: documento de 1 a 2 páginas com as quatro seções preenchidas.
+
+---
+
+
+#### Mini-desafio com solucao
+
+Pendente. Escrever enunciado, dicas e gabarito comentado.
+
+#### Rubrica de validacao da aprendizagem
+
+Pendente. Definir criterio, suficiente e excelente.
+
+#### Erros comuns e como corrigir
+
+Pendente. Levantar sintoma, causa e correcao.
+
+#### Plano de continuidade
+
+Pendente. Apontar o proximo modulo da trilha.
+
+#### Glossario
+
+Pendente. Listar os termos novos deste modulo.
+
+#### Referencias
+
+Pendente. Documentacao oficial com data de consulta.
+
+#### Fontes verificadas
+
+Pendente. Nenhuma afirmacao deste modulo foi conferida contra doc oficial.
+
+---
+
+## Capitulo 8, Particionamento e performance de consultas
+
+Fonte: `armazenamento/particionamento/apostila.md`
+
+### Apostila, particionamento e performance de consultas
+
+> Trilha de Engenharia de Dados. Conduzida por Iuri Zambotto e Paulo Shindi.
+
+#### Sumário
+
+- [0. Como usar esta apostila](#0-como-usar-esta-apostila)
+- [1. Objetivo pedagógico](#1-objetivo-pedagógico)
+- [2. Contexto de negócio](#2-contexto-de-negócio)
+- [3. Por que particionamento importa](#3-por-que-particionamento-importa)
+- [4. Como o particionamento físico funciona](#4-como-o-particionamento-físico-funciona)
+- [5. Partition pruning, o mecanismo central](#5-partition-pruning-o-mecanismo-central)
+- [6. Estratégias de particionamento](#6-estratégias-de-particionamento)
+- [7. Cardinalidade e escolha de chave de partição](#7-cardinalidade-e-escolha-de-chave-de-partição)
+- [8. Skew de partição](#8-skew-de-partição)
+- [9. Hot partitions](#9-hot-partitions)
+- [10. Custo contra performance](#10-custo-contra-performance)
+- [11. A stack do laboratório](#11-a-stack-do-laboratório)
+- [12. Laboratório](#12-laboratório)
+- [13. Análise do domínio de marketing](#13-análise-do-domínio-de-marketing)
+- [14. Exercícios e entregáveis](#14-exercícios-e-entregáveis)
+- [15. Mini-desafio com solução](#15-mini-desafio-com-solução)
+- [16. Rubrica de validação da aprendizagem](#16-rubrica-de-validação-da-aprendizagem)
+- [17. Erros comuns e como corrigir](#17-erros-comuns-e-como-corrigir)
+- [18. Plano de continuidade](#18-plano-de-continuidade)
+- [19. Glossário](#19-glossário)
+- [Referências](#referências)
+- [Fontes verificadas (2026-07-31)](#fontes-verificadas-2026-07-31)
+
+#### 0. Como usar esta apostila
+
+**Leitura linear.** As seções 3 a 5 constroem o mecanismo. Da 6 à 10 cada seção
+trata de uma decisão de projeto com consequência de custo. A 12 é o laboratório, e
+ele é o centro deste módulo.
+
+**Revisão pontual.** Pruning na 5, escolha de chave na 7, custo na 10,
+diagnóstico na 17.
+
+**Pré-requisitos.** Os módulos de object storage e de formatos de arquivo. Este
+material assume que você sabe o que é um bucket, o que é Parquet e por que formato
+colunar importa.
+
+**Este módulo tem laboratório, e ele foi executado.** MinIO, Hive Metastore e
+Trino, em Docker, sem nuvem. O `lab.json` registra cada laboratório com o comando
+que provou, a saída e a data.
+
+**Uma advertência sobre escala, e ela é o próprio conteúdo.** O laboratório roda
+com 15 partições e 12.000 linhas. Não é preguiça de dimensionamento: acima de
+cerca de 20 partições, o Hive Metastore desta pilha trava na fase de commit de um
+CTAS particionado. A medição está na seção 17, e ela é a demonstração literal do
+que a seção 10 ensina sobre overhead de metadados.
+
+**Versões.** Verificado com Trino 479, Hive 4.0.0, PostgreSQL 16, MinIO
+RELEASE.2025-02-03T21-03-04Z e Docker Compose v2.39.1, em 2026-07-31.
+
+#### 1. Objetivo pedagógico
+
+Ao terminar este módulo, você consegue:
+
+1. **Explicar** o que particionamento faz no nível de armazenamento, e por que o
+   engine consegue não ler o que não precisa.
+2. **Demonstrar** partition pruning num plano de execução real, e dizer quanto ele
+   economizou.
+3. **Escolher** chave e granularidade de partição a partir do padrão de acesso e
+   da cardinalidade, justificando pela pergunta que o negócio faz.
+4. **Prever** os três modos de falha de uma escolha errada: small files, skew e
+   hot partition.
+5. **Calcular** o impacto de custo de uma decisão de particionamento com o modelo
+   de cobrança por dado escaneado.
+6. **Reconhecer** o limite de metadados de um catálogo Hive, tendo visto ele
+   acontecer.
+
+#### 2. Contexto de negócio
+
+A startup fictícia de marketing e e-commerce da trilha já tem o dado bruto no
+object storage e já sabe consultar. O problema agora é o preço da resposta.
+
+O time de marketing pergunta, todos os dias: quantos cliques por campanha na
+última semana? Sem particionamento, cada uma dessas perguntas varre o histórico
+inteiro. A resposta é a mesma, o custo cresce todo mês, e ninguém percebe até a
+fatura chegar.
+
+**As caixas do pipeline, e onde estamos**
+
+```
+[Origem] -> [CDC] -> [Bronze] -> [Silver] -> [Gold] -> [Consumo]
+               ^
+               | (o orquestrador garante a ordem e os checks)
+```
+
+| Caixa | O que resolve |
+|---|---|
+| CDC | Representa mudança de forma auditável |
+| Bronze | Dado bruto, fidelidade máxima, sem transformação |
+| Silver | Dado limpo e padronizado, pronto para análise |
+| Gold | Métrica e tabela de consumo |
+| Engine de consulta | Valida e explora, sem armazenar |
+
+Este módulo mora entre bronze e silver: é ali que a decisão de particionamento é
+tomada, e é ela que decide o custo de tudo que vem depois.
+
+**A modelagem mínima que precede a decisão**
+
+Particionamento é decisão de armazenamento, e ela depende de saber o grão.
+
+| Entidade | Grão | Chave | Tipo de mudança | Partição sugerida |
+|---|---|---|---|---|
+| events | 1 evento | event_id | append-only | event_date |
+| campaigns | 1 campanha | campaign_id | upsert | created_date, se existir |
+| costs | 1 campanha por dia | (campaign_id, cost_date) | upsert | cost_date |
+| crm | 1 usuário | user_id | upsert | updated_at, se existir |
+
+Se houver dado pessoal, marque e restrinja o acesso antes de promover para silver
+ou gold. Isso é assunto do módulo de governança, e a decisão precisa ser tomada
+aqui, não lá.
+
+**As perguntas que guiam o módulo**
+
+- Qual coluna define o tempo do dado?
+- Qual coluna aparece no filtro das queries mais caras?
+- Qual o volume por partição que essa escolha produz?
+
+#### 3. Por que particionamento importa
+
+##### 3.1 O cenário sem partição
+
+**O que é**
+
+Imagine uma tabela de eventos com 5 bilhões de registros cobrindo três anos. Você
+precisa do total de cliques da última semana. Sem particionamento, a consulta
+varre os 5 bilhões para achar os que caem na janela. Isso é uma varredura completa:
+caro, lento, e crescendo linearmente com o volume.
+
+Em serviços que cobram por byte escaneado, isso aparece na fatura. A seção 10 faz
+a conta com número.
+
+**O que o particionamento faz**
+
+Particionar é organizar fisicamente o dado em subconjuntos, pelos valores de uma
+ou mais colunas. Quando a consulta filtra pela coluna de partição, o engine lê
+apenas as partições relevantes e ignora o resto.
+
+No exemplo: com os eventos particionados por data, a consulta da última semana lê
+7 partições de mais de mil. Em vez de 5 bilhões de registros, ela lê os da semana.
+A redução é de uma ou duas ordens de magnitude.
+
+##### 3.2 A decisão que mais mexe no custo
+
+**O equívoco comum**
+
+Tratar particionamento como detalhe de implementação. É frequentemente a decisão
+de projeto de dados com maior impacto direto em custo, e ela é tomada uma vez e
+paga todo mês.
+
+Uma escolha errada produz um destes três resultados:
+
+| Erro | Consequência |
+|---|---|
+| Partição por coluna que nenhuma consulta filtra | Toda consulta continua varrendo tudo |
+| Partição por coluna de altíssima cardinalidade | Dezenas de milhares de arquivos minúsculos |
+| Partição por coluna desbalanceada | Uma partição com ordens de magnitude mais dado que as outras |
+
+Os três têm nome, e as seções 7, 8 e 9 tratam de cada um.
+
+#### 4. Como o particionamento físico funciona
+
+##### 4.1 A metáfora do armário
+
+**O que é**
+
+Imagine 365 pastas, uma por dia do ano. Quando alguém pede os documentos de 15 de
+janeiro, você vai direto na pasta e pega. Você não abre as outras 364.
+
+É literalmente o que o particionamento faz no armazenamento.
+
+##### 4.2 Organização em prefixos
+
+**Como funciona na prática**
+
+No S3, e no MinIO que implementa a mesma API, o dado particionado fica em prefixos
+que seguem a convenção Hive:
+
+```
+s3://silver/marketing/events/
+  event_date=2025-01-10/
+    20260731_190000_00001_abcde_...
+  event_date=2025-01-11/
+    20260731_190000_00001_abcde_...
+```
+
+Cada subdiretório `event_date=<valor>` é uma partição, e os arquivos dentro dele
+contêm só os registros daquele dia. Os nomes de arquivo acima são do formato que o
+Trino gera de verdade, observado no laboratório.
+
+##### 4.3 O papel do catálogo
+
+**O que é**
+
+O object storage não sabe que aqueles prefixos são partições. Ele vê objetos com
+nomes. Quem dá significado é o Hive Metastore, que guarda:
+
+- que existe uma tabela `events_silver` no schema `marketing`;
+- onde ela está armazenada;
+- que a coluna de partição é `event_date`;
+- quais partições existem.
+
+Quando o Trino recebe uma consulta com filtro de data, ele pergunta ao metastore
+quais partições existem e quais casam com o filtro, **antes** de tocar qualquer
+arquivo.
+
+**O equívoco comum**
+
+Gravar arquivo direto no bucket e esperar que a consulta o encontre. Se a partição
+não foi registrada no metastore, ela não existe para o engine.
+
+O registro acontece de duas formas: o próprio Trino escrevendo, ou você mandando
+sincronizar. E aqui há uma pegadinha de dialeto que vale saber antes de procurar
+no lugar errado. O comando do Hive é `MSCK REPAIR TABLE`, e **o Trino não tem esse
+comando**. No Trino é um procedimento:
+
+<!-- verificacao: nivel 1, conferido na documentacao do conector Hive do Trino, nao executado, 2026-07-31 -->
+
+```sql
+CALL hive.system.sync_partition_metadata(
+    schema_name => 'marketing',
+    table_name => 'events_silver',
+    mode => 'ADD');
+```
+
+O modo `ADD` acrescenta as partições que existem no storage e não estão no
+catálogo. Há também `DROP` e `FULL`. Material que manda rodar `MSCK REPAIR TABLE`
+no Trino está misturando os dois dialetos.
+
+##### 4.4 A coluna de partição não vive dentro do arquivo
+
+**O que é**
+
+A coluna de partição em geral **não** é armazenada dentro dos arquivos Parquet. O
+valor está codificado no caminho do prefixo. Isso economiza espaço: `2025-01-10`
+não precisa aparecer em cada linha de um arquivo que já está dentro de
+`event_date=2025-01-10/`.
+
+**Como inspecionar**
+
+O plano de execução do Trino diz isso explicitamente. Observado no laboratório:
+
+<!-- verificacao: nivel 3, EXPLAIN executado no Trino 479, saida real, 2026-07-31 -->
+
+```
+event_id := event_id:string:REGULAR
+event_date:date:PARTITION_KEY
+```
+
+`event_id` é `REGULAR`, ou seja, lido do arquivo. `event_date` é `PARTITION_KEY`,
+ou seja, reconstruído a partir do caminho. É a prova da afirmação, na saída da
+própria ferramenta.
+
+#### 5. Partition pruning, o mecanismo central
+
+##### 5.1 O que é
+
+Partition pruning é o mecanismo pelo qual o engine identifica, a partir dos
+filtros, quais partições precisa ler, e descarta as demais antes de abrir arquivo.
+O nome vem de podar.
+
+##### 5.2 Como funciona, passo a passo
+
+Considere a consulta:
+
+<!-- verificacao: nivel 3, executada no Trino 479 contra a tabela do laboratorio, 2026-07-31 -->
+
+```sql
+SELECT campaign_id, COUNT(*) AS total_clicks
+FROM hive.marketing.events_silver
+WHERE event_date BETWEEN DATE '2025-01-10' AND DATE '2025-01-12'
+  AND stage = 'click'
+GROUP BY campaign_id;
+```
+
+O que o Trino faz:
+
+1. Analisa o predicado de `event_date`.
+2. Pergunta ao metastore quais partições existem e quais caem no intervalo.
+3. Recebe a lista das três partições.
+4. Envia requisições ao storage apenas para os arquivos dessas três.
+5. Aplica o filtro de `stage` **dentro** dos arquivos lidos, porque `stage` não é
+   coluna de partição.
+
+##### 5.3 O pruning só acontece na coluna de partição
+
+**O equívoco comum**
+
+Achar que qualquer filtro ativa o pruning. Só a coluna de partição elimina
+partição. Filtro em outra coluna é aplicado depois, dentro do que já foi lido.
+
+A implicação prática decide o projeto: **a coluna de partição deve ser a mais usada
+como filtro nas consultas mais frequentes e mais caras.**
+
+##### 5.4 Pruning e pushdown
+
+Existe otimização em mais de um nível, e vale saber a ordem:
+
+| Nível | O que elimina |
+|---|---|
+| Partition pruning | Partições inteiras, sem abrir arquivo |
+| File pruning | Arquivos individuais, em formatos como Iceberg |
+| Row group pruning | Blocos dentro do Parquet, por estatística de mínimo e máximo |
+
+Este módulo trata do primeiro. Ele é o que dá o maior ganho e o único que você
+controla ao decidir a chave de partição.
+
+##### 5.5 Como inspecionar, e o que o Trino 479 realmente imprime
+
+**Como inspecionar**
+
+Material mais antigo manda procurar a palavra `Constraint` na linha do
+`TableScan`. **O Trino 479 não imprime isso.** O que ele imprime é mais direto:
+a lista de partições que serão lidas.
+
+Com pruning, observado no laboratório:
+
+<!-- verificacao: nivel 3, EXPLAIN executado no Trino 479, saida real, 2026-07-31 -->
+
+```
+└─ TableScan[table = hive:marketing:events_silver]
+       Layout: [event_id:varchar]
+       event_id := event_id:string:REGULAR
+       event_date:date:PARTITION_KEY
+           :: [[2025-01-10]]
+```
+
+Uma partição na lista. Sem pruning, filtrando por uma coluna comum, o plano muda
+de forma e lista todas:
+
+<!-- verificacao: nivel 3, EXPLAIN executado no Trino 479, saida real, 2026-07-31 -->
+
+```
+└─ ScanFilterProject[table = hive:marketing:events_silver, filterPredicate = (channel = varchar 'organic')]
+       event_date:date:PARTITION_KEY
+           :: [[2025-01-01], [2025-01-02], ... [2025-01-15]]
+```
+
+Duas diferenças para ler no plano: o nó deixa de ser `TableScan` e passa a ser
+`ScanFilterProject` com `filterPredicate`, e a lista de partições passa de um
+valor para quinze.
+
+##### 5.6 Quanto isso economiza, medido
+
+**Como funciona na prática**
+
+Mesma tabela, mesmo dado, dois filtros. Números de `EXPLAIN ANALYZE` reais:
+
+| Medida | Com pruning | Sem pruning | Fator |
+|---|---|---|---|
+| Linhas lidas | 800 | 12.000 | 15x |
+| Bytes lidos | 50,92 kB | 761,21 kB | 15x |
+| Entrada física | 8,08 kB | 120,72 kB | 14,9x |
+| Splits | 1 | 15 | 15x |
+| CPU | 11,85 ms | 173,42 ms | 14,6x |
+| Tempo de I/O físico | 3,80 ms | 77,31 ms | 20x |
+
+O fator 15 não é coincidência: é a contagem de partições da tabela. Uma partição
+lida em vez de quinze. Numa tabela com três anos por dia, o mesmo raciocínio dá um
+fator na casa do milhar.
+
+Repare que a consulta sem pruning ainda devolve o resultado certo. Ela só custa
+quinze vezes mais para chegar nele.
+
+#### 6. Estratégias de particionamento
+
+##### 6.1 Por tempo
+
+**O que é**
+
+A estratégia mais comum em data lake. Faz sentido quando o dado tem dimensão
+temporal forte, as consultas filtram por período, e o dado chega de forma
+incremental sem atualizar partição antiga.
+
+**A granularidade decide tudo**
+
+| Granularidade | Problema |
+|---|---|
+| Por ano | Partição enorme, o pruning não ajuda consulta diária |
+| Por hora ou minuto | Excesso de partições e arquivos minúsculos |
+| Por dia | O equilíbrio mais comum em dado transacional |
+
+Hierarquia temporal também é possível, e é útil quando você filtra tanto por mês
+quanto por dia:
+
+```
+s3://bronze/events/
+  year=2026/month=01/day=10/
+  year=2026/month=01/day=11/
+```
+
+##### 6.2 Por chave de negócio
+
+Usado quando as consultas importantes filtram por uma dimensão como `country`,
+`channel` ou `campaign_id`.
+
+Particionar por país faz sentido se a maioria das consultas é por mercado, se os
+países têm volume parecido, e se o número deles é baixo e estável.
+
+##### 6.3 Híbrido, chave composta
+
+Combina tempo e chave de negócio:
+
+```
+s3://bronze/events/
+  event_date=2025-01-10/country=BR/
+  event_date=2025-01-10/country=US/
+```
+
+O ganho: consultas que filtram por data **e** país eliminam ainda mais partições.
+O risco: o número de combinações multiplica, e o número de partições explode.
+
+Este risco não é teórico neste laboratório. Veja a seção 17: 15 partições rodam em
+10 segundos, e 25 travam o metastore. Uma chave composta de 15 datas por 5 países
+já daria 75.
+
+##### 6.4 Não existe estratégia universalmente correta
+
+A decisão vem do padrão de acesso real. As quatro perguntas que a resolvem:
+
+- Qual coluna aparece mais nos filtros das consultas mais custosas?
+- Qual a cardinalidade dessa coluna?
+- Há risco de distribuição desigual?
+- Qual o volume por partição que isso produz?
+
+#### 7. Cardinalidade e escolha de chave de partição
+
+##### 7.1 O que é cardinalidade
+
+Cardinalidade é o número de valores distintos de uma coluna. `user_id` com milhões
+de usuários é alta. `country` com dez países é baixa.
+
+##### 7.2 Por que alta cardinalidade quebra
+
+**O que é**
+
+Particionar por `user_id` numa tabela de 100 milhões de usuários dá 100 milhões de
+partições, cada uma com pouquíssimos registros. Três problemas ao mesmo tempo:
+
+| Problema | Por quê |
+|---|---|
+| Small files | Cada partição gera arquivo minúsculo, e o storage tem custo fixo por arquivo |
+| Overhead de catálogo | O metastore guarda e indexa metadado de cada partição |
+| Pruning inútil | Eliminar poucas partições de milhões não reduz o scan de forma relevante |
+
+O segundo problema é o que a seção 17 mostra acontecendo, com número.
+
+##### 7.3 A faixa que funciona
+
+Não existe número mágico. A prática de mercado indica que partição funciona bem
+com cardinalidade entre 10 e 10.000 valores distintos. Abaixo de 10 o pruning é
+limitado; acima de 10.000 o risco de small files e de overhead cresce.
+
+Para coluna de alta cardinalidade que precisa ser filtrada com frequência, a
+resposta não é partição, é organização interna do arquivo, como clustering ou
+ordenação multidimensional, disponíveis em formatos de tabela mais novos.
+
+##### 7.4 O caso do domínio de marketing
+
+| Coluna | Cardinalidade estimada | Serve como partição? |
+|---|---|---|
+| `event_date` | 365 por ano | Sim, o padrão clássico |
+| `stage` | 4 a 10 | Sim, mas avaliar desequilíbrio |
+| `campaign_id` | 100 a 10.000 | Depende do volume por campanha |
+| `channel` | 5 a 50 | Sim, se o volume for equilibrado |
+| `user_id` | Milhões | Não |
+
+#### 8. Skew de partição
+
+##### 8.1 O que é
+
+Skew é o desequilíbrio de tamanho entre partições. Numa tabela particionada por
+`stage`, se a maioria dos eventos é impressão, aquela partição fica muito maior
+que as outras.
+
+O laboratório tem skew embutido de propósito: a campanha `cmp_001` concentra cerca
+de 35 por cento do tráfego. Se você particionasse por `campaign_id`, veria o
+efeito.
+
+##### 8.2 Por que é um problema
+
+Em engine distribuído, o trabalho é dividido entre workers. Se uma partição é
+muito maior, o worker dela termina muito depois dos outros, e o tempo total da
+consulta é o do mais lento. Isso se chama straggler.
+
+Além da consulta, o skew complica a operação: reprocessar a partição grande é
+desproporcionalmente caro, e estimar crescimento fica difícil.
+
+##### 8.3 Como detectar
+
+**Como inspecionar**
+
+O Trino expõe as partições como uma tabela de sistema:
+
+<!-- verificacao: nivel 3, executado no Trino 479 contra a tabela do laboratorio, 2026-07-31 -->
+
+```sql
+SELECT * FROM hive.marketing."events_silver$partitions";
+```
+
+Se os tamanhos variarem em ordens de magnitude, há skew. No console do MinIO, em
+`http://localhost:9001`, a comparação visual dos prefixos dá a mesma pista mais
+rápido.
+
+##### 8.4 O que fazer
+
+| Estratégia | Quando |
+|---|---|
+| Trocar a chave | O desequilíbrio é natural na coluna escolhida |
+| Sub-particionar | Uma segunda dimensão equilibra a distribuição |
+| Bucketing | Distribuir em N arquivos de tamanho parecido dentro da partição |
+| Aceitar | O desequilíbrio é inevitável, e você otimiza a consulta da partição grande |
+
+A última linha é uma resposta legítima, e dizer isso por escrito vale mais que
+uma otimização que não vai acontecer.
+
+#### 9. Hot partitions
+
+##### 9.1 O que é, e por que é diferente de skew
+
+Hot partition é uma partição que recebe volume desproporcional de **escritas
+simultâneas**. Acontece em tabela particionada por tempo quando vários processos
+escrevem no dia de hoje ao mesmo tempo.
+
+| Fenômeno | Natureza |
+|---|---|
+| Skew | Problema de leitura, a partição é grande |
+| Hot partition | Problema de escrita, a partição recebe muitos writers |
+
+##### 9.2 O caso clássico
+
+Num pipeline quase em tempo real, vários workers escrevem em
+`event_date=<hoje>` ao longo do dia. Cada microbatch gera um arquivo, e ao fim do
+dia a partição tem centenas ou milhares de arquivos pequenos.
+
+##### 9.3 Mitigação
+
+| Estratégia | Como |
+|---|---|
+| Compactação | Job periódico une os arquivos pequenos da partição em arquivos maiores |
+| Área de staging | Os jobs escrevem fora da partição final, e um merge periódico consolida |
+| Serialização pelo orquestrador | O orquestrador impede writers simultâneos na partição do dia |
+
+Formatos de tabela mais novos têm compactação nativa e transacional. No Hive
+clássico, que é o deste laboratório, o processo é manual.
+
+#### 10. Custo contra performance
+
+##### 10.1 O trade-off
+
+Particionar resolve um problema e cria outro. Menos dado lido por consulta, e mais
+metadado para gerenciar. Mais partições significa mais entradas no catálogo, e
+operações que percorrem o schema inteiro ficam mais lentas.
+
+Este módulo tem a demonstração literal disso na seção 17.
+
+##### 10.2 O problema dos small files
+
+**O que é**
+
+Cada arquivo no object storage tem custo fixo de operação. Se uma partição tem
+1.000 arquivos de 1 KB, o engine faz 1.000 requisições para ler 1 MB. Comparado a
+uma requisição para um arquivo de 1 MB, o desperdício é enorme.
+
+**A regra prática**
+
+Arquivos entre 128 MB e 1 GB são o alvo para consulta analítica em object storage.
+Abaixo de 10 MB o overhead começa a aparecer; abaixo de 1 MB é problema. Isso é
+heurística de mercado, não número de documentação.
+
+**A tensão com a granularidade**
+
+Particionar por hora dá 24 partições por dia; com volume baixo, cada uma tem
+poucos MB e você criou o problema de small files. Particionar por mês resolve os
+arquivos e mata o pruning diário.
+
+A conta que resolve: se você sabe o volume diário, sabe qual granularidade deixa
+cada partição com pelo menos alguns arquivos grandes.
+
+##### 10.3 A conta de custo, com o modelo por dado escaneado
+
+**Como funciona na prática**
+
+Serviços que consultam direto no object storage cobram por byte escaneado. A
+página de preço do Athena usa 5 dólares por terabyte como taxa ilustrativa do
+exemplo dela, e é essa taxa que os exercícios deste módulo usam.
+
+Suponha a tabela `events` com 730 dias, 10 milhões de registros por dia e 200
+bytes por registro em Parquet. Total de 1,46 TB.
+
+| Cenário | Volume lido por consulta | Custo por consulta |
+|---|---|---|
+| Sem partição, filtro de 7 dias | 1,46 TB | 7,30 dólares |
+| Particionado por dia, filtro de 7 dias | 7 de 730, cerca de 14 GB | 0,07 dólares |
+
+Cem consultas por dia é a diferença entre 730 dólares e 7 dólares por dia. A
+decisão foi tomada uma vez, no dia em que a tabela foi criada.
+
+##### 10.4 Overhead de catálogo
+
+O Hive Metastore guarda uma entrada no banco relacional para cada partição. Com
+milhares de partições, operações como listar partições e resolver schema ficam
+mais lentas.
+
+Formatos de tabela mais novos reduzem essa dependência ao manter o próprio
+catálogo em arquivos de manifesto no storage.
+
+#### 11. A stack do laboratório
+
+**MinIO, o object storage**
+
+Implementa a API do S3. Para qualquer cliente que use o SDK do S3, é
+indistinguível dele. Roda local, sem custo e sem conta em nuvem. O laboratório
+usa três buckets: `bronze`, `silver` e `gold`.
+
+**Hive Metastore, o catálogo**
+
+Serviço que guarda metadado de tabela: nome, schema, localização, colunas de
+partição e a lista de partições. Usa um banco relacional como backend, aqui um
+PostgreSQL.
+
+**Uma correção que vale registrar.** Na AWS, o Glue Data Catalog cumpre o mesmo
+**papel**, e é comum dizer que ele "fala o mesmo protocolo Thrift". Não fala. O
+Glue é acessado pela API da AWS, e no Trino isso é configuração diferente:
+
+| Catálogo | Configuração no Trino |
+|---|---|
+| Hive Metastore | `hive.metastore=thrift`, com `hive.metastore.uri` |
+| AWS Glue | `hive.metastore=glue`, com `hive.metastore.glue.region` |
+
+O que muda para você: trocar de um para o outro é mudança de configuração do
+conector, não apenas de endereço. O conceito de catálogo é o mesmo, o mecanismo de
+acesso não.
+
+**Trino, o engine de consulta**
+
+Engine SQL distribuído para consulta analítica sobre object storage. Ele não
+armazena nada: lê e processa. Conecta ao metastore via Thrift e ao MinIO via API
+do S3.
+
+**Como os três se conectam**
+
+```
+[Consulta] --> [Trino :8090]
+                    |
+                    |-- (1) metadado --> [Hive Metastore :9083] -> [PostgreSQL]
+                    |
+                    |-- (2) arquivos --> [MinIO :9000] -> [bronze/silver/gold]
+```
+
+O fluxo: a consulta chega ao Trino, ele pede o metadado ao metastore, decide quais
+partições ler com base nos predicados, lê os arquivos dessas partições no MinIO, e
+processa.
+
+**Onde o orquestrador entra**
+
+Nesta sessão o Airflow não sobe. O desenho do DAG é suficiente para conectar as
+caixas: gerar o dado, carregar no bronze, construir a silver particionada, e rodar
+as consultas de validação.
+
+#### 12. Laboratório
+
+O laboratório roda em Docker, sem nuvem. Os runbooks em
+`infrastructure/runbooks/` trazem o passo a passo, inclusive o reset de estado, que
+não é opcional e a seção 17 explica por quê.
+
+**Sobre a escala.** O gerador entrega 15 partições e 12.000 linhas por padrão.
+Esse número é um teto medido, não uma preferência. A seção 17 tem a tabela.
+
+##### Lab 0: Gerar o dado e carregar no bronze
+
+Pré-condição: Docker e Docker Compose v2, e cerca de 8 GB de memória livre.
+
+```bash
+cd engenharia_de_dados/armazenamento/particionamento
+python3 scripts/gerar_dados.py --destino infrastructure/dados
+cd infrastructure
+docker compose up -d
+```
+
+Saída esperada do gerador:
+
+```
+events.csv: 12000 linhas
+events__cdc.csv: 15566 linhas
+janela: 2025-01-01 a 2025-01-15, 15 particoes de event_date
+```
+
+Depois, com a pilha de pé, envie os arquivos ao MinIO:
+
+```bash
+docker run --rm --network mentoria-sessao-04-particionamento_default \
+  -v "$PWD/dados":/data \
+  -e MC_HOST_local="http://minioadmin:minioadmin@minio:9000" \
+  minio/mc:RELEASE.2025-02-08T19-14-21Z \
+  cp /data/events.csv local/bronze/marketing/raw/events/
+```
+
+O gerador é determinístico, com semente fixa. Rodar duas vezes produz o mesmo
+arquivo, e é por isso que esta apostila pode publicar contagens e esperar que elas
+se reproduzam na sua máquina.
+
+##### Lab 1: Criar o schema e a tabela bronze
+
+```sql
+CREATE SCHEMA IF NOT EXISTS hive.marketing
+WITH (location = 's3://bronze/marketing/');
+```
+
+```sql
+CREATE TABLE hive.marketing.events_raw (
+    event_id VARCHAR, event_date VARCHAR, event_ts VARCHAR,
+    user_id VARCHAR, campaign_id VARCHAR, channel VARCHAR,
+    device VARCHAR, country VARCHAR, stage VARCHAR, revenue VARCHAR
+)
+WITH (
+    format = 'CSV',
+    external_location = 's3://bronze/marketing/raw/events/',
+    skip_header_line_count = 1
+);
+```
+
+Saída esperada da contagem: `12000`.
+
+O formato CSV no Hive aceita apenas `VARCHAR`. A tipagem entra na silver, via
+`CAST`. Isso não é limitação do laboratório, é como o formato funciona.
+
+##### Lab 2: Criar a silver particionada
+
+```sql
+CREATE TABLE hive.marketing.events_silver
+WITH (
+    format = 'PARQUET',
+    partitioned_by = ARRAY['event_date'],
+    external_location = 's3://silver/marketing/events/'
+) AS
+SELECT
+    event_id, user_id, campaign_id, channel, device, country, stage,
+    TRY_CAST(revenue AS DOUBLE) AS revenue,
+    CAST(event_date AS DATE) AS event_date
+FROM hive.marketing.events_raw;
+```
+
+Saída esperada: `CREATE TABLE: 12000 rows`, em cerca de 18 segundos.
+
+Repare que `event_date` é a **última** coluna do `SELECT`. A documentação do
+conector Hive registra que o Hive exige que as colunas de partição sejam as últimas
+colunas da tabela, e num CTAS é a ordem do `SELECT` que define a ordem da tabela.
+Por isso a coluna de partição vai no fim.
+
+##### Lab 3: Listar as partições
+
+```sql
+SELECT count(*) AS particoes FROM hive.marketing."events_silver$partitions";
+```
+
+Saída esperada: `15`.
+
+##### Lab 4: Ver o pruning acontecer
+
+```sql
+EXPLAIN ANALYZE
+SELECT event_id, user_id, campaign_id, channel
+FROM hive.marketing.events_silver
+WHERE event_date = DATE '2025-01-10';
+```
+
+Saída esperada, na linha de entrada do plano:
+
+```
+Input: 800 rows (50.92kB), Physical input: 8.08kB, Splits: 1
+```
+
+Um split, uma partição, 800 linhas.
+
+##### Lab 5: Ver a mesma consulta sem pruning
+
+```sql
+EXPLAIN ANALYZE
+SELECT event_id, user_id, campaign_id, channel
+FROM hive.marketing.events_silver
+WHERE channel = 'organic';
+```
+
+Saída esperada:
+
+```
+Input: 12000 rows (761.21kB), Filtered: 80.12%, Physical input: 120.72kB, Splits: 15
+```
+
+Quinze splits, a tabela inteira lida, e 80 por cento do que foi lido descartado
+pelo filtro. Compare com o Lab 4: mesma tabela, resultado correto nos dois, e
+quinze vezes o custo.
+
+Este é o laboratório central do módulo. Se você fizer só um, faça este junto com o
+Lab 4.
+
+##### Lab 6: Derrubar e resetar
+
+```bash
+docker compose down --volumes
+```
+
+A opção `--volumes` não é detalhe. Sem ela, o MinIO e o metastore guardam o estado
+da execução anterior, e o `CREATE TABLE IF NOT EXISTS` da próxima vez encontra a
+tabela já registrada, não faz nada, e devolve dado velho como se fosse novo. A
+seção 17 conta o caso real.
+
+#### 13. Análise do domínio de marketing
+
+Com a tabela criada, as perguntas típicas de um analista de marketing, e o que
+cada uma faz com as partições.
+
+**Cliques por campanha e por dia, a consulta frequente**
+
+```sql
+SELECT event_date, campaign_id, COUNT(*) AS total_clicks
+FROM hive.marketing.events_silver
+WHERE event_date BETWEEN DATE '2025-01-10' AND DATE '2025-01-12'
+  AND stage = 'click'
+GROUP BY event_date, campaign_id
+ORDER BY event_date, campaign_id;
+```
+
+Filtro de partição em `event_date`, filtro de coluna em `stage`. O Trino poda as
+partições fora do intervalo e depois aplica `stage` no que sobrou.
+
+**Usuários únicos por campanha**
+
+```sql
+SELECT campaign_id, COUNT(DISTINCT user_id) AS unique_users
+FROM hive.marketing.events_silver
+WHERE event_date = DATE '2025-01-10'
+GROUP BY campaign_id;
+```
+
+**O ponto de aprendizado**
+
+Todas as consultas de marketing são naturalmente filtradas por data. "Me dá os
+dados do dia X, da semana Y" é o padrão dominante em analytics. Por isso partição
+por data é a decisão padrão para tabela de evento, e a justificativa vem do padrão
+de acesso, não do hábito.
+
+**Quando particionar por campanha em vez de data**
+
+Se a consulta dominante fosse "todos os eventos da campanha A desde sempre",
+particionar por `campaign_id` faria mais sentido. Esse padrão é menos comum
+porque o número de campanhas é alto e variável, e porque campanha tem ciclo de
+vida curto enquanto a análise continua usando janela de tempo.
+
+#### 14. Exercícios e entregáveis
+
+**Exercício 1: Plano de particionamento**
+
+Objetivo: escolher chave e granularidade a partir do padrão de acesso.
+
+Contexto: quatro tabelas do projeto.
+
+| Tabela | Volume estimado | Consultas mais comuns |
+|---|---|---|
+| `events` | 10 M por dia | Por data, por campanha, por stage |
+| `campaigns` | 500 por mês | Por data de criação, por status |
+| `costs` | 1.000 por dia | Por data, por campanha |
+| `crm` | 200 K no total, atualizado diariamente | Por segmento, por data de atualização |
+
+Entregável: proposta por tabela com chave escolhida, justificativa pelo padrão de
+acesso e pela cardinalidade, granularidade, e riscos identificados entre small
+files, skew e hot partition.
+
+**Exercício 2: Análise de custo**
+
+Objetivo: ligar decisão técnica a linha de fatura.
+
+Contexto: os volumes do exercício 1, e a taxa ilustrativa de 5 dólares por
+terabyte escaneado.
+
+Entregável: tabela comparativa de custo mensal por tabela, nos dois cenários, com
+e sem partição, assumindo 100 consultas por dia. Diga também qual das quatro
+tabelas não vale particionar, e por quê.
+
+**Exercício 3: Medir o seu próprio pruning**
+
+Objetivo: usar o plano de execução como instrumento, não como enfeite.
+
+Contexto: a tabela do laboratório.
+
+Entregável: três consultas suas, uma com pruning, uma sem, e uma com filtro
+composto de partição e coluna comum. Para cada uma, o `Input`, o `Physical input`
+e o número de `Splits` do `EXPLAIN ANALYZE`, mais uma frase explicando o número.
+
+**Exercício 4: A última versão de cada evento**
+
+Objetivo: aplicar CDC sobre dado particionado.
+
+Contexto: o `events__cdc.csv` que o gerador produz tem um insert por evento, mais
+update ou delete para parte deles. São 15.566 linhas para 12.000 eventos.
+
+Entregável: uma tabela `events_latest` com a última versão de cada `event_id`,
+descartando o que foi deletado, particionada por `event_date`. A dica está em
+função de janela com `row_number()`. Diga quantas linhas sobraram e por quê.
+
+Este exercício não é um laboratório desta apostila porque não foi executado na
+verificação. Rodar é parte do exercício.
+
+**Exercício 5: Mini ADR da estratégia**
+
+Objetivo: registrar decisão de forma que outra pessoa entenda em seis meses.
+
+Entregável: um ADR curto com título, status, contexto, decisão, pelo menos duas
+alternativas consideradas com seus trade-offs, e consequências para o pipeline.
+
+#### 15. Mini-desafio com solução
+
+**Enunciado**
+
+O time quer acrescentar `country` à chave de partição, para acelerar as análises
+por mercado. São 5 países no dado do laboratório e 15 datas.
+
+Avalie a proposta. Se recomendar, diga o que muda. Se recusar, diga o que fazer no
+lugar.
+
+**Dicas**
+
+- Multiplique antes de opinar.
+- A seção 17 tem um número que decide.
+- Volume por partição é o critério que ninguém lembra de aplicar.
+
+**Gabarito comentado**
+
+Recuso, e por dois motivos independentes.
+
+O primeiro é aritmético e imediato: 15 datas por 5 países dá 75 partições. A
+medição da seção 17 mostra que este laboratório trava acima de cerca de 20. A
+proposta não roda no ambiente onde ela seria testada.
+
+O segundo é o que importa em produção, onde o catálogo aguenta. Com 12.000 linhas
+divididas em 75 partições, cada uma fica com cerca de 160 linhas, alguns kilobytes
+de Parquet. A regra da seção 10 pede partição com arquivos na casa das centenas de
+megabytes. Você teria criado o problema de small files para resolver um problema
+de pruning que talvez não exista.
+
+O que fazer no lugar, em ordem: primeiro, medir. Quantas das consultas realmente
+filtram por país? Se for uma minoria, `country` não deveria ser partição, deveria
+ser apenas uma coluna, e o filtro dela é aplicado depois do pruning por data, que
+já reduziu 15 vezes.
+
+Se a análise por mercado for dominante mesmo, a alternativa é ordenar o dado por
+`country` dentro de cada partição de data, para que a estatística de mínimo e
+máximo do Parquet permita pular blocos. Isso é pruning no nível de row group, da
+seção 5.4, e não cria partição nova nenhuma.
+
+**Interpretação**
+
+A resposta fraca aceita a proposta porque "mais pruning é melhor". A resposta boa
+multiplica 15 por 5 antes de responder. A excelente percebe que a pergunta certa
+não é "particionar por país?", é "quantas consultas filtram por país?", e que
+ninguém mediu isso.
+
+#### 16. Rubrica de validação da aprendizagem
+
+| Critério | Insuficiente | Suficiente | Excelente |
+|---|---|---|---|
+| Mecanismo | Descreve partição como pasta | Explica o papel do catálogo no pruning | Sabe que a coluna de partição não está no arquivo, e prova no plano |
+| Pruning | Acha que qualquer filtro poda | Sabe que só a coluna de partição poda | Lê o plano e diz quanto economizou |
+| Escolha de chave | Escolhe por hábito | Escolhe pelo padrão de acesso e cardinalidade | Calcula o volume por partição antes de decidir |
+| Modos de falha | Não distingue os três | Nomeia small files, skew e hot partition | Prevê qual deles a sua escolha vai produzir |
+| Custo | Trata como assunto financeiro | Faz a conta por dado escaneado | Ordena as decisões por impacto na fatura |
+| Limite de catálogo | Não sabe que existe | Sabe que muitas partições degradam | Reconhece a assinatura do travamento e sabe o teto do ambiente |
+| Honestidade técnica | Publica número que não mediu | Cita fonte e data | Declara o que não foi verificado |
+
+Checklist para a call:
+
+- [ ] Tabela silver particionada criada a partir do dado do MinIO.
+- [ ] Pruning demonstrado no `EXPLAIN ANALYZE`, com o número de splits.
+- [ ] Plano de particionamento das quatro tabelas do exercício 1.
+- [ ] Conta de custo feita para pelo menos uma tabela.
+- [ ] Explicou por que 75 partições é uma má ideia neste ambiente.
+
+#### 17. Erros comuns e como corrigir
+
+**A pilha trava e nenhum log diz nada**
+
+Sintoma: um `CREATE TABLE ... AS SELECT` particionado nunca termina. A query fica
+em `FINISHING`, e depois de um tempo o metastore para de responder até para um
+`SHOW SCHEMAS`, com `SocketTimeoutException`. CPU e memória ociosos nos quatro
+containers, e nenhum erro em nenhum log.
+
+Causa: a fase de commit de partições do metastore. A variável é a **contagem de
+partições**, não o volume de dado. Medido em 2026-07-31, mantendo as linhas fixas
+para isolar:
+
+| Partições | Linhas | Resultado |
+|---|---|---|
+| 5 | 1.000 | concluiu em 5 s |
+| 5 | 12.000 | concluiu em 11 s |
+| 15 | 12.000 | concluiu em 10 s |
+| 25 | 12.000 | travou |
+| 30 | 6.000 | travou |
+| 30 | 60.000 | travou |
+
+O volume de linhas variou 12 vezes sem efeito. Correção: ficar abaixo de cerca de
+20 partições por CTAS neste ambiente. É por isso que o gerador entrega 15 por
+padrão.
+
+Repare no que isso significa: a seção 10 desta apostila ensina que muitas
+partições sobrecarregam o catálogo. Este travamento é essa lição acontecendo no
+próprio laboratório, com número. É o material mais honesto do módulo.
+
+**O `IF NOT EXISTS` devolve dado de meses atrás**
+
+Sintoma: o `CREATE TABLE IF NOT EXISTS` responde `CREATE TABLE: 0 rows`, e a
+contagem depois não bate com a origem.
+
+Causa: os volumes do Docker persistem entre execuções. A tabela já estava
+registrada no metastore de uma sessão anterior, o comando não fez nada, e a
+consulta leu o dado antigo.
+
+Caso real: na verificação de 2026-07-31, o laboratório devolveu 2.000 linhas em 14
+partições quando a origem tinha 60.000 em 30. O dado era de 2026-03-18, e as 14 de
+30 partições eram justamente a assinatura do travamento acima, quatro meses antes.
+
+Correção: `docker compose down --volumes` ao terminar, como no Lab 6. Se
+desconfiar, conte as linhas e compare com o que o gerador reportou.
+
+**A partição existe no storage e a consulta não a encontra**
+
+Sintoma: os arquivos estão no bucket, e a consulta devolve vazio.
+
+Causa: a partição não foi registrada no catálogo. O storage não avisa o metastore.
+
+Correção: escrever pelo próprio engine, ou sincronizar com
+`CALL hive.system.sync_partition_metadata(..., mode => 'ADD')`. No Trino não existe
+`MSCK REPAIR TABLE`, que é o comando equivalente do Hive.
+
+**A consulta filtra e continua caríssima**
+
+Sintoma: você acrescentou `WHERE` e o custo não caiu.
+
+Causa: o filtro não é na coluna de partição. Ele é aplicado depois, no dado já
+lido.
+
+Correção: conferir o plano. Se o nó é `ScanFilterProject` com `filterPredicate` e a
+lista de `PARTITION_KEY` traz todas as partições, não houve pruning.
+
+**Muitos arquivos minúsculos**
+
+Sintoma: a consulta é lenta apesar do pruning funcionar.
+
+Causa: granularidade fina demais, ou muitos writers na mesma partição.
+
+Correção: compactar, e reavaliar a granularidade contra o volume diário real.
+
+**A coluna de partição na posição errada no CTAS**
+
+Sintoma: erro ao criar a tabela particionada.
+
+Causa: no Trino, num CTAS particionado, a coluna de partição precisa ser a última
+do `SELECT`.
+
+Correção: mover a coluna para o fim da lista, como está no Lab 2.
+
+#### 18. Plano de continuidade
+
+**Antes da próxima call**
+
+Faça os exercícios 1 e 3. O terceiro exige rodar o laboratório, e é o que fixa o
+plano de execução como instrumento.
+
+**O que estudar em seguida, dentro da trilha**
+
+O módulo de formatos e tipos de tabela é o par natural deste: formatos de tabela
+mais novos resolvem parte do que aqui é manual, da compactação ao catálogo. O
+módulo de cloud para dados retoma a conta de custo desta seção 10 com as classes
+de armazenamento.
+
+O módulo de transformação com dbt é onde essas decisões passam a viver em código
+versionado, com a materialização escolhida por custo e frequência.
+
+**O que aprofundar por conta**
+
+Rode o laboratório com 25 partições e veja o travamento com os seus olhos. Saber
+reconhecer a assinatura vale mais que evitar o caso.
+
+**O que não perseguir agora**
+
+Ajuste fino de configuração do metastore e bucketing no Hive. Os dois são
+trabalho de plataforma, e o retorno para você hoje é menor que dominar a escolha
+de chave.
+
+#### 19. Glossário
+
+| Termo | Significado |
+|---|---|
+| Bucketing | Distribuição do dado em N arquivos de tamanho parecido dentro da partição |
+| Cardinalidade | Número de valores distintos de uma coluna |
+| Catálogo | Serviço que guarda metadado de tabela e de partição |
+| Compactação | Processo que une arquivos pequenos de uma partição em arquivos maiores |
+| CTAS | `CREATE TABLE AS SELECT`, cria a tabela a partir do resultado de uma consulta |
+| Full scan | Varredura completa da tabela, sem eliminar partição |
+| Hot partition | Partição que recebe volume desproporcional de escritas simultâneas |
+| Partição | Subconjunto físico do dado, definido pelo valor de uma ou mais colunas |
+| Partition pruning | Eliminação de partições a partir dos filtros, antes de abrir arquivo |
+| Pushdown | Empurrar o filtro para o nível mais baixo possível de leitura |
+| Row group | Bloco interno de um arquivo Parquet, com estatística de mínimo e máximo |
+| Skew | Desequilíbrio de tamanho entre partições |
+| Small files | Excesso de arquivos minúsculos, que anula o ganho do particionamento |
+| Split | Unidade de trabalho de leitura que o engine distribui entre workers |
+| Straggler | Worker que termina muito depois dos outros e atrasa a consulta inteira |
+
+#### Referências
+
+Documentação oficial, consultada em 2026-07-31:
+
+- Conector Hive do Trino: https://trino.io/docs/current/connector/hive.html
+- Documentação do MinIO: https://min.io/docs/
+- Preço do Amazon Athena, origem da taxa ilustrativa por terabyte: https://aws.amazon.com/athena/pricing/
+
+Leitura complementar, não conferida nesta revisão:
+
+- Data Storage Design Patterns, capítulo sobre tabela particionada e o trade-off
+  entre granularidade e overhead.
+- Data Observability Design Patterns, capítulo sobre métricas operacionais de
+  partição, como tamanho e número de arquivos.
+
+#### Fontes verificadas (2026-07-31)
+
+- Toda a pilha do laboratório foi executada de verdade em 2026-07-31, com Trino
+  479, Hive 4.0.0, PostgreSQL 16, MinIO RELEASE.2025-02-03T21-03-04Z e Docker
+  Compose v2.39.1. Os laboratórios 0 a 6 estão registrados no `lab.json` com o
+  comando que provou cada um e a saída observada.
+- O ganho do partition pruning foi medido com `EXPLAIN ANALYZE` na mesma tabela,
+  variando apenas o filtro: com pruning, 800 linhas e 50,92 kB em 1 split; sem
+  pruning, 12.000 linhas e 761,21 kB em 15 splits. O fator 15 corresponde à
+  contagem de partições da tabela.
+- O plano de execução do Trino 479 classifica `event_date` como `PARTITION_KEY` e
+  `event_id` como `REGULAR`, o que confirma que a coluna de partição é
+  reconstruída do caminho e não lida do arquivo Parquet.
+- O Trino 479 **não** imprime `Constraint` no `TableScan`, ao contrário do que
+  material mais antigo afirma. Ele imprime a lista de partições sob
+  `event_date:date:PARTITION_KEY`, e troca o nó por `ScanFilterProject` quando o
+  filtro é de coluna comum. As duas saídas estão transcritas na seção 5.5, como
+  observadas.
+- O teto de partições deste ambiente foi medido isolando a variável: 5 partições
+  com 1.000 e com 12.000 linhas concluíram em 5 e 11 segundos; 15 partições com
+  12.000 linhas concluíram em 10 segundos; 25 partições com 12.000 linhas, 30 com
+  6.000 e 30 com 60.000 travaram na fase de commit, com o metastore deixando de
+  responder. O volume de linhas variou 12 vezes sem efeito.
+- O caso do `IF NOT EXISTS` devolvendo dado antigo foi observado: os volumes
+  persistidos de 2026-03-18 fizeram o comando responder `CREATE TABLE: 0 rows` e a
+  consulta devolver 2.000 linhas em 14 partições, quando a origem tinha 60.000 em
+  30 partições.
+- A taxa de 5 dólares por terabyte escaneado usada nas contas da seção 10 e do
+  exercício 2 é a taxa ilustrativa que a própria página de preço do Athena usa no
+  exemplo dela. O preço por região não foi conferido nesta data e não é afirmado
+  aqui. https://aws.amazon.com/athena/pricing/
+- A faixa de 128 MB a 1 GB por arquivo e a faixa de cardinalidade entre 10 e
+  10.000 valores são heurísticas de mercado, não números de documentação, e estão
+  declaradas como tal no texto.
+- A documentação do conector Hive do Trino registra que o Hive exige que as colunas
+  de partição sejam as últimas colunas da tabela. O CTAS do Lab 2 respeita isso, e
+  foi executado com sucesso. O comportamento ao inverter a ordem **não** foi
+  testado, e por isso esta apostila não afirma qual erro aparece.
+  https://trino.io/docs/current/connector/hive.html
+- O Trino não tem `MSCK REPAIR TABLE`. O equivalente é o procedimento
+  `system.sync_partition_metadata`, com modos `ADD`, `DROP` e `FULL`, sendo o `ADD`
+  o que acrescenta partições presentes no storage e ausentes no catálogo. Conferido
+  na documentação e não executado.
+  https://trino.io/docs/current/connector/hive.html
+- O AWS Glue Data Catalog **não** é acessado pelo protocolo Thrift do Hive
+  Metastore. No Trino, os dois são tipos distintos de metastore:
+  `hive.metastore=thrift`, com `hive.metastore.uri`, contra
+  `hive.metastore=glue`, com `hive.metastore.glue.region`. A versão anterior desta
+  apostila afirmava que o Glue era compatível com o mesmo protocolo Thrift na
+  porta 9083, e isso está errado.
+  https://trino.io/docs/current/object-storage/metastores.html
+- O exercício 4, de aplicar CDC sobre dado particionado, **não** foi executado na
+  verificação, e por isso não é um laboratório desta apostila. O arquivo de CDC que
+  o gerador produz tem 15.566 linhas para 12.000 eventos, número que foi conferido
+  na geração.
+
+---
+
+## Capitulo 9, Change Data Capture
+
+Fonte: `ingestao/cdc/apostila.md`
+
+### Apostila, Change Data Capture
+
+> Trilha de Engenharia de Dados. Conduzida por Iuri Zambotto.
+
+> Conteudo extraido da apostila consolidada anterior. As secoes marcadas
+> como pendentes ainda nao foram escritas no padrao unico.
+
+#### Sumario
+
+- [3.1 Change Data Capture (CDC), conceito e lifecycle](#31-change-data-capture-cdc-conceito-e-lifecycle)
+- [3.2 CDC por ciclo de vida de ID, regras e pitfalls](#32-cdc-por-ciclo-de-vida-de-id-regras-e-pitfalls)
+
+#### Como usar esta apostila
+
+Leitura linear para aprender, sumario para revisar um ponto isolado.
+
+#### 3.1 Change Data Capture (CDC), conceito e lifecycle
+
+**O que é CDC e por que existe**
+
+Change Data Capture é o conjunto de técnicas para capturar e representar as mudanças que ocorrem em um banco de dados de origem. Em vez de ler a tabela inteira a cada ciclo (snapshot completo), o CDC captura apenas o que mudou: inserções, atualizações e deleções.
+
+O CDC nasce de uma necessidade real: dados mudam. Um usuário atualiza o endereço, uma campanha é cancelada, um pedido é deletado. Se você só tiver o snapshot mais recente, perdeu a história do que aconteceu. Se você capturar cada evento de mudança, tem uma trilha auditável e pode reconstruir qualquer estado anterior.
+
+**Métodos de captura**
+
+- **Log-based CDC**: lê o write-ahead log (WAL) do banco de dados. É o método mais confiável e menos intrusivo. Ferramentas como Debezium fazem isso para PostgreSQL, MySQL, MongoDB e outros. Cada operação DML (INSERT, UPDATE, DELETE) gera um evento no log.
+
+- **Trigger-based CDC**: triggers no banco disparam escrita em uma tabela de auditoria a cada mudança. Funciona, mas tem custo de escrita no próprio banco de origem.
+
+- **Timestamp-based CDC**: lê registros onde `updated_at > last_processed_time`. Simples de implementar, mas não captura deleções e depende de o campo de timestamp existir e ser confiável.
+
+- **Geração sintética**: para fins didáticos, geramos os eventos de CDC programaticamente com regras de lifecycle controladas. O módulo `cdc_generator` produz arquivos `*__cdc.csv` com essa abordagem.
+
+**Campos padrão de um evento CDC**
+
+Todo evento CDC carrega:
+
+- `cdc_op`: tipo da operação, `insert`, `update` ou `delete`.
+- `cdc_event_ts`: timestamp do evento.
+- `cdc_source_table`: tabela de origem.
+- Os dados do registro no estado em que estava no momento do evento.
+
+**A diferença entre append-only e upsert**
+
+Uma tabela append-only só recebe novos registros; registros passados nunca mudam. Exemplos: logs de acesso, eventos de clique, transações financeiras.
+
+Uma tabela com upsert recebe inserções e também atualizações de registros existentes. Exemplos: cadastro de clientes, status de pedidos, saldo de conta.
+
+O CDC é especialmente relevante para tabelas com upsert. Se você precisar reconstruir o estado atual de um cadastro de clientes, precisa saber não apenas o insert inicial, mas todos os updates subsequentes e, eventualmente, o delete.
+
+#### 3.2 CDC por ciclo de vida de ID, regras e pitfalls
+
+Esta é a regra mais importante desta sessão e precisa ser internalizada.
+
+**A regra do lifecycle por ID**
+
+Para cada identificador único (chave primária) numa tabela CDC, a sequência de eventos obedece a uma regra estrita:
+
+```
+insert → update* → delete?
+```
+
+Traduzindo:
+
+1. O ID aparece **uma única vez** com `cdc_op = insert`. Esse é o primeiro e único evento de criação.
+2. Após o insert, podem existir **zero ou mais** eventos com `cdc_op = update`. Cada update representa uma alteração no estado do registro.
+3. O `cdc_op = delete` é **terminal**: significa que o registro foi removido da origem. Após um delete, esse ID não pode mais aparecer em novos eventos de insert ou update.
+
+**Por que o delete é terminal**
+
+Quando um registro é deletado no banco de origem, ele deixa de existir. Qualquer tentativa de referenciar aquele ID depois disso é ou um erro na captura CDC ou uma reinserção (novo ciclo, novo contexto). Para fins de lifecycle, o delete é o fim de vida daquele ID específico.
+
+**Evidência real do dataset desta sessão**
+
+O arquivo `notes/relatorio-cdc-por-id.md` mostra os resultados do dataset `marketing`:
+
+| Tabela | IDs únicos | Inserts | Updates | Deletes | Violações |
+|---|---|---|---|---|---|
+| `users` | 80 | 80 | 0 | 37 | 0 |
+| `campaigns` | 4 | 4 | 0 | 0 | 0 |
+| `events` | 80 | 80 | 584 | 2 | 0 |
+| `costs` | 4 | 4 | 52 | 0 | 0 |
+| `crm` | 80 | 80 | 0 | 27 | 0 |
+
+Zero violações em todas as tabelas. Cada ID começa com `insert`, updates aparecem apenas entre o insert e o possível delete, e nenhum ID reaparece após o delete.
+
+Exemplos de sequências válidas:
+
+- `user_0001` na tabela `users`: `insert → delete` (vida curta)
+- `user_0001` na tabela `events`: `insert → update → update → ... → update` (criou e atualizou 8 vezes, ainda ativo)
+- `user_0009` na tabela `events`: `insert → update → update → update → delete`
+
+**Os pitfalls mais comuns em CDC**
+
+- **Insert duplicado.** Um evento de insert para um ID que já existe indica erro no pipeline CDC ou problema de deduplicação. O dado não pode ser confiado sem investigação.
+
+- **Update antes do insert.** Se um ID aparece primeiro com `update`, o evento de criação foi perdido. Isso pode acontecer em migrações parciais ou quando a captura CDC começou depois que o registro já existia.
+
+- **Evento após delete.** Se um ID que foi deletado reaparece com `update`, houve um problema sério: ou o delete foi registrado por engano, ou houve reinserção sem novo insert CDC. Ambos indicam inconsistência.
+
+- **Timestamp fora de ordem.** Eventos CDC devem ser processados em ordem temporal por ID. Se o `cdc_event_ts` estiver fora de sequência, o estado reconstruído será incorreto.
+
+- **Soft delete vs hard delete.** Nem todos os bancos geram eventos de delete explícito no CDC. Alguns sistemas usam soft delete: um campo `is_active = false` ou `deleted_at` é atualizado, e o registro permanece na tabela. Nesses casos, o CDC captura um `update`, não um `delete`. É importante saber qual estratégia o banco de origem usa.
+
+**Como validar o lifecycle no código**
+
+A validação implementada no `cdc_generator` segue esta lógica:
+
+1. Agrupar eventos por ID.
+2. Ordenar por `cdc_event_ts`.
+3. Verificar que o primeiro evento é sempre `insert`.
+4. Verificar que após qualquer `delete`, não existem mais eventos para aquele ID.
+5. Reportar qualquer violação.
+
+
+#### Mini-desafio com solucao
+
+Pendente. Escrever enunciado, dicas e gabarito comentado.
+
+#### Rubrica de validacao da aprendizagem
+
+Pendente. Definir criterio, suficiente e excelente.
+
+#### Erros comuns e como corrigir
+
+Pendente. Levantar sintoma, causa e correcao.
+
+#### Plano de continuidade
+
+Pendente. Apontar o proximo modulo da trilha.
+
+#### Glossario
+
+Pendente. Listar os termos novos deste modulo.
+
+#### Referencias
+
+Pendente. Documentacao oficial com data de consulta.
+
+#### Fontes verificadas
+
+Pendente. Nenhuma afirmacao deste modulo foi conferida contra doc oficial.
+
+---
+
+## Capitulo 10, Streaming com Apache Kafka
+
+Fonte: `ingestao/kafka/apostila.md`
+
+### Apostila, Streaming com Apache Kafka
+
+> Trilha de Engenharia de Dados. Conduzida por Iuri Zambotto com Paulo Shindi.
+
+#### Sumario
+
+- [0. Como usar esta apostila](#0-como-usar-esta-apostila)
+- [1. Objetivo pedagogico](#1-objetivo-pedagogico)
+- [2. Contexto de negocio](#2-contexto-de-negocio)
+- [3. O log particionado](#3-o-log-particionado)
+- [4. Chave, particao e ordem](#4-chave-particao-e-ordem)
+- [5. Grupo de consumo e offset](#5-grupo-de-consumo-e-offset)
+- [6. Semanticas de entrega](#6-semanticas-de-entrega)
+- [7. Laboratorio](#7-laboratorio)
+- [8. Exercicios e entregaveis](#8-exercicios-e-entregaveis)
+- [9. Mini-desafio com solucao](#9-mini-desafio-com-solucao)
+- [10. Rubrica de validacao da aprendizagem](#10-rubrica-de-validacao-da-aprendizagem)
+- [11. Erros comuns e como corrigir](#11-erros-comuns-e-como-corrigir)
+- [12. Plano de continuidade](#12-plano-de-continuidade)
+- [13. Glossario](#13-glossario)
+- [Referencias](#referencias)
+- [Fontes verificadas](#fontes-verificadas)
+
+#### 0. Como usar esta apostila
+
+Leitura linear para aprender, sumario para revisar um ponto isolado.
+
+O laboratorio da secao 7 foi executado de ponta a ponta e as saidas registradas sao reais, nao
+ilustrativas. Cada `Lab N` existe no `lab.json` deste modulo, com o comando e a saida esperada.
+
+Pre-requisito: o modulo de Docker e ambiente local. Voce precisa conseguir subir um Compose.
+
+#### 1. Objetivo pedagogico
+
+Ao terminar este modulo voce consegue:
+
+- explicar por que o Kafka e um log particionado e nao uma fila;
+- prever em qual particao uma mensagem vai cair, a partir da chave;
+- dizer o que o Kafka garante sobre ordem, e o que ele nao garante;
+- ler o offset de um grupo de consumo e interpretar o lag;
+- escolher a semantica de entrega adequada, sabendo onde a garantia termina.
+
+#### 2. Contexto de negocio
+
+A startup de marketing do Projeto 1 acompanha campanhas pagas. Ate aqui o pipeline era batch:
+o dado chegava de hora em hora e o relatorio fechava no dia seguinte.
+
+Surgiu uma pergunta que o batch nao responde: quando uma campanha comeca a queimar orcamento
+sem converter, quanto tempo o time leva para perceber? Com carga de hora em hora, ate uma hora.
+Com o orcamento diario de uma campanha grande, uma hora e dinheiro.
+
+Streaming entra aqui para reduzir a latencia entre o evento acontecer e alguem poder agir. Nao
+para substituir o batch, que continua fazendo o fechamento correto.
+
+#### 3. O log particionado
+
+**O que e**
+
+Um topico do Kafka nao e uma fila. E um **log**: uma sequencia de registros que so cresce no
+fim, dividida em particoes, e da qual ninguem remove nada ao ler.
+
+Essa diferenca muda tudo. Numa fila, ler consome. No Kafka, ler apenas move um marcador de
+posicao, e o mesmo registro pode ser lido de novo, por outro consumidor ou pelo mesmo mais tarde.
+
+**Por que particionar**
+
+A particao e a unidade de paralelismo. Um topico com 3 particoes pode ser lido por ate 3
+consumidores do mesmo grupo em paralelo. Com 1 particao, so um consumidor trabalha, por mais
+que voce suba dez.
+
+**O que o Lab 3 mostra**
+
+Ao descrever o topico, cada particao aparece com um `Leader`. O lider e o broker responsavel
+por aquela particao: toda escrita e leitura passa por ele. Em cluster de um no so, o lider e
+sempre o mesmo, e por isso o laboratorio nao demonstra failover.
+
+#### 4. Chave, particao e ordem
+
+**A regra**
+
+Quando a mensagem tem chave, o Kafka escolhe a particao por hash da chave. Mesma chave, mesma
+particao, sempre. Sem chave, a distribuicao e circular entre as particoes.
+
+**O que isso garante**
+
+Ordem **dentro da particao**, e so. O Kafka nao garante ordem global no topico, e nao tem como:
+particoes sao independentes e escritas em paralelo.
+
+Na pratica isso e suficiente quase sempre, porque o que importa e a ordem dos eventos **do
+mesmo titular**. Se todos os eventos do usuario `u1` caem na mesma particao, a sequencia
+`click`, depois `purchase`, chega nessa ordem.
+
+**O equivoco comum**
+
+Achar que aumentar particoes so melhora. Aumentar particoes aumenta paralelismo e **redistribui
+as chaves**: uma chave que caia na particao 1 com 3 particoes pode cair na 4 com 6. Eventos
+antigos ficam onde estavam, e a ordem por chave se quebra na fronteira da mudanca.
+
+Por isso o numero de particoes e decisao de projeto, nao de ajuste fino.
+
+**O que o Lab 5 mostra**
+
+A saida real do laboratorio:
+
+```
+Partition:0	u2	{"user_id":"u2","evento":"view"}
+Partition:1	u1	{"user_id":"u1","evento":"click"}
+Partition:1	u1	{"user_id":"u1","evento":"purchase"}
+```
+
+As duas mensagens de `u1` cairam na particao 1, e nessa ordem. A de `u2` foi para a 0. A regra
+de hash da chave nao e teoria, esta ali.
+
+#### 5. Grupo de consumo e offset
+
+**O que e um grupo**
+
+Consumidores que compartilham o mesmo `group.id` dividem as particoes entre si. Cada particao
+e lida por exatamente um membro do grupo, o que da paralelismo sem duplicar processamento.
+
+Consumidores de grupos diferentes leem o mesmo topico de forma independente. E por isso que o
+mesmo fluxo alimenta o time de analytics e o de operacoes sem um atrapalhar o outro.
+
+**Offset**
+
+O offset e a posicao do grupo em cada particao. Ele fica guardado no proprio Kafka, num topico
+interno, e nao no consumidor. Se o consumidor morre e volta, retoma de onde parou.
+
+**Lag**
+
+Lag e a diferenca entre o fim do log e a posicao do grupo. Lag zero significa que o grupo leu
+tudo. Lag crescendo significa que a producao esta mais rapida que o consumo, e e a metrica que
+merece alerta.
+
+**O que o Lab 6 mostra**
+
+```
+GROUP           TOPIC         PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG
+time-analytics  eventos-mkt   0          1               1               0
+time-analytics  eventos-mkt   1          2               2               0
+```
+
+O grupo commitou 1 mensagem na particao 0 e 2 na particao 1, que e exatamente a distribuicao
+observada no Lab 5. Lag zero nas duas.
+
+Repare que a particao 2 nao aparece: nenhuma mensagem caiu nela, entao o grupo nao tem offset
+commitado ali.
+
+#### 6. Semanticas de entrega
+
+| Semantica | O que garante | Custo |
+|---|---|---|
+| At-most-once | Nunca duplica, pode perder | Commit antes de processar |
+| At-least-once | Nunca perde, pode duplicar | Commit depois de processar |
+| Exactly-once | Cada evento uma vez, **dentro do Kafka** | Producer idempotente e transacao |
+
+**Onde a garantia termina**
+
+O exactly-once do Kafka e `read-process-write`: consumir de um topico, processar, produzir em
+outro e commitar o offset, tudo ou nada. E atomico **dentro do Kafka**.
+
+Seu S3, seu Postgres e sua tabela Iceberg nao participam dessa transacao. No instante em que o
+dado atravessa essa borda, voce voltou para at-least-once.
+
+Na pratica, o caminho mais simples e mais barato e assumir at-least-once e tornar a duplicata
+inofensiva no destino, com chave de negocio explicita e escrita idempotente.
+
+**CDC nao mora aqui**
+
+Change Data Capture aparece com frequencia junto de Kafka, via Debezium. O **conceito** de CDC
+pertence ao modulo `cdc`, que cobre captura log-based sem broker. Este modulo trata apenas do
+**transporte**: como o evento de mudanca viaja pelo Kafka depois de capturado.
+
+#### 7. Laboratorio
+
+Todos os passos abaixo foram executados em 2026-07-30 e as saidas sao reais. O manifesto
+`lab.json` deste modulo registra comando e saida esperada de cada um.
+
+Antes de comecar, leia `infrastructure/runbooks/00_pre_requisitos.md`.
+
+- **Lab 1**, subir a stack do Kafka
+- **Lab 2**, criar o topico com 3 particoes
+- **Lab 3**, inspecionar particoes e lider
+- **Lab 4**, produzir eventos com chave
+- **Lab 5**, consumir e observar a particao de cada chave
+- **Lab 6**, inspecionar offset do grupo de consumo
+- **Lab 7**, derrubar a stack
+
+Os scripts Python em `scripts/producers/` e `scripts/consumers/` cobrem os mesmos conceitos com
+a biblioteca cliente, para quem quiser ir alem do CLI.
+
+#### 8. Exercicios e entregaveis
+
+**Exercicio 1: prever a particao**
+
+Objetivo: aplicar a regra de hash da chave.
+
+Contexto: o topico `eventos-mkt` tem 3 particoes. Voce vai produzir eventos das chaves `u1`,
+`u2`, `u3` e `u4`.
+
+Entregavel: antes de rodar, escreva sua previsao de qual chave cai em qual particao. Depois
+rode o Lab 4 e o Lab 5 com essas chaves e compare. Explique os acertos e os erros.
+
+---
+
+**Exercicio 2: o efeito de mudar particoes**
+
+Objetivo: entender por que o numero de particoes e decisao de projeto.
+
+Contexto: partindo do topico com 3 particoes ja populado, aumente para 6 com
+`kafka-topics.sh --alter --partitions 6`.
+
+Entregavel: produza de novo as mesmas chaves, consuma tudo desde o inicio e mostre uma chave
+cujos eventos ficaram divididos entre duas particoes. Explique o impacto na ordem.
+
+---
+
+**Exercicio 3: lag sob pressao**
+
+Objetivo: ler o lag como metrica operacional.
+
+Contexto: produza 1000 eventos e consuma com um unico consumidor lento, com pausa artificial
+entre mensagens.
+
+Entregavel: tabela com o lag medido em tres momentos, e uma frase dizendo o que voce alertaria
+em producao e a partir de qual limiar.
+
+---
+
+**Exercicio 4: escolher a semantica**
+
+Objetivo: decidir com criterio, nao por reflexo.
+
+Contexto: dois casos. O primeiro contabiliza cliques para cobranca de anunciante. O segundo
+atualiza um painel de monitoramento que refaz o calculo a cada minuto.
+
+Entregavel: para cada caso, a semantica escolhida, a justificativa e o que precisa existir no
+destino para que a escolha se sustente.
+
+#### 9. Mini-desafio com solucao
+
+**Enunciado**
+
+O time de operacoes reclama que o painel mostra o evento de `purchase` de um usuario **antes**
+do `click` que o originou. Os dois eventos sao produzidos pelo mesmo servico, na ordem certa,
+para o mesmo topico. O topico tem 6 particoes.
+
+Por que isso acontece, e como corrigir sem mudar o numero de particoes?
+
+**Dicas antes do gabarito**
+
+- O Kafka garante ordem em que escopo?
+- O que decide a particao de uma mensagem?
+- O produtor esta enviando chave?
+
+**Gabarito comentado**
+
+Os eventos estao sendo produzidos **sem chave**. Sem chave, o Kafka distribui de forma circular
+entre as 6 particoes, entao `click` e `purchase` do mesmo usuario caem em particoes diferentes.
+
+Particoes sao lidas em paralelo e independentes entre si. O Kafka garante ordem **apenas dentro
+da particao**, entao nada impede o consumidor de processar a particao que tem o `purchase`
+antes da que tem o `click`. Nao ha bug: e o comportamento correto de um log particionado.
+
+A correcao e produzir com `user_id` como chave. A partir dai, todos os eventos do mesmo usuario
+caem na mesma particao e chegam na ordem em que foram produzidos.
+
+Cuidado ao aplicar: a correcao vale para os eventos **novos**. Os que ja estao no topico
+continuam onde foram gravados, e a ordem so se restabelece na janela posterior a mudanca.
+
+#### 10. Rubrica de validacao da aprendizagem
+
+| Criterio | Insuficiente | Suficiente | Excelente |
+|---|---|---|---|
+| Ordem | Diz que o Kafka garante ordem | Diz que garante dentro da particao | Explica por que ordem global e impossivel com particoes paralelas |
+| Chave | Nao relaciona chave e particao | Sabe que a chave decide a particao | Antecipa o efeito de mudar o numero de particoes sobre a ordem |
+| Offset | Confunde offset com posicao do consumidor | Sabe que o offset e do grupo e vive no Kafka | Interpreta lag como sinal operacional e propoe limiar |
+| Semantica | Escolhe exactly-once por reflexo | Escolhe com base no caso | Aponta onde a garantia termina e o que fazer no destino |
+| Laboratorio | Nao roda | Reproduz os labs | Modifica o cenario e explica a saida diferente |
+
+#### 11. Erros comuns e como corrigir
+
+| Sintoma | Causa | Correcao |
+|---|---|---|
+| Eventos do mesmo usuario fora de ordem | Produzir sem chave | Usar a chave de negocio como chave da mensagem |
+| Subir varios consumidores e so um trabalhar | Mais consumidores que particoes no grupo | Aumentar particoes no projeto, ou aceitar o teto |
+| Consumidor nao ve mensagem antiga | Grupo novo comeca do fim por padrao | Usar `--from-beginning` ou configurar `auto.offset.reset` |
+| Script no host nao conecta | Listener anunciado errado | Conferir `KAFKA_ADVERTISED_LISTENERS`, o EXTERNAL precisa anunciar `localhost:9092` |
+| Lag cresce sem parar | Consumo mais lento que producao | Paralelizar por particao ou otimizar o processamento |
+| Reprocessar duplica no destino | Confiar no exactly-once atravessando a borda | Escrita idempotente com chave de negocio no destino |
+
+#### 12. Plano de continuidade
+
+Proximo passo natural na trilha e o modulo `kubernetes`, que cobre como esse tipo de servico
+roda em producao com limite de recurso e reinicio controlado.
+
+Para aprofundar o assunto deste modulo: `cdc`, que e o dono do conceito de Change Data Capture,
+e trata da captura que muitas vezes alimenta um topico como este.
+
+#### 13. Glossario
+
+| Termo | Significado |
+|---|---|
+| Broker | Servidor que armazena e serve as particoes |
+| Topico | Nome logico do log, dividido em particoes |
+| Particao | Unidade de paralelismo e de ordem, um log que so cresce no fim |
+| Offset | Posicao de um grupo dentro de uma particao |
+| Grupo de consumo | Conjunto de consumidores que divide as particoes entre si |
+| Lag | Distancia entre o fim do log e a posicao do grupo |
+| KRaft | Modo de consenso do Kafka que dispensa o ZooKeeper |
+| Listener | Endereco e protocolo pelo qual o broker aceita conexao |
+
+#### Referencias
+
+- Documentacao do Apache Kafka, secao de design e de consumidores. https://kafka.apache.org/documentation/
+- Imagem oficial `apache/kafka` no Docker Hub. https://hub.docker.com/r/apache/kafka
+
+#### Fontes verificadas
+
+Verificado em 2026-07-30, com Kafka 3.9.0 em modo KRaft, via Docker Compose 2.39.1.
+
+- A saida de particao por chave da secao 4 e a execucao real do Lab 5 neste ambiente.
+- A tabela de offset e lag da secao 5 e a execucao real do Lab 6 neste ambiente.
+- As imagens `apache/kafka:3.9.0` e `provectuslabs/kafka-ui:v0.7.2` foram confirmadas no
+  registry com `docker manifest inspect` na mesma data.
+- O manifesto `lab.json` deste modulo registra nivel 3 para os sete laboratorios.
+
+---
+
+## Capitulo 11, Transformação com dbt
+
+Fonte: `modelagem/dbt/apostila.md`
+
+### Apostila, dbt: transformação com SQL versionado e testado
+
+> Trilha de Engenharia de Dados. Conduzida por Iuri Zambotto e Paulo Shindi.
+
+#### Sumário
+
+- [0. Como usar esta apostila](#0-como-usar-esta-apostila)
+- [1. Objetivo pedagógico](#1-objetivo-pedagógico)
+- [2. Contexto de negócio](#2-contexto-de-negócio)
+- [3. O que o dbt é, e o que ele não é](#3-o-que-o-dbt-é-e-o-que-ele-não-é)
+- [4. Model, ref e o DAG](#4-model-ref-e-o-dag)
+- [5. Materializações](#5-materializações)
+- [6. Camadas: sources, staging e marts](#6-camadas-sources-staging-e-marts)
+- [7. Seeds e snapshots](#7-seeds-e-snapshots)
+- [8. Jinja e macros](#8-jinja-e-macros)
+- [9. Testes: genéricos, singulares e unitários](#9-testes-genéricos-singulares-e-unitários)
+- [10. Contratos, documentação e linhagem](#10-contratos-documentação-e-linhagem)
+- [11. Laboratório](#11-laboratório)
+- [12. Exercícios e entregáveis](#12-exercícios-e-entregáveis)
+- [13. Mini-desafio com solução](#13-mini-desafio-com-solução)
+- [14. Rubrica de validação da aprendizagem](#14-rubrica-de-validação-da-aprendizagem)
+- [15. Erros comuns e como corrigir](#15-erros-comuns-e-como-corrigir)
+- [16. Plano de continuidade](#16-plano-de-continuidade)
+- [17. Glossário](#17-glossário)
+- [Referências](#referências)
+- [Fontes verificadas (2026-07-31)](#fontes-verificadas-2026-07-31)
+
+#### 0. Como usar esta apostila
+
+**Leitura linear.** Seções 1 a 10 constroem o modelo mental. A seção 11 é o
+laboratório, e ela só faz sentido depois da 6. As seções 12 a 14 são o que você
+entrega e como isso é avaliado na call.
+
+**Revisão pontual.** Se você já usa dbt e veio atrás de um assunto específico,
+vá direto: materialização na 5, teste na 9, contrato na 10. A seção 15 é a que
+mais economiza tempo de quem já está com o projeto na mão.
+
+**Pré-requisitos.** SQL com JOIN e agregação, no nível do módulo de SQL da
+trilha. Docker rodando na sua máquina, no nível do módulo de Docker. Você não
+precisa saber Python, e não precisa de conta em nuvem.
+
+**Versões desta apostila.** Tudo foi verificado com dbt Core 1.12.0 e
+dbt-duckdb 1.10.1, em 2026-07-31. Onde a versão importa para o comportamento, a
+apostila diz qual.
+
+#### 1. Objetivo pedagógico
+
+Ao terminar este módulo, você consegue:
+
+1. **Explicar** por que o dbt existe e qual problema do ELT ele resolve, sem
+   recorrer a "porque é a ferramenta padrão".
+2. **Escrever** um model em SQL que o dbt materializa como view, table ou
+   incremental, e justificar a escolha por custo e frequência.
+3. **Conectar** models pelo `ref()` e ler o DAG resultante, entendendo por que a
+   ordem de execução não é escrita por você.
+4. **Organizar** um projeto em sources, staging e marts, dizendo o que entra em
+   cada camada e o que nunca entra.
+5. **Testar** dados com teste genérico, teste singular e unit test, sabendo qual
+   dos três responde a qual pergunta.
+6. **Declarar** um contrato de model e prever o que quebra quando o contrato é
+   violado.
+7. **Diagnosticar** as falhas mais comuns de um projeto dbt a partir da
+   mensagem de erro, sem tentativa e erro.
+
+O verbo de cada item é o que será cobrado. "Explicar" é oral, na call.
+"Escrever" e "testar" são código que roda.
+
+#### 2. Contexto de negócio
+
+A startup fictícia de marketing e e-commerce da trilha continua a mesma. Ela
+veicula campanhas pagas em Google Ads, Meta Ads e TikTok Ads, e nos módulos
+anteriores você já construiu a parte de baixo do pipeline: o object storage
+guardando o dado bruto, o particionamento decidindo o custo da leitura, o
+Airflow orquestrando a ingestão e o Kafka trazendo o evento quase em tempo real.
+
+O que ainda não existe é a camada que responde à pergunta do negócio. Hoje o
+analista abre o dado cru e escreve, de novo, o mesmo JOIN entre campanha,
+veiculação e conversão. Cada um escreve um pouco diferente. Quando a diretoria
+pergunta qual canal tem o melhor custo por conversão, chegam dois números.
+
+A pergunta deste módulo é essa: **quanto custou cada conversão, por canal e por
+dia, com um número só, calculado num lugar só.**
+
+O que este módulo acrescenta ao projeto:
+
+| Camada | Já existia | Este módulo acrescenta |
+|---|---|---|
+| Ingestão | Airflow, Kafka, MinIO | nada |
+| Armazenamento | Parquet particionado | nada |
+| Transformação | query solta de analista | models versionados, testados e documentados |
+| Consumo | planilha | uma tabela fato com uma definição única |
+
+#### 3. O que o dbt é, e o que ele não é
+
+##### 3.1 O recorte do dbt no ELT
+
+**O que é**
+
+O dbt é a camada de transformação de um pipeline ELT. Ele não extrai dado e não
+carrega dado: ele pega o que já está no banco e produz tabelas e views novas a
+partir de SELECT.
+
+A sigla ajuda a lembrar do recorte. No ETL clássico, você transforma antes de
+carregar, geralmente numa máquina intermediária. No ELT, você carrega primeiro e
+transforma dentro do próprio banco, usando o poder de processamento dele. O dbt
+é o "T" do ELT, e só ele.
+
+**Como funciona na prática**
+
+Você escreve um arquivo `.sql` com um SELECT. O dbt envolve esse SELECT no DDL
+apropriado e submete ao banco. Você nunca escreve `CREATE TABLE`, `DROP TABLE`
+nem `CREATE SCHEMA`.
+
+**O equívoco comum**
+
+Muita gente descreve o dbt como "um orquestrador". Ele ordena a execução dos
+próprios models, o que é diferente de orquestrar um pipeline. Ele não agenda,
+não tenta de novo com backoff, não observa fonte externa e não dispara alerta
+por si. Quem faz isso é o Airflow, do módulo de orquestração. Em produção os
+dois convivem: o Airflow chama o dbt.
+
+**Como inspecionar**
+
+O comando `dbt compile` mostra o SQL que seria enviado ao banco, sem enviar.
+É a forma mais direta de ver que o dbt é um gerador de SQL, não um motor de
+processamento.
+
+##### 3.2 Analytics engineering, a prática por trás da ferramenta
+
+O dbt trouxe para o trabalho analítico quatro coisas que a engenharia de
+software já tinha: versionamento, teste automatizado, documentação junto do
+código e integração contínua.
+
+O ganho não é a ferramenta, é a mudança de quem responde pela definição. Antes
+do dbt, "receita líquida" morava dentro de uma query no BI, de um Excel e da
+cabeça de duas pessoas. Depois, mora num arquivo com histórico no Git.
+
+##### 3.3 dbt Core, dbt Cloud e o motor Fusion
+
+| Sabor | O que é | Quando faz sentido |
+|---|---|---|
+| dbt Core | CLI open source, roda local ou em qualquer orquestrador | Todo projeto começa aqui, e muitos ficam |
+| dbt Cloud | Plataforma gerenciada, com IDE, agendador, documentação e CI | Time sem engenheiro de plataforma disponível |
+| Fusion | Motor escrito em Rust, com entendimento nativo de SQL por dialeto | Hoje é o padrão da instalação nova do dbt |
+
+O Fusion merece atenção porque o cenário mudou rápido. A documentação oficial
+descreve o Fusion como a experiência padrão ao instalar o dbt, construída sobre
+o runtime Apache 2.0 do dbt Core 2.0. Ao mesmo tempo, a página de versões do
+dbt Core lista o 2.0 como alpha, e o 1.12, de 2026-07-16, como a versão em
+suporte ativo.
+
+As duas coisas convivem, e a leitura honesta é: o Fusion é o caminho declarado,
+e a linha 1.x é a que está em suporte ativo hoje. O laboratório deste módulo fixa
+o dbt Core 1.12.0 por esse motivo. Quando você for escolher para um projeto real,
+confira as duas páginas na data da decisão, porque essa fronteira anda.
+
+Nada do que você aprende aqui muda de nome com o Fusion. Model, `ref`, teste,
+materialização e contrato são o framework, não o motor.
+
+#### 4. Model, ref e o DAG
+
+##### 4.1 O model é um SELECT
+
+**O que é**
+
+Um model é um arquivo `.sql` dentro de `models/`, com um SELECT. O nome do
+arquivo vira o nome do objeto no banco.
+
+**Como funciona na prática**
+
+Este é um model real do laboratório, o `stg_campanhas`:
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-core 1.12.0, 2026-07-31 -->
+
+```sql
+select
+    cast(campanha_id as integer)             as campanha_id,
+    trim(nome)                               as nome_campanha,
+    lower(trim(canal))                       as canal,
+    cast(data_inicio as date)                as data_inicio,
+    cast(orcamento_diario as decimal(10, 2)) as orcamento_diario
+from {{ source('bruto', 'campanhas') }}
+```
+
+O passo a passo do que acontece quando você roda `dbt run`:
+
+1. O dbt lê todos os arquivos do projeto e monta o manifesto, que é o mapa de
+   tudo que existe e de quem depende de quem.
+2. Ele resolve o `{{ source(...) }}` para o nome real da tabela ou do arquivo.
+3. Ele envolve o SELECT no DDL da materialização escolhida.
+4. Ele submete o SQL ao banco e registra o resultado.
+
+**O equívoco comum**
+
+Que o nome do model precisa ser declarado em algum lugar. Não precisa. O nome do
+arquivo é o nome do model, e é ele que o `ref()` procura. Renomear o arquivo
+renomeia o objeto e quebra todo `ref()` que apontava para o nome antigo.
+
+**Como inspecionar**
+
+O SQL final fica em `target/compiled/`. Abrir esse arquivo é o hábito que mais
+acelera o aprendizado no começo, porque ele elimina a dúvida sobre o que o Jinja
+virou.
+
+##### 4.2 ref, a função que constrói o grafo
+
+**O que é**
+
+`ref('nome_do_model')` é como um model aponta para outro. Ela devolve o nome
+qualificado do objeto no banco e, ao mesmo tempo, declara uma dependência.
+
+**Como funciona na prática**
+
+```sql
+select * from {{ ref('stg_eventos_campanha') }}
+```
+
+O dbt lê isso e conclui duas coisas: onde buscar o dado e que este model precisa
+rodar depois do `stg_eventos_campanha`. É a mesma linha respondendo às duas
+perguntas, e é por isso que o grafo nunca desatualiza em relação ao código.
+
+**O equívoco comum**
+
+Escrever o nome da tabela direto, porque "funciona igual". Funciona na primeira
+execução e falha na segunda. Sem o `ref()`, o dbt não sabe da dependência, roda
+os dois models na ordem errada e você recebe um erro de tabela inexistente que
+não tem relação aparente com o que você escreveu.
+
+O mesmo vale para o `source()`: ele marca a fronteira entre o que o dbt produz e
+o que ele apenas consome.
+
+**Como inspecionar**
+
+`dbt list --select stg_campanhas+` lista o model e tudo que depende dele. O `+`
+à direita significa descendentes, e à esquerda, ancestrais.
+
+##### 4.3 O DAG não é escrito, é derivado
+
+**O que é**
+
+O grafo acíclico dirigido do projeto é o conjunto de todas as dependências
+declaradas por `ref()` e `source()`. Ninguém escreve a ordem de execução.
+
+**O equívoco comum**
+
+Achar que existe um arquivo de ordenação para editar quando a execução sai
+errada. Não existe, e isso é a característica central. Se a ordem está errada,
+a dependência está errada, e o conserto é no `ref()`.
+
+**Como inspecionar**
+
+No laboratório, o `dbt build` imprime a ordem que ele escolheu, numerada. Foi
+assim que o Lab 2 mostrou os models de staging rodando antes do mart, sem que
+nada no projeto declare isso.
+
+#### 5. Materializações
+
+##### 5.1 As cinco materializações
+
+**O que é**
+
+A materialização decide como o resultado do SELECT é persistido. A
+documentação oficial lista cinco embutidas: `table`, `view`, `incremental`,
+`ephemeral` e `materialized view`. O padrão, quando você não declara nada, é
+`view`.
+
+| Materialização | O que o dbt faz | Custo de armazenamento | Custo de leitura |
+|---|---|---|---|
+| `view` | Cria uma view, recriada a cada execução | nenhum | paga a transformação a cada consulta |
+| `table` | Recria a tabela inteira a cada execução | tamanho do resultado | baixo |
+| `incremental` | Processa só o que chegou desde a última vez | tamanho do resultado | baixo |
+| `ephemeral` | Não cria objeto, injeta o SQL como CTE | nenhum | herdado de quem a consome |
+| `materialized view` | Delega ao banco a atualização da view | depende do banco | baixo |
+
+**Como funciona na prática**
+
+Você declara no bloco `config` do próprio model, ou por pasta no
+`dbt_project.yml`. O laboratório usa a segunda forma, porque a decisão é da
+camada, não do arquivo:
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-core 1.12.0, 2026-07-31 -->
+
+```yaml
+models:
+  campanhas:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
+```
+
+**O equívoco comum**
+
+Marcar tudo como `table` porque "table é mais rápido". Rápido para ler, caro
+para construir. Uma camada de staging que só renomeia e converte tipo raramente
+justifica o custo de reescrever a tabela inteira a cada execução.
+
+A regra prática que funciona: staging em `view`, mart em `table`, e `incremental`
+apenas quando a tabela cheia começa a doer no tempo ou na fatura.
+
+##### 5.2 Incremental, o que muda de verdade
+
+**O que é**
+
+Um model incremental transforma todas as linhas na primeira execução e, nas
+seguintes, apenas as que você filtrar. O filtro é seu, não do dbt.
+
+**Como funciona na prática**
+
+Este é o `fct_custo_diario` do laboratório:
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt run --select fct_custo_diario, dbt-core 1.12.0, 2026-07-31 -->
+
+```sql
+{{ config(materialized="incremental", unique_key=["campanha_id", "data_evento"]) }}
+
+select
+    campanha_id,
+    data_evento,
+    sum(custo) as custo
+from {{ ref('stg_eventos_campanha') }}
+
+{% if is_incremental() %}
+    where data_evento > (
+        select coalesce(max(data_evento), date '1900-01-01') from {{ this }}
+    )
+{% endif %}
+
+group by campanha_id, data_evento
+```
+
+A macro `is_incremental()` devolve verdadeiro quando três condições valem ao
+mesmo tempo, segundo a documentação oficial: o model já existe como tabela no
+banco, a execução não passou `--full-refresh`, e o model está configurado como
+`incremental`.
+
+No Lab 4 você vê isso acontecer. Na primeira execução o bloco `{% if %}`
+desaparece do SQL compilado. Na segunda, ele aparece:
+
+<!-- verificacao: nivel 3, saida real de target/compiled na 2a execucao, 2026-07-31 -->
+
+```sql
+    where data_evento > (
+        select coalesce(max(data_evento), date '1900-01-01')
+        from "campanhas"."main"."fct_custo_diario"
+    )
+```
+
+**O equívoco comum**
+
+Achar que o `unique_key` faz o filtro. Ele não faz. O `unique_key` decide o que
+acontece com uma linha que já existe, atualizar em vez de duplicar. Quem decide
+o que sequer é lido é o `where` dentro do `is_incremental()`. Sem ele, o
+incremental lê tudo e só economiza escrita.
+
+**Como inspecionar**
+
+Rode o model duas vezes e compare `target/compiled/` entre as execuções. É a
+prova, não a explicação.
+
+#### 6. Camadas: sources, staging e marts
+
+##### 6.1 A fronteira do source
+
+**O que é**
+
+Um `source` declara uma tabela que o dbt lê mas não produz. É a fronteira do
+projeto.
+
+**Como funciona na prática**
+
+No laboratório, os arquivos brutos são CSV lidos diretamente pelo adapter:
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-duckdb 1.10.1, 2026-07-31 -->
+
+```yaml
+sources:
+  - name: bruto
+    meta:
+      external_location: "dados_brutos/{name}.csv"
+    tables:
+      - name: campanhas
+      - name: eventos_campanha
+      - name: conversoes
+```
+
+A chave `external_location` é específica do dbt-duckdb, e existe para que o
+adapter leia o arquivo no lugar de uma tabela do catálogo. Num data warehouse de
+nuvem você não usaria isso: as tabelas cruas já estariam carregadas, e o source
+apenas declararia schema e nome.
+
+**O equívoco comum**
+
+Usar `source()` para uma tabela que o próprio dbt cria. Isso desliga a
+dependência, e o resultado é o mesmo erro de ordem de execução da seção 4.2. A
+regra é curta: se o dbt cria, é `ref`. Se alguém entrega, é `source`.
+
+##### 6.2 Staging, uma fonte por model
+
+**O que é**
+
+A camada de staging tem um model por tabela de origem. Ela faz apenas o que é
+mecânico: renomear coluna, converter tipo, normalizar texto.
+
+**O equívoco comum**
+
+Colocar regra de negócio no staging. O sintoma aparece meses depois, quando dois
+marts precisam da mesma origem com regras diferentes e alguém decide duplicar o
+staging. A partir daí existem duas verdades.
+
+O teste mental: se a resposta a "por que essa linha está aqui" envolve uma
+decisão de negócio, a linha não é de staging.
+
+##### 6.3 Marts, o modelo que o negócio consome
+
+**O que é**
+
+O mart é o modelo final por domínio. É onde vive a regra de negócio, a junção
+entre fontes e o cálculo que a diretoria vai citar em reunião.
+
+**Como funciona na prática**
+
+O `fct_desempenho_campanha` junta veiculação, cadastro, conversão e o de para de
+canal, e produz o número que o módulo prometeu na seção 2. Rodado no Lab 3, ele
+responde:
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt show, saida real, 2026-07-31 -->
+
+```
+| grupo_de_canal |   custo | conversoes | custo_por_conversao |
+| -------------- | ------- | ---------- | ------------------- |
+| Social         | 4,747.9 |          7 |              678.27 |
+| Search         | 4,126.8 |          5 |              825.36 |
+```
+
+O dado é fictício, e o formato da resposta não é. É esse recorte que encerra a
+discussão de qual canal está mais caro.
+
+**O equívoco comum**
+
+Uma camada intermediária que ninguém consegue explicar. Modelos `int_` existem
+para reaproveitar junção usada por mais de um mart. Quando existe um `int_` com
+um consumidor só, ele geralmente é um mart mal nomeado.
+
+#### 7. Seeds e snapshots
+
+##### 7.1 Seed, o CSV que é código
+
+**O que é**
+
+Um seed é um arquivo CSV dentro de `seeds/`, carregado como tabela pelo comando
+`dbt seed`. Ele serve para dado pequeno, estável e versionado.
+
+**Como funciona na prática**
+
+O laboratório usa um de para de canal:
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt build, 2026-07-31 -->
+
+```csv
+canal,grupo_de_canal,e_pago
+google_ads,Search,true
+meta_ads,Social,true
+tiktok_ads,Social,true
+```
+
+**O equívoco comum**
+
+Usar seed para carregar dado de produção. Seed vive no Git, e Git não é lugar de
+volume nem de dado pessoal. O critério é: cabe numa revisão de pull request e
+muda por decisão humana? Então é seed.
+
+##### 7.2 Snapshot, o histórico que a origem não guarda
+
+**O que é**
+
+Um snapshot registra como uma linha era em cada momento. É a resposta ao problema
+de origem que sobrescreve o próprio dado, e implementa o padrão conhecido como
+dimensão de mudança lenta, ou SCD tipo 2.
+
+**Como funciona na prática**
+
+A partir do dbt Core 1.9 o snapshot é declarado em YAML:
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt snapshot, dbt-core 1.12.0, 2026-07-31 -->
+
+```yaml
+snapshots:
+  - name: snap_campanhas
+    relation: ref('stg_campanhas')
+    config:
+      unique_key: campanha_id
+      strategy: check
+      check_cols: ["orcamento_diario"]
+```
+
+Existem duas estratégias. A `timestamp` usa uma coluna de data de alteração da
+própria origem, e é a preferida quando ela existe. A `check` compara os valores
+das colunas listadas a cada execução, e é o que sobra quando a origem não traz
+data confiável.
+
+O dbt acrescenta colunas de controle, entre elas `dbt_scd_id`, `dbt_valid_from`,
+`dbt_valid_to` e `dbt_updated_at`. No Lab 5 você altera o orçamento de uma
+campanha e vê o resultado:
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt show, saida real, 2026-07-31 -->
+
+```
+| campanha_id | orcamento_diario |       dbt_valid_from |         dbt_valid_to |
+| ----------- | ---------------- | -------------------- | -------------------- |
+|           3 |              450 | 2026-07-31 16:22:... | 2026-07-31 16:23:... |
+|           3 |              500 | 2026-07-31 16:23:... |                      |
+```
+
+A linha antiga não foi apagada. Ela foi fechada, e a nova nasceu aberta. Quem
+consome a tabela hoje filtra `dbt_valid_to is null`; quem precisa saber qual era
+o orçamento em junho consulta pela data.
+
+**O equívoco comum**
+
+Rodar o snapshot uma vez por semana e esperar histórico diário. O snapshot só
+enxerga o que existe no instante em que roda. Mudança que aconteceu e voltou
+atrás entre duas execuções é invisível, para sempre. A frequência do snapshot é
+a resolução do seu histórico.
+
+#### 8. Jinja e macros
+
+##### 8.1 Jinja é a parte que roda antes do SQL
+
+**O que é**
+
+Jinja é a linguagem de template que o dbt usa. Ela é processada antes de o SQL
+chegar ao banco, e produz texto.
+
+Duas sintaxes bastam para começar: `{{ ... }}` insere um valor no texto, e
+`{% ... %}` executa lógica sem inserir nada.
+
+**O equívoco comum**
+
+Tratar Jinja como se fosse parte do SQL. O banco nunca vê Jinja. Isso explica
+por que um validador de SQL puro rejeita um model do dbt: para ele, `{{` não é
+sintaxe válida. Também explica por que erro de Jinja aparece na compilação, e
+erro de SQL aparece na execução.
+
+##### 8.2 Macro, a função que você escreve
+
+**O que é**
+
+Uma macro é um bloco reutilizável de Jinja e SQL, declarado em `macros/`.
+
+**Como funciona na prática**
+
+O laboratório tem uma macro pequena e útil, que evita divisão por zero:
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-core 1.12.0, 2026-07-31 -->
+
+```jinja
+{% macro razao_segura(numerador, denominador) %}
+    {{ numerador }} / nullif({{ denominador }}, 0)
+{% endmacro %}
+```
+
+E o mart a chama:
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt build, 2026-07-31 -->
+
+```sql
+cast(
+    {{ razao_segura('eventos.custo', 'conversoes_por_dia.conversoes') }}
+    as decimal(12, 2)
+) as custo_por_conversao
+```
+
+Os argumentos vão entre aspas porque a macro recebe o **texto** do nome da
+coluna, não o valor dela.
+
+**O equívoco comum**
+
+Criar macro cedo demais. Duas ocorrências de um trecho ainda são duas
+ocorrências. Na terceira, o padrão está claro e a macro nasce com o nome certo.
+Macro criada na primeira ocorrência costuma abstrair a coisa errada.
+
+**Como inspecionar**
+
+O `target/compiled/` mostra a macro já expandida. Se a expansão surpreende, o
+problema é a macro, não o model.
+
+#### 9. Testes: genéricos, singulares e unitários
+
+##### 9.1 Os três tipos, e a pergunta de cada um
+
+| Tipo | Pergunta que responde | Roda quando |
+|---|---|---|
+| Genérico | Este dado obedece a uma regra conhecida? | depois de o model existir |
+| Singular | Esta condição específica do meu negócio se sustenta? | depois de o model existir |
+| Unitário | Minha lógica está certa para uma entrada que eu escolhi? | antes de o model ser materializado |
+
+A diferença entre os dois primeiros e o terceiro é a que mais confunde. Teste
+genérico e singular olham o dado que existe. Unit test olha a lógica, com dado
+que você inventou de propósito.
+
+##### 9.2 Testes genéricos
+
+**O que é**
+
+O dbt traz quatro testes genéricos embutidos: `unique`, `not_null`,
+`accepted_values` e `relationships`.
+
+**Como funciona na prática**
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-core 1.12.0, 2026-07-31 -->
+
+```yaml
+models:
+  - name: stg_campanhas
+    columns:
+      - name: campanha_id
+        data_tests:
+          - unique
+          - not_null
+      - name: canal
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["google_ads", "meta_ads", "tiktok_ads"]
+```
+
+Duas mudanças de sintaxe importam aqui, e as duas já pegaram gente de surpresa:
+
+1. A chave é `data_tests`, não `tests`. O nome antigo ainda aparece em muito
+   material na internet.
+2. Os argumentos do teste vivem dentro de `arguments`, disponível a partir da
+   versão 1.10.5. Versões anteriores esperavam o argumento no nível de cima.
+
+**O equívoco comum**
+
+Achar que teste genérico é enfeite de projeto maduro. O Lab 6 mostra o
+contrário: uma linha com canal desconhecido no CSV bruto derruba o build antes
+que o número errado chegue ao mart.
+
+**Como inspecionar**
+
+Quando um teste falha, o dbt informa o caminho do SQL compilado. Abrir esse
+arquivo e rodar a query mostra exatamente quais linhas quebraram a regra.
+
+##### 9.3 Testes singulares
+
+**O que é**
+
+Um teste singular é um arquivo `.sql` em `tests/` com uma query que precisa
+devolver zero linhas. Cada linha devolvida é uma violação.
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt build, 2026-07-31 -->
+
+```sql
+select
+    campanha_id,
+    data_evento,
+    custo
+from {{ ref('fct_desempenho_campanha') }}
+where custo < 0
+```
+
+A inversão de lógica é a fonte de erro mais comum aqui. Você escreve a query que
+encontra o **problema**, não a que confirma que está tudo bem.
+
+##### 9.4 Unit tests
+
+**O que é**
+
+Unit tests chegaram no dbt Core 1.8. Eles validam a lógica do model com entradas
+fixas, antes de materializar qualquer coisa.
+
+**Como funciona na prática**
+
+Este unit test do laboratório protege uma decisão de negócio real: dia sem
+conversão precisa ter custo por conversão nulo, e não zero.
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-core 1.12.0, 2026-07-31 -->
+
+```yaml
+unit_tests:
+  - name: test_dia_sem_conversao_nao_vira_zero
+    model: fct_desempenho_campanha
+    given:
+      - input: ref('stg_eventos_campanha')
+        rows:
+          - {evento_id: 1, campanha_id: 1, data_evento: "2026-06-01", impressoes: 100, cliques: 10, custo: 50.00}
+      - input: ref('stg_conversoes')
+        rows: []
+    expect:
+      rows:
+        - {campanha_id: 1, data_evento: "2026-06-01", conversoes: 0, custo_por_conversao: null}
+```
+
+Zero diria que a conversão saiu de graça, que é o contrário do que aconteceu.
+Nenhum dado real do laboratório expõe essa diferença hoje, e é exatamente por
+isso que ela precisa de um teste com dado inventado.
+
+**O equívoco comum**
+
+Escrever unit test para o que o banco já garante. Testar que `sum()` soma gasta
+tempo e não protege nada. Unit test vale para lógica sua: janela, regex, cálculo
+condicional, tratamento de nulo.
+
+Uma restrição prática: todo `ref()` e `source()` que o model usa precisa
+aparecer em `given`. Não dá para fornecer metade das entradas.
+
+#### 10. Contratos, documentação e linhagem
+
+##### 10.1 Contrato de model
+
+**O que é**
+
+Um contrato declara a forma que a saída do model precisa ter: nome e tipo de
+cada coluna, e restrições opcionais. Com `enforced: true`, o model falha ao
+construir quando a saída não bate.
+
+**Como funciona na prática**
+
+<!-- verificacao: nivel 3, docker compose run --rm dbt build, dbt-core 1.12.0, 2026-07-31 -->
+
+```yaml
+models:
+  - name: fct_desempenho_campanha
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: campanha_id
+        data_type: integer
+        constraints:
+          - type: not_null
+      - name: custo
+        data_type: decimal(12,2)
+```
+
+O contrato faz duas coisas: uma checagem prévia comparando as colunas do SELECT
+com as declaradas, e a inclusão de tipos e restrições no DDL enviado ao banco.
+
+A segunda parte é visível. Depois do Lab 2, o DuckDB mostra a coluna como não
+anulável de verdade:
+
+<!-- verificacao: nivel 3, describe main.fct_desempenho_campanha, saida real, 2026-07-31 -->
+
+```
+│     column_name     │  column_type  │  null   │
+├─────────────────────┼───────────────┼─────────┤
+│ campanha_id         │ INTEGER       │ NO      │
+│ custo               │ DECIMAL(12,2) │ YES     │
+```
+
+A restrição não ficou só no YAML. Ela virou DDL.
+
+**O equívoco comum**
+
+Confundir contrato com teste. Teste roda depois e reprova o dado. Contrato roda
+junto da construção e reprova a **estrutura**. Uma coluna renomeada por engano
+passa em todos os testes de valor e é barrada pelo contrato.
+
+Vale saber o limite: contrato funciona em `table`, `view` com restrições
+limitadas, e `incremental`. Não funciona em `ephemeral` nem em `materialized
+view`.
+
+##### 10.2 Documentação e linhagem
+
+O `dbt docs generate` produz um site navegável com a descrição de cada model e
+coluna, mais o DAG clicável. A descrição vem do mesmo YAML onde vivem os testes,
+que é o ponto: documentação que mora longe do código envelhece sem que ninguém
+perceba.
+
+Este módulo não gera a documentação no laboratório. O comando existe e está na
+referência oficial citada no fim da apostila, e o exercício 4 pede que você o
+rode.
+
+#### 11. Laboratório
+
+O laboratório roda inteiro em Docker, com dbt Core 1.12.0, dbt-duckdb 1.10.1 e
+DuckDB 1.5.5. Nada sai da sua máquina, e não há credencial de nuvem envolvida.
+
+Os runbooks em `infrastructure/runbooks/` trazem o passo a passo completo. O
+resumo abaixo diz o que cada laboratório prova.
+
+##### Lab 0: Construir a imagem
+
+Pré-condição: Docker Engine 28 ou superior e Docker Compose v2.
+
+```bash
+cd engenharia_de_dados/modelagem/dbt/infrastructure
+export DBT_UID=$(id -u)
+export DBT_GID=$(id -g)
+docker compose build
+```
+
+Saída esperada: ` mentoria-dbt:1.12.0  Built`.
+
+As duas variáveis existem por um motivo prático: sem elas o container escreve
+`target/` e `logs/` como root no seu disco, e você precisa de `sudo` para
+limpar depois.
+
+##### Lab 1: Conferir a conexão
+
+```bash
+docker compose run --rm dbt debug
+```
+
+Saída esperada: `Connection test: [OK connection ok]` e `All checks passed!`.
+
+O `dbt debug` confere projeto, perfil, dependências e conexão. Quando ele
+reclama, o problema está antes do seu SQL.
+
+##### Lab 2: Rodar o projeto inteiro
+
+```bash
+docker compose run --rm dbt build
+```
+
+Saída esperada: `Done. PASS=22 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=22`.
+
+Os 22 nós são 1 seed, 3 models de staging, 1 mart em `table`, 1 model
+incremental, 1 snapshot, 14 data tests e 1 unit test. O `dbt build` executa
+model, teste, snapshot e seed na ordem do DAG.
+
+Repare na ordem impressa: o unit test roda **antes** do model que ele testa, e
+os testes de staging rodam antes de o mart existir. Ninguém escreveu essa ordem.
+
+##### Lab 3: Ler o resultado
+
+```bash
+docker compose run --rm dbt show --inline "select grupo_de_canal, sum(custo) as custo, sum(conversoes) as conversoes, round(sum(custo) / nullif(sum(conversoes), 0), 2) as custo_por_conversao from {{ ref('fct_desempenho_campanha') }} group by grupo_de_canal order by custo_por_conversao"
+```
+
+Saída esperada: `Social` com custo por conversão 678.27 e `Search` com 825.36.
+
+Esta é a pergunta da seção 2 respondida com um número só.
+
+##### Lab 4: Ver o incremental funcionar
+
+Pré-condição: Lab 2 concluído.
+
+```bash
+docker compose run --rm dbt run --select fct_custo_diario
+sed -n '1,20p' projeto_dbt/target/compiled/campanhas/models/marts/fct_custo_diario.sql
+```
+
+Saída esperada: o SQL compilado da segunda execução traz a cláusula `where
+data_evento > (...)`, que não existia na primeira.
+
+##### Lab 5: Ver o snapshot registrar uma mudança
+
+Pré-condição: Lab 2 concluído.
+
+```bash
+sed -i 's/^3,Remarketing Carrinho,meta_ads,2026-06-03,450.00$/3,Remarketing Carrinho,meta_ads,2026-06-03,500.00/' projeto_dbt/dados_brutos/campanhas.csv
+docker compose run --rm dbt snapshot
+docker compose run --rm dbt show --inline "select campanha_id, orcamento_diario, dbt_valid_from, dbt_valid_to from {{ ref('snap_campanhas') }} where campanha_id = 3 order by dbt_valid_from"
+sed -i 's/^3,Remarketing Carrinho,meta_ads,2026-06-03,500.00$/3,Remarketing Carrinho,meta_ads,2026-06-03,450.00/' projeto_dbt/dados_brutos/campanhas.csv
+```
+
+Saída esperada: duas linhas para a campanha 3, a de 450 com `dbt_valid_to`
+preenchido e a de 500 com `dbt_valid_to` vazio.
+
+O último comando devolve o CSV ao estado original.
+
+##### Lab 6: Quebrar um teste de propósito
+
+```bash
+printf '6,Teste Linkedin,linkedin_ads,2026-06-07,200.00\n' >> projeto_dbt/dados_brutos/campanhas.csv
+docker compose run --rm dbt build --select stg_campanhas
+sed -i '$d' projeto_dbt/dados_brutos/campanhas.csv
+```
+
+Saída esperada:
+
+```
+[ERROR]: in test accepted_values_stg_campanhas_canal__google_ads__meta_ads__tiktok_ads
+  Got 1 result, configured to fail if != 0
+Done. PASS=6 WARN=0 ERROR=1 SKIP=0 NO-OP=0 REUSED=0 TOTAL=7
+```
+
+Este é o laboratório mais importante da lista. Ver o pipeline parar por causa de
+um dado ruim é o que transforma teste de dados de burocracia em rede de
+proteção.
+
+##### Lab 7: Derrubar o ambiente
+
+```bash
+docker compose run --rm dbt clean
+docker compose down --rmi local
+```
+
+A ordem importa. O `clean` precisa da imagem ainda de pé.
+
+#### 12. Exercícios e entregáveis
+
+**Exercício 1: Escolha de materialização**
+
+Objetivo: justificar materialização por custo e frequência, não por hábito.
+
+Contexto: os quatro models do laboratório, mais dois hipotéticos, uma tabela de
+eventos com 400 milhões de linhas atualizada de hora em hora, e um relatório
+executivo consultado três vezes por mês.
+
+Entregável: tabela com uma linha por model, contendo materialização escolhida,
+justificativa em uma frase e o que aconteceria com a escolha oposta.
+
+**Exercício 2: Um teste que pega um erro real**
+
+Objetivo: escrever teste a partir de uma falha plausível, não de uma lista.
+
+Contexto: o `fct_desempenho_campanha` do laboratório.
+
+Entregável: um teste genérico novo e um teste singular novo, os dois no projeto,
+mais a demonstração de cada um falhando. Para demonstrar a falha, altere o CSV
+bruto, rode, capture a saída e desfaça a alteração, como no Lab 6.
+
+**Exercício 3: Camada intermediária**
+
+Objetivo: reconhecer quando um `int_` se justifica.
+
+Contexto: suponha um segundo mart, `fct_funil_por_canal`, que precisa da mesma
+junção entre eventos, campanhas e de para de canal.
+
+Entregável: proposta de refatoração indicando o que vira `int_`, o que fica no
+mart, e o critério que você usou. Se a sua conclusão for que não vale a pena
+criar o `int_`, defenda isso, que também é resposta.
+
+**Exercício 4: Documentação e linhagem**
+
+Objetivo: usar o material de documentação que o projeto já produz.
+
+Contexto: o projeto do laboratório, depois do Lab 2.
+
+Entregável: as descrições de coluna do `fct_desempenho_campanha` preenchidas no
+YAML, mais a saída do comando de geração de documentação e uma observação sobre
+o que o DAG mostrou que você não esperava.
+
+#### 13. Mini-desafio com solução
+
+**Enunciado**
+
+O time de marketing pede uma tabela nova: receita por grupo de canal e semana,
+com a variação percentual em relação à semana anterior. A tabela vai para um
+painel executivo consultado algumas vezes por mês.
+
+Requisitos:
+
+1. Um model novo, com materialização justificada.
+2. Reaproveitar o que já existe, sem reescrever junção.
+3. Pelo menos um teste que proteja a conta.
+4. Tratar o caso da primeira semana, que não tem semana anterior.
+
+**Dicas**
+
+- A junção entre eventos, campanhas e canal já existe em algum lugar do projeto.
+- Variação percentual é uma divisão, e o projeto já tem uma macro para divisão
+  que pode dar zero no denominador.
+- A primeira semana é o mesmo problema do dia sem conversão da seção 9.4.
+
+**Gabarito comentado**
+
+Materialização `table`. O consumo é raro, então o custo de leitura importa pouco;
+o volume é pequeno, então `incremental` só acrescenta complexidade. `view`
+também funcionaria, e a diferença é irrelevante nessa escala. O que não se
+justifica é `incremental`, e a razão é que a complexidade tem um custo de
+manutenção que o ganho não paga.
+
+Reaproveitamento: o model parte de `ref('fct_desempenho_campanha')`, que já
+resolveu a junção. Partir do staging de novo criaria a segunda definição de
+receita, que é o problema que o módulo inteiro existe para evitar.
+
+Esqueleto da lógica:
+
+```sql
+with semanal as (
+    select
+        grupo_de_canal,
+        date_trunc('week', data_evento) as semana,
+        sum(receita) as receita
+    from {{ ref('fct_desempenho_campanha') }}
+    group by grupo_de_canal, date_trunc('week', data_evento)
+)
+
+select
+    grupo_de_canal,
+    semana,
+    receita,
+    lag(receita) over (partition by grupo_de_canal order by semana) as receita_anterior,
+    {{ razao_segura(
+        'receita - lag(receita) over (partition by grupo_de_canal order by semana)',
+        'lag(receita) over (partition by grupo_de_canal order by semana)'
+    ) }} as variacao
+from semanal
+```
+
+<!-- verificacao: nivel 1, esqueleto didatico conferido contra a doc de macros e de window function, nao executado no laboratorio, 2026-07-31 -->
+
+Este bloco é esqueleto de resposta, não código do laboratório. Ele foi conferido
+contra a documentação de macro do dbt, e não foi executado. Rodá-lo é parte do
+desafio.
+
+Primeira semana: o `lag` devolve nulo, o `nullif` dentro da macro impede o erro
+de divisão, e o resultado é nulo. Nulo é a resposta certa aqui, porque não houve
+variação a medir. Preencher com zero afirmaria estabilidade que não existiu.
+
+Teste que protege a conta: um teste singular que devolve as linhas onde
+`variacao` é nula e `receita_anterior` não é. Se isso acontecer, a macro está
+errada, não o dado.
+
+**Interpretação**
+
+O que separa a boa resposta da resposta correta é o item 2. Quem parte do mart
+existente entendeu que o valor do dbt está na definição única. Quem reescreve a
+junção produziu SQL que funciona e um problema de governança.
+
+#### 14. Rubrica de validação da aprendizagem
+
+| Critério | Insuficiente | Suficiente | Excelente |
+|---|---|---|---|
+| Papel do dbt | Descreve como orquestrador ou como banco | Situa como camada de transformação do ELT | Explica a fronteira com o Airflow e por que os dois convivem |
+| ref e DAG | Escreve nome de tabela direto | Usa `ref` e `source` corretamente | Diagnostica erro de ordem de execução a partir da mensagem |
+| Materialização | Usa `table` em tudo | Escolhe por custo e frequência, e justifica | Sabe quando `incremental` não compensa e defende a escolha |
+| Camadas | Mistura regra de negócio no staging | Separa staging de mart com critério | Argumenta quando um `int_` se justifica e quando não |
+| Testes | Só usa `not_null` e `unique` | Usa os três tipos na situação certa | Escreve teste a partir de uma falha real observada |
+| Contrato | Confunde com teste de dado | Declara contrato e prevê o que ele barra | Explica o limite por materialização |
+| Diagnóstico | Tenta e erra até funcionar | Lê a mensagem e vai ao ponto | Usa `target/compiled/` como primeiro passo |
+
+A avaliação é feita na call, sobre o código que você entregou nos exercícios.
+
+#### 15. Erros comuns e como corrigir
+
+**O seed não encontra o próprio CSV**
+
+Sintoma: `IO Error: No files found that match the pattern`, com um caminho
+absoluto que não existe dentro do container.
+
+Causa: o `target/` foi escrito por uma execução fora do Docker. O manifesto
+guardou o caminho da máquina de fora, e o parse parcial reaproveitou.
+
+Correção: `dbt clean` e rodar de novo. Esse erro apareceu de verdade na
+construção deste laboratório, na primeira vez em que o projeto rodou no host e
+depois no container.
+
+**Model roda antes da dependência**
+
+Sintoma: erro de tabela ou view inexistente, num model que estava funcionando.
+
+Causa: nome de tabela escrito direto em vez de `ref()`. Sem o `ref()` não existe
+aresta no grafo, e sem aresta não existe ordem.
+
+Correção: trocar por `ref()`. Confirmar com `dbt list --select <model>+`.
+
+**O incremental não economiza nada**
+
+Sintoma: o tempo de execução não cai depois da primeira vez.
+
+Causa: falta o bloco `{% if is_incremental() %}` com o filtro. O `unique_key`
+sozinho evita duplicata, não evita leitura.
+
+Correção: acrescentar o filtro e comparar `target/compiled/` entre duas
+execuções.
+
+**O teste passa e o número está errado**
+
+Sintoma: todos os testes verdes, e o negócio aponta um valor que não fecha.
+
+Causa: os testes existentes cobrem forma, não regra. `not_null` e `unique` não
+sabem o que é uma conversão.
+
+Correção: escrever teste singular a partir da regra de negócio, e unit test para
+a lógica que o dado atual não exercita, como o caso do dia sem conversão.
+
+**`tests:` não funciona como o tutorial mostra**
+
+Sintoma: o teste declarado no YAML é ignorado, ou o parse reclama.
+
+Causa: material antigo. A chave é `data_tests`, e o argumento do teste vive
+dentro de `arguments` a partir da versão 1.10.5.
+
+Correção: conferir a sintaxe na documentação da sua versão, e a versão com
+`dbt --version`.
+
+**Arquivos root no seu diretório**
+
+Sintoma: `target/` e `logs/` que você não consegue apagar sem `sudo`.
+
+Causa: container rodando como root sobre um volume montado.
+
+Correção: exportar `DBT_UID` e `DBT_GID` antes do `docker compose`, como no
+Lab 0.
+
+**O `dbt debug` reclama de git**
+
+Sintoma: `Could not find command, ensure it is in the user's PATH: "git"`.
+
+Causa: imagem base enxuta sem git. O dbt usa git para baixar pacote.
+
+Correção: instalar git na imagem. O `Dockerfile` do laboratório já faz isso, e
+esse erro foi a razão.
+
+#### 16. Plano de continuidade
+
+**Antes da próxima call**
+
+Termine os exercícios 1 e 2. Eles são a base da conversa.
+
+**O que estudar em seguida, dentro da trilha**
+
+O próximo bloco é Nuvem e escala. O módulo de cloud para dados mostra onde esse
+projeto dbt rodaria de verdade, com o data warehouse no lugar do DuckDB. O de
+infraestrutura como código trata de como esse ambiente nasce sem ninguém clicar
+em console.
+
+O módulo de orquestração com Airflow, que você já viu, ganha um recorte novo
+depois deste: em produção o `dbt build` é uma tarefa chamada pelo agendador, e a
+integração entre os dois DAGs é um assunto por si.
+
+**O que aprofundar por conta**
+
+Pacotes do ecossistema, a começar por `dbt_utils`, que resolve problema comum
+com macro pronta. Depois, integração contínua: rodar apenas o que mudou num pull
+request é o ganho que mais aparece quando o projeto passa de algumas dezenas de
+models.
+
+**O que não perseguir agora**
+
+Semantic layer e exposures são úteis e não mudam nada até o projeto ter
+consumidor de verdade. Deixe para quando existir painel apontando para o mart.
+
+#### 17. Glossário
+
+| Termo | Significado |
+|---|---|
+| Adapter | Biblioteca que traduz o SQL do dbt para um banco específico |
+| Contrato | Declaração da forma da saída de um model, verificada na construção |
+| DAG | Grafo de dependências entre models, derivado dos `ref` e `source` |
+| Data test | Teste que avalia o dado depois de o model existir |
+| Ephemeral | Materialização que não cria objeto, injetada como CTE |
+| Incremental | Materialização que processa apenas o recorte filtrado por você |
+| Jinja | Linguagem de template processada antes de o SQL chegar ao banco |
+| Macro | Bloco reutilizável de Jinja e SQL, declarado em `macros/` |
+| Manifesto | Arquivo em `target/` com o mapa completo do projeto |
+| Mart | Camada final, por domínio de negócio |
+| Materialização | Estratégia de persistência do resultado de um model |
+| Model | Arquivo `.sql` com um SELECT que o dbt transforma em objeto no banco |
+| ref | Função que aponta para outro model e cria a dependência |
+| SCD tipo 2 | Padrão que guarda cada versão de uma linha ao longo do tempo |
+| Seed | CSV versionado, carregado como tabela por `dbt seed` |
+| Snapshot | Captura periódica que registra mudança de linha ao longo do tempo |
+| source | Função e declaração de tabela que o dbt lê mas não produz |
+| Staging | Camada de limpeza mecânica, um model por origem |
+| Unit test | Teste da lógica do model com entradas fixas, antes de materializar |
+
+#### Referências
+
+Documentação oficial do dbt, consultada em 2026-07-31:
+
+- Materializações: https://docs.getdbt.com/docs/build/materializations
+- Models incrementais: https://docs.getdbt.com/docs/build/incremental-models
+- Snapshots: https://docs.getdbt.com/docs/build/snapshots
+- Jinja e macros: https://docs.getdbt.com/docs/build/jinja-macros
+- Data tests: https://docs.getdbt.com/reference/resource-properties/data-tests
+- Unit tests: https://docs.getdbt.com/docs/build/unit-tests
+- Contratos de model: https://docs.getdbt.com/docs/collaborate/govern/model-contracts
+- Comandos: https://docs.getdbt.com/reference/dbt-commands
+- Comando build: https://docs.getdbt.com/reference/commands/build
+- Versões do dbt Core: https://docs.getdbt.com/docs/dbt-versions/core
+- Motor Fusion: https://docs.getdbt.com/docs/fusion/about-fusion
+- Adapter dbt-duckdb: https://github.com/duckdb/dbt-duckdb
+
+#### Fontes verificadas (2026-07-31)
+
+- O dbt tem cinco materializações embutidas, `table`, `view`, `incremental`,
+  `ephemeral` e `materialized view`, e o padrão é `view`.
+  https://docs.getdbt.com/docs/build/materializations
+- `is_incremental()` é verdadeiro quando o model já existe como tabela, a
+  execução não passou `--full-refresh` e o model é `incremental`.
+  https://docs.getdbt.com/docs/build/incremental-models
+- O snapshot é declarado em YAML com `relation`, `unique_key`, `strategy` e
+  `check_cols`, e o dbt acrescenta `dbt_scd_id`, `dbt_valid_from`,
+  `dbt_valid_to` e `dbt_updated_at`. https://docs.getdbt.com/docs/build/snapshots
+- Os quatro testes genéricos embutidos são `unique`, `not_null`,
+  `accepted_values` e `relationships`, declarados sob `data_tests`.
+  https://docs.getdbt.com/reference/resource-properties/data-tests
+- A chave `arguments` para argumento de teste genérico está disponível a partir
+  da versão 1.10.5, e versões anteriores usam o argumento no nível de cima.
+  https://docs.getdbt.com/reference/resource-properties/data-tests
+- Unit tests foram introduzidos no dbt Core 1.8, exigem todos os `ref` e
+  `source` do model em `given`, e não suportam `materialized view`.
+  https://docs.getdbt.com/docs/build/unit-tests
+- Contrato com `enforced: true` faz checagem prévia das colunas e inclui tipos e
+  restrições no DDL, e falha o build quando violado. Ele suporta `table`,
+  `view` com restrições limitadas e `incremental`, e não suporta `ephemeral`
+  nem `materialized view`.
+  https://docs.getdbt.com/docs/collaborate/govern/model-contracts
+- O `dbt build` executa models, tests, snapshots, seeds e funções definidas pelo
+  usuário, em ordem do DAG. https://docs.getdbt.com/reference/commands/build
+- O dbt Core 1.12 foi lançado em 2026-07-16 e está em suporte ativo; o 1.11 é de
+  2025-12-19 e o dbt Core 2.0 aparece como alpha.
+  https://docs.getdbt.com/docs/dbt-versions/core
+- O motor Fusion é escrito em Rust e é descrito como a experiência padrão da
+  instalação do dbt, sobre o runtime Apache 2.0 do dbt Core 2.0.
+  https://docs.getdbt.com/docs/fusion/about-fusion
+- O dbt-duckdb 1.10.1 foi publicado em 2026-02-17, exige Python 3.10 ou
+  superior, `dbt-core>=1.8.0` e `duckdb>=1.0.0`.
+  https://pypi.org/project/dbt-duckdb/
+- O dbt-duckdb lê arquivo externo como source pela chave `external_location`
+  declarada em `meta`. https://github.com/duckdb/dbt-duckdb
+- As saídas de laboratório citadas nesta apostila, incluindo
+  `PASS=22 WARN=0 ERROR=0`, o SQL compilado do incremental, as duas linhas do
+  snapshot e a coluna `campanha_id` como não anulável, foram capturadas em
+  execução real com dbt Core 1.12.0, dbt-duckdb 1.10.1 e DuckDB 1.5.5. O
+  registro completo, com comando e nível, está em `lab.json`.
+
+---
+
+## Capitulo 12, Orquestração com Apache Airflow
+
+Fonte: `orquestracao/airflow/apostila.md`
+
+### Apostila, Orquestracao com Apache Airflow
+
+> Trilha de Engenharia de Dados. Conduzida por Iuri Zambotto.
+
+> Conteudo extraido da apostila consolidada anterior. As secoes marcadas
+> como pendentes ainda nao foram escritas no padrao unico.
+
+#### Sumario
+
+- [2.1 Por que orquestrar pipelines de dados](#21-por-que-orquestrar-pipelines-de-dados)
+- [2.2 Arquitetura do Apache Airflow](#22-arquitetura-do-apache-airflow)
+- [2.3 DAGs, tasks e dependências na prática](#23-dags-tasks-e-dependências-na-prática)
+- [2.4 Idempotência e retries](#24-idempotência-e-retries)
+- [2.5 Exercícios e entregáveis](#25-exercícios-e-entregáveis)
+
+#### Como usar esta apostila
+
+Leitura linear para aprender, sumario para revisar um ponto isolado.
+
+
+> Pré-requisito: Capítulo 1, o Airflow é a ferramenta que garante a execução confiável e ordenada do pipeline descrito no ciclo de vida dos dados da Sessão 01.
+
+#### 2.1 Por que orquestrar pipelines de dados
+
+**O que é orquestração de dados e por que ela existe**
+
+Um pipeline de dados raramente é uma tarefa única. Em geral, ele envolve sequências como: aguardar dados chegarem → extrair → transformar → carregar → notificar. Executar essas etapas manualmente ou via `cron` simples gera problemas clássicos:
+
+- **Ordem errada de execução.** Um job de transformação pode rodar antes dos dados de origem estarem completos, gerando resultados inválidos ou zerados.
+- **Duplicidade de dados.** Se o job travar e você rodar manualmente, os registros podem ser inseridos duas vezes sem que você perceba de imediato.
+- **Perda de rastreio.** Com scripts avulsos no cron, é difícil saber o que rodou quando, o que falhou e por quê. O histórico vira uma caixa-preta.
+- **Falta de dependências explícitas.** O cron não sabe que o job B só pode rodar depois que o job A terminar. Você precisa codificar isso manualmente, o que não escala.
+
+**A diferença entre agendar e orquestrar**
+
+Agendar é dizer "rode às 03h". Orquestrar é dizer "rode às 03h, mas só se o dado de ontem estiver disponível, e depois que esse job terminar, dispare os dois jobs seguintes em paralelo, e se qualquer um falhar, tente mais três vezes com espera exponencial".
+
+Orquestração resolve um problema de coordenação. Ela dá visibilidade, controle e auditoria ao fluxo de dados.
+
+**Quando faz sentido usar um orquestrador**
+
+Não todo pipeline precisa de Airflow. Um script simples que roda uma vez por dia sem dependências pode viver no cron sem problema. O orquestrador vale a pena quando:
+
+- Há dependências entre tarefas ou entre pipelines distintos.
+- O pipeline precisa ser reexecutado (backfill) de forma segura.
+- É necessário monitorar SLA e receber alertas.
+- A equipe precisa inspecionar histórico de execuções.
+- Há múltiplos autores de pipelines que precisam de um padrão comum.
+
+**Referência do livro (Cap. 6, Data Flow Design Patterns)**
+
+O padrão *Local Sequencer* descreve exatamente esse problema: quando um job monolítico cresce a ponto de ser ininteligível, a solução é decompô-lo em tarefas sequenciais com dependências explícitas. A separação melhora a leitura do pipeline, facilita retries pontuais e define fronteiras de reprocessamento claras.
+
+#### 2.2 Arquitetura do Apache Airflow
+
+Airflow é um orquestrador de workflows declarado em Python. Para trabalhar bem com ele, é fundamental conhecer seus componentes e o papel de cada um.
+
+**Os componentes principais**
+
+- **Webserver (API Server, a partir do Airflow 3.x).** É a interface visual e REST API. Você acessa a UI no `localhost:8081`, visualiza DAGs, loga nas tasks, força execuções manuais e monitora o estado dos pipelines. No Airflow 3.1.x (versão usada nesta trilha), o componente foi renomeado para `airflow-apiserver`.
+
+- **Scheduler.** É o componente mais crítico. Ele varre os arquivos de DAG, determina quais tasks precisam ser enfileiradas com base nas dependências e no cronograma, e delega a execução para os workers. O scheduler não executa código de negócio diretamente, apenas toma decisões de agendamento.
+
+- **Worker.** Executa o código das tasks. No modelo com Celery Executor, múltiplos workers podem rodar em paralelo, cada um em contêineres separados. No LocalExecutor (típico de ambientes de desenvolvimento), as tasks rodam em processos locais do scheduler.
+
+- **Triggerer.** Componente introduzido no Airflow 2.2 para suportar *deferrable operators*. Ele gerencia tarefas que ficam esperando um evento externo (como uma API responder ou um arquivo aparecer) sem bloquear um worker. É útil em pipelines com muitos sensors.
+
+- **Metastore (banco de dados).** O estado de todas as execuções é persistido em um banco relacional, geralmente PostgreSQL em produção. Inclui o histórico de DAG runs, o estado de cada task (queued, running, success, failed, skipped), logs resumidos e configurações.
+
+- **Redis (ou outro broker de mensagens).** Usado no modelo com Celery Executor para enfileirar tasks entre o scheduler e os workers. O scheduler coloca a task na fila; o worker consome.
+
+- **Init.** No Docker Compose local, o serviço `airflow-init` é um job de bootstrap que cria o banco, aplica migrações e cria o usuário admin. Roda uma única vez antes dos demais serviços subirem.
+
+**Fluxo de uma execução**
+
+1. O scheduler lê os arquivos `.py` da pasta `dags/`.
+2. Identifica que uma DAG deve rodar (por schedule ou trigger manual).
+3. Cria um *DAG run* no metastore e enfileira as tasks elegíveis.
+4. O worker pega a task da fila, executa o código Python correspondente e reporta o resultado ao metastore.
+5. O scheduler usa o resultado para determinar se a próxima task na dependência pode ser enfileirada.
+6. A UI exibe o estado em tempo quase real.
+
+**Por que o scheduler não executa tasks**
+
+Se o scheduler executasse tasks, uma task lenta ou que consome muita memória poderia travar o agendamento de todas as outras DAGs. A separação de responsabilidades é deliberada e essencial para escalabilidade.
+
+#### 2.3 DAGs, tasks e dependências na prática
+
+**O que é uma DAG**
+
+DAG significa *Directed Acyclic Graph*. No Airflow, é o objeto principal que representa um pipeline. Ele define as tasks e a ordem em que devem rodar. "Acíclico" significa que não pode haver ciclos: task A → task B → task A nunca é permitido.
+
+Exemplo mínimo de DAG em Python:
+
+```python
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from datetime import datetime
+
+def extract():
+    print("Extraindo dados...")
+
+def transform():
+    print("Transformando...")
+
+def load():
+    print("Carregando...")
+
+with DAG(
+    dag_id="pipeline_marketing",
+    start_date=datetime(2026, 1, 1),
+    schedule="@daily",
+    catchup=False,
+) as dag:
+    t1 = PythonOperator(task_id="extract", python_callable=extract)
+    t2 = PythonOperator(task_id="transform", python_callable=transform)
+    t3 = PythonOperator(task_id="load", python_callable=load)
+
+    t1 >> t2 >> t3
+```
+
+O operador `>>` define a dependência: `t1` deve terminar com sucesso antes de `t2` iniciar.
+
+**Tipos de operadores mais comuns**
+
+- `PythonOperator`: executa uma função Python.
+- `BashOperator`: executa um comando shell.
+- `PostgresOperator`: executa uma query SQL num banco PostgreSQL.
+- `FileSensor` / `ExternalTaskSensor`: espera uma condição externa antes de avançar.
+- `BranchPythonOperator`: avalia uma condição e decide qual branch seguir.
+
+**catchup e start_date**
+
+O `start_date` define quando a DAG começa a existir no tempo. Se `catchup=True` (padrão), o Airflow vai tentar rodar todos os intervalos entre `start_date` e hoje que ainda não foram executados, isso é backfill automático. Em ambientes de produção com dados reais, isso pode ser perigoso se o pipeline não for idempotente. Em desenvolvimento, use `catchup=False`.
+
+**Retries e políticas de falha**
+
+Cada task pode ter configuração individual de retries:
+
+```python
+t2 = PythonOperator(
+    task_id="transform",
+    python_callable=transform,
+    retries=3,
+    retry_delay=timedelta(minutes=5),
+    retry_exponential_backoff=True,
+)
+```
+
+Isso diz: se a task `transform` falhar, tente mais 3 vezes, com espera de 5 minutos entre as tentativas (e com backoff exponencial, o tempo entre retries cresce a cada tentativa).
+
+**Exemplo da DAG de marketing**
+
+A DAG didática desta sessão tem a seguinte sequência:
+
+```
+extract_costs -> extract_events -> build_daily_metrics -> publish_report
+```
+
+Cada task simula uma etapa real de um pipeline de marketing:
+
+- `extract_costs`: lê custos por campanha.
+- `extract_events`: lê eventos de usuários.
+- `build_daily_metrics`: agrega as métricas diárias.
+- `publish_report`: disponibiliza o relatório para consumo.
+
+**Referência do livro (Cap. 6, Local Sequencer)**
+
+Este pipeline segue o padrão *Local Sequencer*: tarefas encadeadas em sequência, onde cada uma depende da anterior. A vantagem prática é que, se `build_daily_metrics` falhar, o Airflow reexecuta apenas essa task, sem precisar refazer a extração, que pode ser cara ou ter janelas de tempo limitadas.
+
+#### 2.4 Idempotência e retries
+
+**O que é idempotência em dados**
+
+Uma operação é idempotente quando pode ser executada múltiplas vezes e sempre produz o mesmo resultado. Em dados, isso significa que rodar o mesmo pipeline duas vezes não duplica registros, não gera inconsistências, e produz exatamente o mesmo dataset que uma única execução produziria.
+
+Idempotência não é opcional em engenharia de dados: retries acontecem, falhas parciais acontecem, e backfills são necessários. Se o pipeline não for idempotente, cada retry pode ser uma bomba-relógio.
+
+**Por que duplicatas são o pior cenário**
+
+Quando um pipeline duplica dados, há dois caminhos possíveis:
+
+1. Duplicatas identificáveis: você tem chave primária, pode deduplicar. Caro, mas possível.
+2. Duplicatas não identificáveis: sem chave única, não há como saber qual registro é a repetição. Esse é o cenário descrito como pesadelo no Cap. 4 do livro de referência.
+
+**Padrões de idempotência (Cap. 4 do livro)**
+
+O livro apresenta três famílias principais:
+
+- **Fast Metadata Cleaner**: em vez de `DELETE FROM tabela WHERE ...` (caro em tabelas grandes), usa `TRUNCATE TABLE` ou `DROP + CREATE` por partição. Opera na camada de metadados, que é ordens de magnitude mais rápida que varrer dados.
+
+- **Data Overwrite**: quando não há camada de metadados (ex: object store puro), usa `INSERT OVERWRITE` ou equivalente. No Spark, isso é `input_data.write.mode('overwrite')`.
+
+- **Merger (UPSERT)**: para datasets incrementais onde não se tem o conjunto completo, usa a operação `MERGE INTO ... USING ...`. Aplica insert se o registro é novo, update se já existe. Deletes precisam ser expressos como soft deletes (campo `is_deleted`).
+
+**Idempotência aplicada ao Airflow**
+
+Na DAG de marketing, a task `publish_report` é o ponto mais sensível. Se ela rodar duas vezes, o relatório pode ser duplicado para os consumidores. A solução é garantir que o relatório seja identificado por data de execução (chave idempotente) e que a escrita seja overwrite por partição de data, e não append.
+
+**Retries e idempotência andam juntos**
+
+Configurar `retries=3` em uma task não idempotente é aumentar a probabilidade de problema, não de solução. Antes de habilitar retries, certifique-se de que a task pode ser reexecutada sem efeitos colaterais.
+
+#### 2.5 Exercícios e entregáveis
+
+**Exercício 1, Matriz de decisão de orquestrador**
+
+Objetivo: entender quando usar orquestrador vs. cron vs. sem automação.
+
+Construa uma tabela com pelo menos 5 cenários (reais ou hipotéticos) e, para cada um, justifique a escolha de ferramenta:
+
+| Cenário | Dependências? | Retries? | Backfill? | Ferramenta recomendada | Justificativa |
+|---|---|---|---|---|---|
+| ... | ... | ... | ... | ... | ... |
+
+Entregável: tabela preenchida com 5 cenários + 2 parágrafos de justificativa técnica.
+
+---
+
+**Exercício 2, Blueprint de camadas bronze/silver/gold**
+
+Objetivo: definir o padrão de armazenamento do Projeto 1.
+
+Para cada camada, defina:
+- Formato de arquivo
+- Table format
+- Estratégia de particionamento
+- Política de retenção
+- Critério de promoção para a próxima camada
+
+Entregável: tabela de decisão por camada (os conceitos de table format e particionamento são detalhados nos capítulos 3 e 4).
+
+---
+
+**Exercício 3, Mini ADR de table format**
+
+Objetivo: documentar formalmente a decisão de table format.
+
+Um ADR (Architecture Decision Record) é um documento curto que registra uma decisão técnica e suas justificativas. Escreva um mini ADR com:
+
+- **Contexto:** qual é o problema que motivou a decisão.
+- **Decisão:** qual table format foi escolhido.
+- **Alternativas consideradas:** Hive, Iceberg e Delta, com prós e contras de cada um para o contexto do Projeto 1.
+- **Consequências:** o que fica mais fácil e o que fica mais difícil com a escolha feita.
+
+Entregável: documento de 1 a 2 páginas com as quatro seções preenchidas.
+
+---
+
+
+#### Mini-desafio com solucao
+
+Pendente. Escrever enunciado, dicas e gabarito comentado.
+
+#### Rubrica de validacao da aprendizagem
+
+Pendente. Definir criterio, suficiente e excelente.
+
+#### Erros comuns e como corrigir
+
+Pendente. Levantar sintoma, causa e correcao.
+
+#### Plano de continuidade
+
+Pendente. Apontar o proximo modulo da trilha.
+
+#### Glossario
+
+Pendente. Listar os termos novos deste modulo.
+
+#### Referencias
+
+Pendente. Documentacao oficial com data de consulta.
+
+#### Fontes verificadas
+
+Pendente. Nenhuma afirmacao deste modulo foi conferida contra doc oficial.

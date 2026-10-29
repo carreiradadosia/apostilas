@@ -13,8 +13,12 @@ Mantido por Iuri Zambotto e Paulo Shindi.
 
 ## Como usar
 
-Cada módulo tem `README.md` e `apostila.md` em `<trilha>/modulos/<módulo>/`. Os módulos com
-laboratório trazem `lab.json` e a pasta `infrastructure/`, com os passos para rodar na sua máquina.
+Cada trilha é organizada por conceito, e cada módulo vive em `<trilha>/<conceito>/<módulo>/`,
+com `README.md` e `apostila.md`. A pasta `fundamentos/` de um conceito tem a apostila conceitual;
+as outras são ferramentas ou subtemas usados como exemplo, como `orquestracao/airflow/`.
+
+Os módulos com laboratório trazem `lab.json` e a pasta `infrastructure/`, com os passos para rodar
+na sua máquina.
 
 A ordem dos módulos é sugestão, não obrigação de percurso: cada mentorado tem um roteiro próprio.
 
