@@ -2,22 +2,13 @@
   "modulo": "orquestracao/airflow",
   "verificado_em": "2026-10-29",
   "nivel_maximo_atingido": 2,
-  "observacao": "Laboratório unificado em lab/: os comandos de labs[] rodam de dentro de engenharia_de_dados/orquestracao/airflow/lab, depois do ./preparar.sh. labs[] registra o nível 3, executado em 2026-10-29 com a saída capturada em lab/saidas/. artefatos[] é o nível 2, estático: o docker-compose.yaml de lab/ só passa em docker compose config -q com o .env que o preparar.sh cria; o SQL de lab/dags/sql usa marcadores do psycopg, como %(dia)s, e foi conferido pelo sqlglot no dialeto postgres, porque no dialeto padrão o % vira operador e os cinco arquivos com marcador são reprovados. infrastructure/ é o laboratório anterior, mantido como legado; dele vêm, em versoes, a entrada redis e a chave ${AIRFLOW_IMAGE_NAME:-apache/airflow.",
+  "observacao": "Laboratório unificado em lab/: os comandos de labs[] rodam de dentro de engenharia_de_dados/orquestracao/airflow/lab, depois do ./preparar.sh. labs[] registra o nível 3, executado em 2026-10-29 com a saída capturada em lab/saidas/. artefatos[] é o nível 2, estático: o docker-compose.yaml de lab/ só passa em docker compose config -q com o .env que o preparar.sh cria; o SQL de lab/dags/sql usa marcadores do psycopg, como %(dia)s, e foi conferido pelo sqlglot no dialeto postgres, porque no dialeto padrão o % vira operador e os cinco arquivos com marcador são reprovados.",
   "versoes": {
-    "${AIRFLOW_IMAGE_NAME:-apache/airflow": "3.1.7}",
     "apache/airflow": "3.3.2-python3.13",
     "orquestracao-lab-runner": "local",
-    "postgres": "16.15-alpine",
-    "redis": "7.2-bookworm"
+    "postgres": "16.15-alpine"
   },
   "artefatos": [
-    {
-      "arquivo": "infrastructure/docker-compose.yml",
-      "nivel": 2,
-      "comando": "docker compose -f orquestracao/airflow/infrastructure/docker-compose.yml config -q",
-      "verificado_em": "2026-10-29",
-      "saida": "sem erro"
-    },
     {
       "arquivo": "lab/checagens/extrair_logs.py",
       "nivel": 2,

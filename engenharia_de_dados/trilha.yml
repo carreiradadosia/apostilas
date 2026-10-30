@@ -4,207 +4,34 @@
 # conceitual dele; as demais são ferramentas ou subtemas usados como exemplo.
 # A ordem abaixo é recomendação, não obrigação de percurso. Cada mentorado tem
 # um roteiro próprio, que seleciona e reordena módulos sem alterar este repositório.
+# Aqui fica só o que está terminado. Os demais conceitos estão em revisão, e a
+# versão anterior deles está no branch rascunhos.
 # Contrato completo em zambotto-mentoria-core/REPO.md.
 
 trilha: engenharia_de_dados
 titulo: "Engenharia de Dados"
-atualizado_em: 2026-10-29
+atualizado_em: 2026-10-30
 
 blocos:
-  - id: fundamentos
-    nome: Fundamentos
-    modulos:
-      - fundamentos/introducao
-      - fundamentos/sql
-      - fundamentos/fontes-e-contratos
-
-  - id: ambiente
-    nome: Ambiente
-    modulos:
-      - ambiente/docker
-      - ambiente/cloud
-      - ambiente/infraestrutura-como-codigo
-      - ambiente/kubernetes
-
-  - id: armazenamento
-    nome: Armazenamento
-    modulos:
-      - armazenamento/object-storage
-      - armazenamento/formatos-e-tabelas
-      - armazenamento/particionamento
-      - armazenamento/nosql
-
-  - id: ingestao
-    nome: Ingestão
-    modulos:
-      - ingestao/cdc
-      - ingestao/kafka
-      - ingestao/airbyte
-      - ingestao/web-scraping
-
-  - id: processamento
-    nome: Processamento
-    modulos:
-      - processamento/spark
-
-  - id: modelagem
-    nome: Modelagem e transformação
-    modulos:
-      - modelagem/dbt
-
   - id: orquestracao
     nome: Orquestração
     modulos:
       - orquestracao/fundamentos
       - orquestracao/airflow
 
-  - id: qualidade-e-governanca
-    nome: Qualidade e governança
-    modulos:
-      - qualidade-e-governanca/fundamentos
-
-  - id: projeto
-    nome: Projeto
-    modulos:
-      - projeto/projeto-de-engenharia
-
 modulos:
-  fundamentos/introducao:
-    titulo: "Introdução à engenharia de dados e diagnóstico"
-    tipo: conteudo
-    status: publicado
-    lab: false
-
-  fundamentos/sql:
-    titulo: "SQL com foco em JOINs"
-    tipo: conteudo
-    status: publicado
-    lab: false
-
-  fundamentos/fontes-e-contratos:
-    titulo: "Fontes, arquitetura e contratos de dados"
-    tipo: conteudo
-    status: publicado
-    lab: false
-
-  ambiente/docker:
-    titulo: "Docker e ambiente local"
-    tipo: conteudo
-    status: planejado
-    lab: true
-
-  ambiente/cloud:
-    titulo: "Cloud para dados"
-    tipo: conteudo
-    status: publicado
-    lab: false
-    relacionado:
-      - armazenamento/object-storage
-      - ambiente/infraestrutura-como-codigo
-
-  ambiente/infraestrutura-como-codigo:
-    titulo: "Infraestrutura como código"
-    tipo: conteudo
-    status: publicado
-    lab: true
-    relacionado:
-      - ambiente/cloud
-
-  ambiente/kubernetes:
-    titulo: "Kubernetes para engenharia de dados"
-    tipo: conteudo
-    status: publicado
-    lab: true
-
-  armazenamento/object-storage:
-    titulo: "Object storage e data lake"
-    tipo: conteudo
-    status: planejado
-    lab: true
-    relacionado:
-      - ambiente/cloud
-
-  armazenamento/formatos-e-tabelas:
-    titulo: "Formatos de arquivo e tipos de tabela"
-    tipo: conteudo
-    status: rascunho
-    lab: false
-
-  armazenamento/particionamento:
-    titulo: "Particionamento e performance de consultas"
-    tipo: conteudo
-    status: publicado
-    lab: true
-
-  armazenamento/nosql:
-    titulo: "NoSQL, quando o relacional não serve"
-    tipo: conteudo
-    status: planejado
-    lab: false
-
-  ingestao/cdc:
-    titulo: "Change Data Capture"
-    tipo: conteudo
-    status: rascunho
-    lab: true
-    relacionado:
-      - ingestao/kafka
-
-  ingestao/kafka:
-    titulo: "Streaming com Apache Kafka"
-    tipo: conteudo
-    status: publicado
-    lab: true
-    relacionado:
-      - ingestao/cdc
-
-  ingestao/airbyte:
-    titulo: "Ingestão com Airbyte"
-    tipo: conteudo
-    status: planejado
-    lab: true
-
-  ingestao/web-scraping:
-    titulo: "Web scraping"
-    tipo: conteudo
-    status: planejado
-    lab: true
-
-  processamento/spark:
-    titulo: "Processamento distribuído, Spark, PySpark e Databricks"
-    tipo: conteudo
-    status: planejado
-    lab: true
-
-  modelagem/dbt:
-    titulo: "Transformação com dbt"
-    tipo: conteudo
-    status: publicado
-    lab: true
-
   orquestracao/fundamentos:
     titulo: "Fundamentos de orquestração"
     tipo: conteudo
-    status: planejado
+    status: publicado
     lab: false
     relacionado:
       - orquestracao/airflow
 
   orquestracao/airflow:
-    titulo: "Orquestração com Apache Airflow"
-    tipo: conteudo
-    status: rascunho
+    titulo: "Laboratório de orquestração com Apache Airflow"
+    tipo: laboratorio
+    status: publicado
     lab: true
     relacionado:
       - orquestracao/fundamentos
-
-  qualidade-e-governanca/fundamentos:
-    titulo: "Governança, qualidade e LGPD"
-    tipo: conteudo
-    status: planejado
-    lab: false
-
-  projeto/projeto-de-engenharia:
-    titulo: "Projeto de engenharia"
-    tipo: capstone
-    status: planejado
