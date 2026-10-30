@@ -292,8 +292,8 @@ formas: 430,90. Mudou quem manda rodar. O tratamento não mudou.
 > `success`, numa execução disparada com data lógica 2026-10-21 09:00 UTC (dia processado
 > 20/10), em que a primeira tentativa do bronze tem uma queda simulada de propósito, pelo conf
 > `simular_queda`; silver e gold rodaram uma vez, com sucesso. Python aprovado no `ruff check`
-> (ruff 0.12.12). Trechos de `dags/sql/silver_pedidos.sql` e `dags/pipeline_loja.py`, da
-> pasta `degraus/` do laboratório (capítulo 13).
+> (ruff 0.12.12). Trechos de `dags/sql/silver_pedidos.sql` e `dags/pipeline_loja.py`, do
+> laboratório do capítulo 13.
 
 Por isso começar à mão é um caminho válido. O SQL que você valida hoje é o mesmo que o
 orquestrador vai rodar quando a entrega virar recorrente.
@@ -1844,8 +1844,8 @@ criar_dag("loja_ingenua", "bronze_pedidos_ingenuo.sql")
 criar_dag("loja_idempotente", "bronze_pedidos.sql")
 ```
 
-> Verificação: nível 3. É o arquivo `dags/pipeline_loja.py` da pasta `degraus/` do
-> laboratório, sem mudança, executado em 2026-10-29 em ambiente descartável, com a imagem `apache/airflow:3.3.2`
+> Verificação: nível 3. É o arquivo `dags/pipeline_loja.py` do laboratório do capítulo 13,
+> sem mudança, executado em 2026-10-29 em ambiente descartável, com a imagem `apache/airflow:3.3.2`
 > (mesmo digest de `apache/airflow:3.3.2-python3.13`, a tag que a apostila fixa) e PostgreSQL
 > 16.15 em contêiner. Comandos que provaram: `airflow dags list-import-errors`,
 > `airflow dags trigger` e `airflow tasks states-for-dag-run`, com as saídas da seção 12.4, e
@@ -1997,14 +1997,17 @@ Pela Dag, num reprocessamento dos mesmos três dias, rodado duas vezes (capítul
 
 Mesmos números. Só mudou quem rodou.
 
-> Verificação: nível 3. Saídas copiadas sem mudança da pasta `degraus/` do laboratório, executado em
+> Verificação: nível 3. Saídas copiadas sem mudança do laboratório, executado em
 > 2026-10-29 em ambiente descartável, com a imagem `apache/airflow:3.3.2` e PostgreSQL 16.15:
 > `airflow dags list-import-errors`, `airflow tasks states-for-dag-run` da execução
 > `retry_idempotente`, o script à mão e o backfill. Os comandos do Airflow rodaram com
 > `docker compose --profile airflow exec -T airflow-scheduler` na frente. Os 33 s vêm do
 > `airflow dags test` da Dag mínima, no mesmo dia e na mesma imagem. `python dags/pipeline_loja.py`
-> e `airflow dags test loja_idempotente` não foram rodados: ficam no nível 1, conferidos na
-> documentação.
+> e `airflow dags test loja_idempotente 2026-10-22` também estão no nível 3: rodaram em 2026-10-29
+> no laboratório do capítulo 13, com `docker compose exec airflow-scheduler` na frente e a imagem
+> `apache/airflow:3.3.2-python3.13`. O primeiro terminou sem saída e com código 0; o segundo marcou
+> a execução como `successful` em cerca de 15 s e gravou o dia 21 no registro de carga, com o
+> executor `airflow:manual`.
 
 **O equívoco comum**
 
@@ -2020,24 +2023,24 @@ Agora é com você. O capítulo 13 monta tudo isso na sua máquina.
 
 Dá. Este laboratório roda a rede de lojas fictícia numa máquina comum, com dados sintéticos. Você vai rodar o fluxo à mão e como Dag, ver o número da diretoria dobrar e voltar ao certo, receber um alerta e entender o atendimento da meia-noite.
 
-| Lab | O que você vê | Pasta |
+| Lab | O que você vê | Perfil do compose |
 |---|---|---|
-| 0 | A máquina pronta | principal |
-| 1 | Réplica só leitura e o fluxo à mão | `degraus/` |
-| 2 | A primeira Dag | principal |
-| 3 | Registro de carga com alerta | principal |
-| 4 | Duplicar e consertar | `degraus/` |
-| 5 | Meia-noite e datas | `degraus/` e `datas-e-fuso/` |
+| 0 | A máquina pronta | nenhum |
+| 1 | Réplica só leitura e o fluxo à mão | `manual` |
+| 2 | A primeira Dag | `airflow` |
+| 3 | Registro de carga com alerta | `airflow` |
+| 4 | Duplicar e consertar | `manual` e `airflow` |
+| 5 | Meia-noite e datas | `airflow` |
 
 **Onde está o código**
 
-O pacote do laboratório, com um compose leve só e perfis para o fluxo à mão, o Airflow e o registro de carga, está em preparação no módulo do Airflow desta trilha. Os comandos abaixo foram executados no laboratório usado para escrever esta apostila, em três pastas: a principal, `degraus/` e `datas-e-fuso/`. Quando o pacote sair, confira nele os nomes de pasta antes de copiar um comando.
+O laboratório fica no módulo do Airflow desta trilha, na pasta `engenharia_de_dados/orquestracao/airflow/lab/` do repositório clonado. É um compose leve só: o Postgres sobe sempre, o `runner` do fluxo à mão fica no perfil `manual`, e o Airflow, com as Dags da primeira execução, do registro de carga, da loja e das datas, no perfil `airflow`. Rode todos os comandos de dentro dessa pasta. O ambiente sobe uma vez e fica no ar do Lab 1 ao Lab 5; só o fim do Lab 5 derruba tudo. O `README.md` da pasta repete o passo a passo, e a pasta `saidas/` guarda a saída real de cada lab.
 
 **Como ler o nível de cada bloco**
 
 Todo bloco traz o nível de verificação. Nível 1: conferido na documentação oficial. Nível 2: passa no validador. Nível 3: executado em ambiente descartável, com a saída capturada.
 
-Salvo onde o bloco diz outra coisa, tudo foi executado em 2026-10-29, com Airflow 3.3.2 (Python 3.13.15) e PostgreSQL 16.15, em Linux nativo. A subida do ambiente principal e o Lab 3 rodaram também no Windows, com WSL2 e Docker Engine dentro do Ubuntu. Os arquivos de compose passaram em `docker compose config -q`, e as Dags das três pastas passaram no `ruff check` e no `ruff format --check` (ruff 0.12.12).
+Salvo onde o bloco diz outra coisa, tudo foi executado em 2026-10-29, com Airflow 3.3.2 (Python 3.13.15) e PostgreSQL 16.15, em Linux nativo, no laboratório da pasta acima. A subida do Airflow e o Lab 3 rodaram também no Windows, com WSL2 e Docker Engine dentro do Ubuntu, na versão do laboratório usada para escrever esta apostila, com a mesma imagem e as mesmas Dags. O compose passou em `docker compose config -q`, e as Dags passaram no `ruff check` e no `ruff format --check` (ruff 0.12.12).
 
 ### Lab 0: Preparar a máquina
 
@@ -2075,7 +2078,7 @@ Get-PSDrive C | Select-Object Free
 
 **Fim de linha LF.** Quem clona de dentro do Ubuntu recebe os `.sh` com LF. O risco é o Git for Windows com `core.autocrlf=true`, que troca LF por CRLF. Com CRLF, o `preparar.sh` falha com `bash\r` não encontrado e não cria o `.env`. Se o CRLF estiver no script de inicialização do Postgres, a primeira subida cai, e na seguinte o Postgres fica pronto sem a base `loja`, sem que o teste de saúde perceba. Um `.gitattributes` com `*.sh text eol=lf` força LF.
 
-**O dono dos arquivos.** Na pasta principal, rode:
+**O dono dos arquivos.** Na pasta do laboratório, rode:
 
 ```bash
 ./preparar.sh
@@ -2085,7 +2088,7 @@ Get-PSDrive C | Select-Object Free
 
 Saída esperada: `.env criado com AIRFLOW_UID=1000 e segredos aleatórios.` No WSL, o primeiro usuário recebe o UID 1000; no Linux, aparece o seu número. O guia do Compose do Airflow manda gravar `AIRFLOW_UID=$(id -u)`, senão os arquivos ficam com dono root. Tutorial antigo fixa 50000: o ambiente sobe, mas criar ou editar Dag dá `Permission denied`.
 
-**Imagem e porta.** A página da imagem diz que o Python padrão é o 3.12, mas a `apache/airflow:3.3.2` roda o 3.13.15. Fixe a tag explícita acrescentando `AIRFLOW_IMAGE_NAME=apache/airflow:3.3.2-python3.13` ao `.env`; no registro, as duas tags têm o mesmo digest. A interface abre sem login, por isso a porta fica presa ao `127.0.0.1`. Com Docker Engine no WSL, o encaminhamento de localhost, ligado por padrão, leva a porta ao Windows; abrir a interface no navegador do Windows não foi verificado.
+**Imagem e porta.** A página da imagem diz que o Python padrão é o 3.12, mas a `apache/airflow:3.3.2` roda o 3.13.15. O compose do laboratório já fixa a tag explícita `apache/airflow:3.3.2-python3.13`; no registro, as duas tags têm o mesmo digest. A interface abre sem login, por isso a porta fica presa ao `127.0.0.1`. Com Docker Engine no WSL, o encaminhamento de localhost, ligado por padrão, leva a porta ao Windows; abrir a interface no navegador do Windows não foi verificado.
 
 **Nota sobre SQL Server.** O laboratório usa só PostgreSQL. A imagem do Airflow 3.3.2 não traz o provider do SQL Server, e o `postgres_fdw` lê só servidores PostgreSQL. O caminho com SQL Server não foi testado aqui.
 
@@ -2097,12 +2100,11 @@ Copiar número do tutorial. O espaço se mede no disco físico, e o UID se lê n
 
 "Como leio o ERP sem travar a produção? E dá para rodar bronze, silver e gold sem ferramenta nova?"
 
-Pré-condição: Lab 0. Rode na pasta `degraus/`.
+Pré-condição: Lab 0. Rode na pasta do laboratório.
 
 A réplica aqui é simulada: o banco `erp` tem um papel que só lê, e o banco `dw` lê esse banco pelo `postgres_fdw`, a extensão que acessa dados de outro servidor PostgreSQL. Tudo em SQL.
 
 ```bash
-./preparar.sh
 docker compose up -d --wait postgres
 docker compose exec -T postgres psql -U dw -d dw \
   -c "SELECT count(*) AS pedidos_lidos_pela_replica FROM replica.pedidos;"
@@ -2147,10 +2149,10 @@ Achar que marcar a sessão como só leitura protege o banco. Neste laboratório,
 
 "Quando o Airflow entra, eu reescrevo tudo?"
 
-Não. Muda quem roda. Pré-condição: Lab 0. Rode na pasta principal.
+Não. Muda quem roda. Pré-condição: Lab 0. Rode na pasta do laboratório.
 
 ```bash
-docker compose up -d --wait --wait-timeout 300
+docker compose --profile airflow up -d --wait --wait-timeout 300
 docker compose exec airflow-scheduler airflow dags list-import-errors
 docker compose exec airflow-scheduler airflow dags unpause ola_orquestracao
 docker compose exec airflow-scheduler airflow dags trigger ola_orquestracao
@@ -2190,7 +2192,7 @@ def ola_orquestracao():
 
 *Trecho do arquivo executado acima (nível 3); imports de `airflow.sdk`.*
 
-O fluxo da loja como Dag está em `degraus/dags/pipeline_loja.py`. Ele lê os mesmos arquivos SQL do Lab 1, uma tarefa por camada: `bronze >> silver >> gold >> registrar_carga`. Você o roda no Lab 4.
+O fluxo da loja como Dag está em `dags/pipeline_loja.py`. Ele lê os mesmos arquivos SQL do Lab 1, uma tarefa por camada: `bronze >> silver >> gold >> registrar_carga`. Você o roda no Lab 4.
 
 **Se a Dag não aparecer.** O Airflow procura arquivos novos por varredura periódica, a cada 300 s no padrão. O laboratório reduz para 30 s.
 
@@ -2204,7 +2206,7 @@ Achar que o Airflow é o código de limpeza. Ele é quem roda o código.
 
 "Como sei que a carga falhou, se ela termina verde?"
 
-Registro de carga é a tabela com cada carga: quando rodou, se foi agendada ou manual, quantas linhas. Pré-condição: Lab 2, ambiente principal no ar.
+Registro de carga é a tabela com cada carga: quando rodou, se foi agendada ou manual, quantas linhas. Pré-condição: Lab 2, Airflow no ar.
 
 A Dag `registro_de_carga` trata os pedidos em SQL no banco, grava a contagem em `controle_carga` e compara com a carga anterior. Se repetir, a checagem falha e o alerta dispara. O código da checagem e do alerta é o da seção 9.4, no arquivo `dags/registro_de_carga.py` (nível 3).
 
@@ -2241,15 +2243,7 @@ Vamos ver o que aconteceu. A carga rodou sem erro, e a origem não mudou. Sem o 
 
 Contagem repetida é sinal, não prova. Ela pede que alguém olhe.
 
-Terminou? Derrube o ambiente principal:
-
-```bash
-docker compose down --volumes --remove-orphans
-```
-
-*Nível 3, 2026-10-29.*
-
-Se for recomeçar do zero, apague também a pasta `logs/`, para não misturar logs de rodadas diferentes.
+Terminou? Deixe o ambiente no ar: o Lab 4 usa o mesmo banco e o mesmo Airflow.
 
 **O equívoco comum**
 
@@ -2259,7 +2253,7 @@ Tratar verde como dado certo. Verde quer dizer que o código terminou, não que 
 
 "Se a carga rodar duas vezes, o número da diretoria dobra?"
 
-Depende de como ela grava. Idempotência é isto: rodar de novo dá o mesmo resultado de rodar uma vez. Pré-condição: Lab 1, Postgres de `degraus/` no ar. Rode na pasta `degraus/`.
+Depende de como ela grava. Idempotência é isto: rodar de novo dá o mesmo resultado de rodar uma vez. Pré-condição: Lab 1, com o dia 20 já carregado uma vez, e o ambiente no ar. Rode na pasta do laboratório.
 
 **À mão.** A versão ingênua só faz INSERT, sem chave. A idempotente apaga o dia e insere de novo, na mesma transação.
 
@@ -2273,7 +2267,7 @@ docker compose run --rm -T runner python scripts/pipeline.py --dia 2026-10-20
 
 Saída esperada: `bronze=8 silver=8 receita_paga=861.80`, depois `bronze=12 silver=12 receita_paga=1292.70`, e a versão idempotente volta a `bronze=4 silver=4 receita_paga=430.90`. Todas terminam com sucesso. A idempotente conserta o dia já duplicado.
 
-**Pela Dag, com nova tentativa.** Suba o Airflow ao lado do mesmo banco e despause a versão ingênua:
+**Pela Dag, com nova tentativa.** Confirme o Airflow ao lado do mesmo banco (se ele já subiu no Lab 2, o `up` não muda nada) e despause a versão ingênua:
 
 ```bash
 docker compose --profile airflow up -d --wait --wait-timeout 300
@@ -2282,7 +2276,7 @@ docker compose --profile airflow exec -T airflow-scheduler airflow dags unpause 
 docker compose --profile airflow exec -T airflow-scheduler airflow dags list-runs loja_ingenua
 ```
 
-*Nível 3: Airflow 3.3.2, Linux nativo, 2026-10-29. Interface em `http://127.0.0.1:8091`.*
+*Nível 3: Airflow 3.3.2, Linux nativo, 2026-10-29. Interface em `http://127.0.0.1:8080`.*
 
 Ao despausar, o Airflow cria a execução agendada mais recente. Ela carrega um dia em que a loja fictícia não tem pedido: zero linhas, e sucesso. Guarde isso: é uma falha silenciosa, a carga roda, não traz nada e termina verde. É o tipo de problema que o registro de carga do Lab 3 ajuda a pegar.
 
@@ -2342,7 +2336,7 @@ Achar que nova tentativa conserta. Ela repete o que o código faz. Se o código 
 
 "Por que aparece atendimento à meia-noite numa loja que fecha às 22h?"
 
-Porque o horário foi gravado em UTC, três horas à frente de Brasília. Pré-condição: Lab 1. Comece na pasta `degraus/`.
+Porque o horário foi gravado em UTC, três horas à frente de Brasília. Pré-condição: Lab 1 e o Airflow do Lab 2 no ar. Rode na pasta do laboratório.
 
 ```bash
 docker compose exec -T postgres psql -U dw -d dw \
@@ -2360,30 +2354,16 @@ Saída esperada, na linha do pedido 104:
 
 O pedido foi às 21h30 do dia 20, horário da loja. O `AT TIME ZONE 'America/Sao_Paulo'` da silver lê o horário sem fuso como sendo de Brasília e o converte. Numa sessão em UTC, ele vira 00h30 do dia 21. Agrupar pela data UTC jogaria a venda para o dia seguinte. Por isso a silver guarda `dia_local`, e o gold agrupa por ele.
 
-**Agora a janela do orquestrador.** Antes, derrube o ambiente de `degraus/`, ainda nessa pasta:
+**Agora a janela do orquestrador.** No mesmo Airflow, seis Dags iguais, em `dags/datas_por_timetable.py`, só mudam a agenda e leem visitas sintéticas gravadas em UTC. A loja fecha às 22h.
 
 ```bash
-docker compose --profile airflow --profile cron --profile manual down --volumes --remove-orphans
+docker compose exec airflow-scheduler airflow dags unpause datas_trigger_intervalo
+docker compose exec airflow-scheduler airflow dags unpause datas_dia_brasilia
+docker compose cp checagens/extrair_logs.py airflow-scheduler:/tmp/extrair_logs.py
+docker compose exec airflow-scheduler python /tmp/extrair_logs.py /opt/airflow/logs dag_id=datas_
 ```
 
-*Nível 3, 2026-10-29.*
-
-A imagem do `runner`, de cerca de 73 MB, fica; apague com `docker image rm orquestracao-degraus-runner:local` se quiser.
-
-Vá para `datas-e-fuso/`. Lá, seis Dags iguais só mudam a agenda e leem visitas sintéticas gravadas em UTC. A loja fecha às 22h.
-
-```bash
-docker run -d --rm --name orq-datas -p 127.0.0.1:18083:8080 \
-  -e AIRFLOW__CORE__LOAD_EXAMPLES=false -e AIRFLOW__CORE__PARALLELISM=4 \
-  -e AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS=true \
-  -v "$PWD/dags:/opt/airflow/dags:ro" apache/airflow:3.3.2-python3.13 standalone
-docker exec orq-datas airflow dags unpause datas_trigger_intervalo
-docker exec orq-datas airflow dags unpause datas_dia_brasilia
-docker cp checagens/extrair_logs.py orq-datas:/tmp/extrair_logs.py
-docker exec orq-datas python /tmp/extrair_logs.py /opt/airflow/logs scheduled__
-```
-
-*Nível 3: Airflow 3.3.2 em `standalone`, 2026-10-29. Na execução, a tag usada foi `apache/airflow:3.3.2`, que tem o mesmo digest de `3.3.2-python3.13`, e o contêiner tinha outro nome; fora o nome do contêiner, o comando é o executado.*
+*Nível 3: Airflow 3.3.2, LocalExecutor e PostgreSQL 16.15, Linux nativo, 2026-10-29, em duas rodadas, às 20h10 e às 20h23 de Brasília. Espere as duas execuções agendadas chegarem a `success`, alguns segundos depois de despausar, antes de ler os logs.*
 
 O que a execução agendada de 2026-10-29 leu:
 
@@ -2400,13 +2380,15 @@ A janela em UTC pega duas visitas da noite anterior e perde a das 21h30 do próp
 
 Achar que o dia da execução é o dia do dado. Confira a janela e o fuso antes de confiar no número.
 
-**Desmontar o último ambiente**
+**Desmontar o ambiente**
+
+Ainda na pasta do laboratório, derrube tudo:
 
 ```bash
-docker stop orq-datas
+docker compose --profile airflow --profile manual down --volumes --remove-orphans
 ```
 
-*Nível 3, 2026-10-29.* O contêiner subiu com `--rm` e some ao parar.
+*Nível 3, 2026-10-29.* Somem os contêineres, o volume do banco e a rede. A imagem do `runner`, de cerca de 73 MB, fica; apague com `docker image rm orquestracao-lab-runner:local` se quiser. Se for recomeçar do zero, apague também a pasta `logs/`, para não misturar logs de rodadas diferentes.
 
 Rodou tudo? O capítulo 14 pede que você faça sozinho.
 
@@ -2486,7 +2468,7 @@ Entregável: o que aconteceu, por que ficou verde e o que muda na Dag, em três 
 
 **Gabarito comentado**
 
-Falha silenciosa: o SQL rodou sem erro e não trouxe linha. Verde só quer dizer que o código não lançou exceção. No laboratório, um dia sem dado novo passou como sucesso no cron, com `bronze=0`, e no Airflow. Sem checagem explícita, nenhum dos dois sabe que zero é problema.
+Falha silenciosa: o SQL rodou sem erro e não trouxe linha. Verde só quer dizer que o código não lançou exceção. No teste feito para esta apostila (seção 9.1), um dia sem dado novo passou como sucesso no cron, com `bronze=0`, e no Airflow. Sem checagem explícita, nenhum dos dois sabe que zero é problema.
 
 Confira a origem antes de mexer na Dag. Na origem sintética, não houve venda no dia 28, e mesmo assim alguém precisava saber. A mudança está no Exercício 8.
 
@@ -2563,7 +2545,7 @@ Esta falha é real, não simulada. Tarefa que passa na segunda tentativa merece 
 
 "Como eu provo que a carga aguenta rodar de novo?"
 
-Os dois exercícios usam a pasta `degraus/` do laboratório do capítulo 13, a mesma dos Labs 1 e 4.
+Os dois exercícios usam o laboratório do capítulo 13, o mesmo dos Labs 1 e 4.
 
 **Exercício 7: Bronze idempotente, provado duas vezes**
 
@@ -2764,7 +2746,7 @@ No critério do degrau, começar à mão é caminho válido. O insuficiente não
 
 Para o gestor, o critério de idempotência pesa mais. É ele que responde "posso mandar rodar de novo sem medo?".
 
-Vamos ver como fica a evidência excelente de idempotência. Na pasta `degraus/` do laboratório, a versão idempotente da carga apaga o dia e insere de novo, na mesma transação. Rodada duas vezes à mão para o mesmo dia, ela gravou o mesmo resultado (trecho da saída):
+Vamos ver como fica a evidência excelente de idempotência. No laboratório do capítulo 13, a versão idempotente da carga apaga o dia e insere de novo, na mesma transação. Rodada duas vezes à mão para o mesmo dia, ela gravou o mesmo resultado (trecho da saída):
 
 ```text
 $ docker compose run --rm -T runner python scripts/pipeline.py --dia 2026-10-20 2>&1 | grep resultado
@@ -2805,7 +2787,9 @@ certo.
 > Verificação: mensagens e comandos no nível 3, observados em 2026-10-29 na imagem
 > `apache/airflow:3.3.2-python3.13`, mesmo digest de `3.3.2`, em Linux e em Windows 11 com WSL2 e
 > Docker Engine. A mensagem sai no idioma do sistema: `Permission denied` vira `Permissão negada`.
-> Ficam no nível 1, conferidos na documentação: o `.gitattributes`, o `start_date` com `pendulum`
+> O `.gitattributes` do repositório, com `*.sh text eol=lf`, está no nível 3 no Git 2.55.0 do Linux:
+> num clone com `core.autocrlf=true`, o `.sh` ficou com LF e um `.txt` virou CRLF; no Git for
+> Windows, não foi testado. Ficam no nível 1, conferidos na documentação: o `start_date` com `pendulum`
 > (página de fuso, nas fontes), o aviso de versão da Dag, o sensor, o `dag_run.logical_date`, o
 > callback e o health.
 
@@ -3328,6 +3312,13 @@ execuções simultâneas e a recusa do segundo backfill, vem destas saídas, nã
   7.0.2 e common-sql 2.1.1, e o `airflow tasks render` mostrou as duas consultas no dia anterior à
   data lógica, sem rodar contra o banco; o `docker-compose.yaml` do laboratório usa
   `postgresql+psycopg2`, conferido na leitura do arquivo.
+- Laboratório do capítulo 13, em `engenharia_de_dados/orquestracao/airflow/lab/`: Lab 0 a Lab 5
+  rodados em sequência num ambiente só, com a saída de cada lab em `saidas/`; Airflow saudável em
+  46 s com o Postgres já no ar e em 54 s e 82 s partindo do zero; `python dags/pipeline_loja.py`
+  sem saída e com código 0; `airflow dags test loja_idempotente 2026-10-22` em `success` em cerca
+  de 15 s; contêineres somando cerca de 0,9 GiB no fim do Lab 5; o `down` final sem contêiner nem
+  volume do projeto; `.gitattributes` com `*.sh text eol=lf` mantendo o `.sh` com LF num clone com
+  `core.autocrlf=true`, no Git 2.55.0.
 
 ## Reconferência na 3.4.0
 

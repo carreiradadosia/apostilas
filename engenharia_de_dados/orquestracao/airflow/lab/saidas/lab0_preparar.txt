@@ -1,0 +1,89 @@
+$ ./preparar.sh
+.env criado com AIRFLOW_UID=1001 e segredos aleatórios.
+[exit 0, 0,0 s, 2026-10-29T20:11:53-0300]
+
+$ grep -c . .env; cut -d= -f1 .env; stat -c "%a %U" .env
+7
+AIRFLOW_UID
+AIRFLOW_DB_PASSWORD
+LOJA_DB_PASSWORD
+ERP_DB_PASSWORD
+REPLICA_DB_PASSWORD
+DW_DB_PASSWORD
+JWT_SECRET
+600 <usuario>
+[exit 0, 0,0 s, 2026-10-29T20:11:53-0300]
+
+$ docker compose config -q && echo "config ok, sem perfil"
+config ok, sem perfil
+[exit 0, 0,1 s, 2026-10-29T20:11:53-0300]
+
+$ docker compose --profile manual --profile airflow config -q && echo "config ok, perfis manual e airflow"
+config ok, perfis manual e airflow
+[exit 0, 0,1 s, 2026-10-29T20:11:53-0300]
+
+$ docker compose config --services; echo ---; docker compose --profile manual --profile airflow config --services
+postgres
+---
+postgres
+runner
+airflow-init
+airflow-apiserver
+airflow-dag-processor
+airflow-scheduler
+[exit 0, 0,2 s, 2026-10-29T20:11:53-0300]
+
+$ docker compose --profile manual --profile airflow config --images
+apache/airflow:3.3.2-python3.13
+apache/airflow:3.3.2-python3.13
+apache/airflow:3.3.2-python3.13
+apache/airflow:3.3.2-python3.13
+postgres:16.15-alpine
+orquestracao-lab-runner:local
+[exit 0, 0,1 s, 2026-10-29T20:11:53-0300]
+
+# Nova execução, com a versão final do preparar.sh (as senhas geradas num laço), seguida de uma subida curta do Postgres.
+
+$ ./preparar.sh
+.env criado com AIRFLOW_UID=1001 e segredos aleatórios.
+[exit 0, 0,0 s, 2026-10-29T20:38:30-0300]
+
+$ cut -d= -f1 .env; stat -c "%a %U" .env
+AIRFLOW_UID
+AIRFLOW_DB_PASSWORD
+LOJA_DB_PASSWORD
+ERP_DB_PASSWORD
+REPLICA_DB_PASSWORD
+DW_DB_PASSWORD
+JWT_SECRET
+600 <usuario>
+[exit 0, 0,0 s, 2026-10-29T20:38:30-0300]
+
+$ docker compose --profile manual --profile airflow config -q && echo "config ok, perfis manual e airflow"
+config ok, perfis manual e airflow
+[exit 0, 0,1 s, 2026-10-29T20:38:30-0300]
+
+$ docker compose up -d --wait postgres 2>&1 | grep -c Healthy
+1
+[exit 0, 5,9 s, 2026-10-29T20:38:36-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "SELECT count(*) AS pedidos_lidos_pela_replica FROM replica.pedidos;"
+ pedidos_lidos_pela_replica 
+----------------------------
+                         10
+(1 row)
+
+[exit 0, 0,2 s, 2026-10-29T20:38:36-0300]
+
+$ docker compose exec -T postgres psql -U loja -d loja -c "SELECT count(*) FROM pedidos_origem;"
+ count 
+-------
+     5
+(1 row)
+
+[exit 0, 0,1 s, 2026-10-29T20:38:36-0300]
+
+$ docker compose --profile airflow --profile manual down --volumes --remove-orphans 2>&1 | grep -c Removed
+3
+[exit 0, 0,4 s, 2026-10-29T20:38:37-0300]
+

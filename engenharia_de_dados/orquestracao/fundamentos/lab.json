@@ -1,0 +1,64 @@
+{
+  "modulo": "orquestracao/fundamentos",
+  "verificado_em": "2026-10-29",
+  "nivel_maximo_atingido": 0,
+  "observacao": "Módulo conceitual, sem código próprio: artefatos[] fica vazio e o gerador registra nivel_maximo_atingido 0 por não haver artefato a verificar, não por falha. Os Labs 0 a 5 citados na apostila rodam no laboratório do módulo orquestracao/airflow, em engenharia_de_dados/orquestracao/airflow/lab; comandos, saídas esperadas e saídas capturadas ficam no lab.json daquele módulo, com o mesmo id. Cada entrada de labs[] aqui só aponta para lá, para não manter os comandos em dois lugares.",
+  "versoes": {},
+  "artefatos": [],
+  "labs": [
+    {
+      "id": "Lab 0",
+      "titulo": "Preparar a máquina",
+      "nivel": 3,
+      "verificado_em": "2026-10-29",
+      "laboratorio": "orquestracao/airflow",
+      "pasta": "orquestracao/airflow/lab",
+      "comandos_e_saidas": "labs[] de orquestracao/airflow/lab.json, id 'Lab 0'"
+    },
+    {
+      "id": "Lab 1",
+      "titulo": "Réplica só leitura e o fluxo à mão",
+      "nivel": 3,
+      "verificado_em": "2026-10-29",
+      "laboratorio": "orquestracao/airflow",
+      "pasta": "orquestracao/airflow/lab",
+      "comandos_e_saidas": "labs[] de orquestracao/airflow/lab.json, id 'Lab 1'"
+    },
+    {
+      "id": "Lab 2",
+      "titulo": "A primeira Dag",
+      "nivel": 3,
+      "verificado_em": "2026-10-29",
+      "laboratorio": "orquestracao/airflow",
+      "pasta": "orquestracao/airflow/lab",
+      "comandos_e_saidas": "labs[] de orquestracao/airflow/lab.json, id 'Lab 2'"
+    },
+    {
+      "id": "Lab 3",
+      "titulo": "Registro de carga e alerta",
+      "nivel": 3,
+      "verificado_em": "2026-10-29",
+      "laboratorio": "orquestracao/airflow",
+      "pasta": "orquestracao/airflow/lab",
+      "comandos_e_saidas": "labs[] de orquestracao/airflow/lab.json, id 'Lab 3'"
+    },
+    {
+      "id": "Lab 4",
+      "titulo": "Duplicar e consertar",
+      "nivel": 3,
+      "verificado_em": "2026-10-29",
+      "laboratorio": "orquestracao/airflow",
+      "pasta": "orquestracao/airflow/lab",
+      "comandos_e_saidas": "labs[] de orquestracao/airflow/lab.json, id 'Lab 4'"
+    },
+    {
+      "id": "Lab 5",
+      "titulo": "Meia-noite e datas",
+      "nivel": 3,
+      "verificado_em": "2026-10-29",
+      "laboratorio": "orquestracao/airflow",
+      "pasta": "orquestracao/airflow/lab",
+      "comandos_e_saidas": "labs[] de orquestracao/airflow/lab.json, id 'Lab 5'"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+$ ./preparar.sh
+.env já existe, nada a fazer.
+[exit 0, 0,0 s, 2026-10-29T20:31:27-0300]
+
+$ grep -n "image:" docker-compose.yaml; docker compose --profile manual --profile airflow config --images
+5:  image: apache/airflow:3.3.2-python3.13
+33:    image: postgres:16.15-alpine
+54:    image: orquestracao-lab-runner:local
+apache/airflow:3.3.2-python3.13
+apache/airflow:3.3.2-python3.13
+apache/airflow:3.3.2-python3.13
+postgres:16.15-alpine
+orquestracao-lab-runner:local
+apache/airflow:3.3.2-python3.13
+[exit 0, 0,1 s, 2026-10-29T20:31:27-0300]
+
+$ docker compose --profile airflow up -d --wait --wait-timeout 300 2>&1 | grep -c Healthy
+8
+[exit 0, 81,5 s, 2026-10-29T20:32:48-0300]
+
+$ docker compose exec airflow-scheduler airflow dags list-import-errors
+No data found
+[exit 0, 4,1 s, 2026-10-29T20:32:52-0300]
+
+$ docker compose run --rm -T runner python scripts/pipeline.py --dia 2026-10-20
+ Container orqlab-verif-postgres-1  Running
+2026-10-29T20:32:54-03:00 dia=2026-10-20 modo=idempotente executor=manual
+  bronze_pedidos.sql: ok
+  silver_pedidos.sql: ok
+  gold_vendas_por_dia.sql: ok
+  registrar_carga.sql: ok
+  resultado: bronze=4 silver=4 receita_paga=430.90
+[exit 0, 1,6 s, 2026-10-29T20:32:54-0300]
+
+$ docker compose exec airflow-scheduler airflow dags unpause ola_orquestracao && docker compose exec airflow-scheduler airflow dags trigger ola_orquestracao -o plain >/dev/null && sleep 15 && docker compose exec airflow-scheduler airflow dags list-runs ola_orquestracao -o plain
+dag_id           | is_paused
+=================+==========
+ola_orquestracao | True     
+                            
+dag_id            run_id                                    state    run_after                         logical_date    start_date                        end_date
+ola_orquestracao  manual__2026-10-29T23:33:01.608321+00:00  success  2026-10-29T23:33:01.608321+00:00                  2026-10-29T23:33:02.189718+00:00  2026-10-29T23:33:08.569947+00:00
+[exit 0, 26,4 s, 2026-10-29T20:33:21-0300]
+
+$ docker compose exec -T postgres psql -U loja -d loja -c "SELECT count(*) FROM pedidos_origem;"
+ count 
+-------
+     5
+(1 row)
+
+[exit 0, 0,1 s, 2026-10-29T20:33:21-0300]
+
+$ docker compose --profile airflow --profile manual down --volumes --remove-orphans 2>&1 | grep -c Removed
+7
+[exit 0, 3,8 s, 2026-10-29T20:33:25-0300]
+

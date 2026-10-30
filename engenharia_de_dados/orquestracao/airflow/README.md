@@ -18,9 +18,13 @@ raiz da trilha. Seu roteiro pode cursar este modulo em outra posicao.
 ## O que tem aqui
 
 - `apostila.md`, o material de estudo do modulo
-- `infrastructure/`, o ambiente do laboratorio em Docker Compose
-- `infrastructure/runbooks/`, o passo a passo para subir e validar
-- `lab.json`, o manifesto de verificacao, nivel 2, em 2026-07-30
+- `lab/`, o laboratório dos Labs 0 a 5 da apostila de Fundamentos de orquestração: um compose
+  leve só, com Airflow 3.3.2, LocalExecutor e Postgres 16.15, o passo a passo no `lab/README.md`
+  e a saída real de cada lab em `lab/saidas/`
+- `lab.json`, o manifesto de verificação: artefatos no nível 2 e Labs 0 a 5 no nível 3, em
+  2026-10-29
+- `infrastructure/`, o ambiente anterior em Docker Compose, com Airflow 3.1.7 e Celery, mantido
+  como legado até decisão; os runbooks dele ficam em `infrastructure/runbooks/`
 
 ## O que ainda nao existe
 
@@ -32,8 +36,9 @@ Diretorios opcionais ausentes neste modulo, declarados aqui de proposito:
 
 ## Como rodar
 
-Siga os runbooks em ordem, a partir da raiz do repositorio clonado:
+A partir da raiz do repositório clonado:
 
 ```bash
-cat engenharia_de_dados/orquestracao/airflow/infrastructure/runbooks/00_pre_requisitos.md
+cd engenharia_de_dados/orquestracao/airflow/lab
+cat README.md
 ```

@@ -1,0 +1,19 @@
+$ git --version
+git version 2.55.0
+[exit 0, 0,0 s, 2026-10-29T20:29:55-0300]
+
+$ cat origem/.gitattributes; file origem/preparar.sh origem/nota.txt
+*.sh text eol=lf
+origem/preparar.sh: Bourne-Again shell script, Unicode text, UTF-8 text executable
+origem/nota.txt:    ASCII text
+[exit 0, 0,0 s, 2026-10-29T20:29:55-0300]
+
+$ git -C origem init -q && git -C origem add . && git -C origem -c user.name=lab -c user.email=lab@example.invalid commit -qm teste && echo commit ok
+commit ok
+[exit 0, 0,0 s, 2026-10-29T20:29:55-0300]
+
+$ git -c core.autocrlf=true clone -q origem copia && file copia/preparar.sh copia/nota.txt
+copia/preparar.sh: Bourne-Again shell script, Unicode text, UTF-8 text executable
+copia/nota.txt:    ASCII text, with CRLF line terminators
+[exit 0, 0,1 s, 2026-10-29T20:29:55-0300]
+

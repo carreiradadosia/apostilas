@@ -1,0 +1,74 @@
+$ docker compose exec airflow-scheduler airflow dags unpause registro_de_carga
+dag_id            | is_paused
+==================+==========
+registro_de_carga | True     
+                             
+[exit 0, 3,2 s, 2026-10-29T20:14:23-0300]
+
+$ docker compose exec airflow-scheduler airflow dags list-runs registro_de_carga
+dag_id            | run_id                               | state   | run_after                 | logical_date              | start_date                       | end_date                        
+==================+======================================+=========+===========================+===========================+==================================+=================================
+registro_de_carga | scheduled__2026-10-29T16:00:00+00:00 | success | 2026-10-29T16:00:00+00:00 | 2026-10-29T16:00:00+00:00 | 2026-10-29T23:14:23.119258+00:00 | 2026-10-29T23:14:28.985605+00:00
+                                                                                                                                                                                                
+[exit 0, 2,9 s, 2026-10-29T20:14:56-0300]
+
+$ docker compose exec postgres psql -U loja -d loja -c \
+  "INSERT INTO pedidos_origem (id, cliente, valor, status, criado_em) VALUES
+   (6, 'Cliente E', 99.90, 'pago', '2026-10-29 10:00:00'),
+   (7, 'Cliente F', 15.00, NULL, '2026-10-29 11:30:00');"
+INSERT 0 2
+[exit 0, 0,1 s, 2026-10-29T20:15:02-0300]
+
+$ docker compose exec airflow-scheduler airflow dags trigger registro_de_carga
+2026-10-29T23:15:05.243025Z [info     ] creating dag run               [airflow.serialization.definitions.dag] loc=dag.py:615 logical_date=None partition_key=None run_after=datetime.datetime(2026, 10, 29, 23, 15, 5, 223540, tzinfo=Timezone('UTC')) run_id=manual__2026-10-29T23:15:05.223540+00:00
+     |                   |                         |                     |                   |          | last_scheduling_decisio |              |          |            |        |                     
+conf | dag_id            | dag_run_id              | data_interval_start | data_interval_end | end_date | n                       | logical_date | run_type | start_date | state  | triggering_user_name
+=====+===================+=========================+=====================+===================+==========+=========================+==============+==========+============+========+=====================
+{}   | registro_de_carga | manual__2026-10-29T23:1 | None                | None              | None     | None                    | None         | manual   | None       | queued | default             
+     |                   | 5:05.223540+00:00       |                     |                   |          |                         |              |          |            |        |                     
+                                                                                                                                                                                                        
+[exit 0, 3,1 s, 2026-10-29T20:15:05-0300]
+
+$ docker compose exec airflow-scheduler airflow dags trigger registro_de_carga
+2026-10-29T23:15:08.581836Z [info     ] creating dag run               [airflow.serialization.definitions.dag] loc=dag.py:615 logical_date=None partition_key=None run_after=datetime.datetime(2026, 10, 29, 23, 15, 8, 568165, tzinfo=Timezone('UTC')) run_id=manual__2026-10-29T23:15:08.568165+00:00
+     |                   |                         |                     |                   |          | last_scheduling_decisio |              |          |            |        |                     
+conf | dag_id            | dag_run_id              | data_interval_start | data_interval_end | end_date | n                       | logical_date | run_type | start_date | state  | triggering_user_name
+=====+===================+=========================+=====================+===================+==========+=========================+==============+==========+============+========+=====================
+{}   | registro_de_carga | manual__2026-10-29T23:1 | None                | None              | None     | None                    | None         | manual   | None       | queued | default             
+     |                   | 5:08.568165+00:00       |                     |                   |          |                         |              |          |            |        |                     
+                                                                                                                                                                                                        
+[exit 0, 3,4 s, 2026-10-29T20:15:09-0300]
+
+$ docker compose exec airflow-scheduler airflow dags list-runs registro_de_carga
+dag_id            | run_id                                | state   | run_after                        | logical_date              | start_date                       | end_date                        
+==================+=======================================+=========+==================================+===========================+==================================+=================================
+registro_de_carga | manual__2026-10-29T23:15:08.568165+00 | failed  | 2026-10-29T23:15:08.568165+00:00 |                           | 2026-10-29T23:15:12.384240+00:00 | 2026-10-29T23:15:18.145880+00:00
+                  | :00                                   |         |                                  |                           |                                  |                                 
+registro_de_carga | manual__2026-10-29T23:15:05.223540+00 | success | 2026-10-29T23:15:05.223540+00:00 |                           | 2026-10-29T23:15:06.310611+00:00 | 2026-10-29T23:15:11.340671+00:00
+                  | :00                                   |         |                                  |                           |                                  |                                 
+registro_de_carga | scheduled__2026-10-29T16:00:00+00:00  | success | 2026-10-29T16:00:00+00:00        | 2026-10-29T16:00:00+00:00 | 2026-10-29T23:14:23.119258+00:00 | 2026-10-29T23:14:28.985605+00:00
+                                                                                                                                                                                                        
+[exit 0, 2,8 s, 2026-10-29T20:15:57-0300]
+
+$ docker compose exec postgres psql -U loja -d loja -c \
+  "SELECT id, run_id, tipo_execucao, linhas FROM controle_carga ORDER BY id;"
+ id |                  run_id                  | tipo_execucao | linhas 
+----+------------------------------------------+---------------+--------
+  1 | scheduled__2026-10-29T16:00:00+00:00     | scheduled     |      5
+  2 | manual__2026-10-29T23:15:05.223540+00:00 | manual        |      7
+  3 | manual__2026-10-29T23:15:08.568165+00:00 | manual        |      7
+(3 rows)
+
+[exit 0, 0,1 s, 2026-10-29T20:16:03-0300]
+
+$ grep -ho 'ValueError[^"]*\|ALERTA[^"]*' logs/dag_id=registro_de_carga/run_id=manual__2026-10-29T23:15:08.568165+00:00/task_id=checar_repeticao/attempt=1.log | sort -u
+ALERTA: a task checar_repeticao falhou na execução manual__2026-10-29T23:15:08.568165+00:00
+ValueError
+[exit 0, 0,0 s, 2026-10-29T20:16:03-0300]
+
+$ grep -o '"exc_type":"[^"]*"\|"exc_value":"[^"]*"\|ALERTA[^"]*' 'logs/dag_id=registro_de_carga/run_id=manual__2026-10-29T23:15:08.568165+00:00/task_id=checar_repeticao/attempt=1.log' | sort -u
+ALERTA: a task checar_repeticao falhou na execução manual__2026-10-29T23:15:08.568165+00:00
+"exc_type":"ValueError"
+"exc_value":"A contagem repetiu a carga anterior (7 linhas). A origem pode não ter sido atualizada."
+[exit 0, 0,0 s, 2026-10-29T20:16:14-0300]
+

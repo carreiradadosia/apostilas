@@ -1,0 +1,322 @@
+$ docker compose run --rm -T runner python scripts/pipeline.py --dia 2026-10-20 --modo ingenuo
+ Container orqlab-verif-postgres-1  Running
+2026-10-29T20:16:23-03:00 dia=2026-10-20 modo=ingenuo executor=manual
+  bronze_pedidos_ingenuo.sql: ok
+  silver_pedidos.sql: ok
+  gold_vendas_por_dia.sql: ok
+  registrar_carga.sql: ok
+  resultado: bronze=8 silver=8 receita_paga=861.80
+[exit 0, 1,3 s, 2026-10-29T20:16:23-0300]
+
+$ docker compose run --rm -T runner python scripts/pipeline.py --dia 2026-10-20 --modo ingenuo
+ Container orqlab-verif-postgres-1  Running
+2026-10-29T20:16:24-03:00 dia=2026-10-20 modo=ingenuo executor=manual
+  bronze_pedidos_ingenuo.sql: ok
+  silver_pedidos.sql: ok
+  gold_vendas_por_dia.sql: ok
+  registrar_carga.sql: ok
+  resultado: bronze=12 silver=12 receita_paga=1292.70
+[exit 0, 1,2 s, 2026-10-29T20:16:24-0300]
+
+$ docker compose run --rm -T runner python scripts/pipeline.py --dia 2026-10-20
+ Container orqlab-verif-postgres-1  Running
+2026-10-29T20:16:26-03:00 dia=2026-10-20 modo=idempotente executor=manual
+  bronze_pedidos.sql: ok
+  silver_pedidos.sql: ok
+  gold_vendas_por_dia.sql: ok
+  registrar_carga.sql: ok
+  resultado: bronze=4 silver=4 receita_paga=430.90
+[exit 0, 1,2 s, 2026-10-29T20:16:26-0300]
+
+$ docker compose --profile airflow up -d --wait --wait-timeout 300
+ Container orqlab-verif-postgres-1  Running
+ Container orqlab-verif-airflow-scheduler-1  Running
+ Container orqlab-verif-airflow-apiserver-1  Running
+ Container orqlab-verif-airflow-dag-processor-1  Running
+ Container orqlab-verif-postgres-1  Waiting
+ Container orqlab-verif-postgres-1  Healthy
+ Container orqlab-verif-airflow-init-1  Starting
+ Container orqlab-verif-airflow-init-1  Started
+ Container orqlab-verif-postgres-1  Waiting
+ Container orqlab-verif-airflow-init-1  Waiting
+ Container orqlab-verif-airflow-init-1  Waiting
+ Container orqlab-verif-postgres-1  Waiting
+ Container orqlab-verif-airflow-init-1  Waiting
+ Container orqlab-verif-postgres-1  Waiting
+ Container orqlab-verif-postgres-1  Healthy
+ Container orqlab-verif-postgres-1  Healthy
+ Container orqlab-verif-postgres-1  Healthy
+ Container orqlab-verif-airflow-init-1  Exited
+ Container orqlab-verif-airflow-init-1  Exited
+ Container orqlab-verif-airflow-init-1  Exited
+ Container orqlab-verif-airflow-init-1  Waiting
+ Container orqlab-verif-postgres-1  Waiting
+ Container orqlab-verif-airflow-apiserver-1  Waiting
+ Container orqlab-verif-airflow-scheduler-1  Waiting
+ Container orqlab-verif-airflow-dag-processor-1  Waiting
+ Container orqlab-verif-airflow-init-1  Exited
+ Container orqlab-verif-postgres-1  Healthy
+ Container orqlab-verif-airflow-scheduler-1  Healthy
+ Container orqlab-verif-airflow-dag-processor-1  Healthy
+ Container orqlab-verif-airflow-apiserver-1  Healthy
+[exit 0, 7,2 s, 2026-10-29T20:16:33-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow dags list-import-errors
+No data found
+[exit 0, 2,7 s, 2026-10-29T20:16:36-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow dags unpause loja_ingenua
+dag_id       | is_paused
+=============+==========
+loja_ingenua | True     
+                        
+[exit 0, 2,8 s, 2026-10-29T20:16:38-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow dags list-runs loja_ingenua
+dag_id       | run_id                               | state   | run_after                 | logical_date              | start_date                       | end_date                        
+=============+======================================+=========+===========================+===========================+==================================+=================================
+loja_ingenua | scheduled__2026-10-29T09:00:00+00:00 | success | 2026-10-29T09:00:00+00:00 | 2026-10-29T09:00:00+00:00 | 2026-10-29T23:16:38.465829+00:00 | 2026-10-29T23:16:42.830061+00:00
+                                                                                                                                                                                           
+[exit 0, 2,6 s, 2026-10-29T20:17:06-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c 'SELECT executor, dia_referencia, linhas_bronze, linhas_silver, receita_paga FROM controle.carga ORDER BY id DESC LIMIT 1;'
+     executor      | dia_referencia | linhas_bronze | linhas_silver | receita_paga 
+-------------------+----------------+---------------+---------------+--------------
+ airflow:scheduled | 2026-10-28     |             0 |             0 |         0.00
+(1 row)
+
+[exit 0, 0,1 s, 2026-10-29T20:17:13-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw   -c 'TRUNCATE bronze.pedidos, silver.pedidos, gold.vendas_por_dia, controle.carga RESTART IDENTITY;'
+TRUNCATE TABLE
+[exit 0, 0,1 s, 2026-10-29T20:17:14-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow dags trigger loja_ingenua   -l 2026-10-21T09:00:00+00:00 -r retry_ingenuo -c '{"simular_queda": true}'
+2026-10-29T23:17:16.333625Z [info     ] creating dag run               [airflow.serialization.definitions.dag] loc=dag.py:615 logical_date=DateTime(2026, 10, 21, 9, 0, 0, tzinfo=FixedTimezone(0, name="+00:00")) partition_key=None run_after=datetime.datetime(2026, 10, 29, 23, 17, 16, 322953, tzinfo=Timezone('UTC')) run_id=retry_ingenuo
+                    |              |               | data_interval_star |                    |          | last_scheduling_de |                    |          |            |        | triggering_user_nam
+conf                | dag_id       | dag_run_id    | t                  | data_interval_end  | end_date | cision             | logical_date       | run_type | start_date | state  | e                  
+====================+==============+===============+====================+====================+==========+====================+====================+==========+============+========+====================
+{'simular_queda':   | loja_ingenua | retry_ingenuo | 2026-10-29         | 2026-10-29         | None     | None               | 2026-10-21         | manual   | None       | queued | default            
+True}               |              |               | 23:17:16.322953+00 | 23:17:16.322953+00 |          |                    | 09:00:00+00:00     |          |            |        |                    
+                    |              |               | :00                | :00                |          |                    |                    |          |            |        |                    
+                                                                                                                                                                                                        
+[exit 0, 2,8 s, 2026-10-29T20:17:16-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow dags list-runs loja_ingenua
+dag_id       | run_id                               | state   | run_after                        | logical_date              | start_date                       | end_date                        
+=============+======================================+=========+==================================+===========================+==================================+=================================
+loja_ingenua | retry_ingenuo                        | success | 2026-10-29T23:17:16.322953+00:00 | 2026-10-21T09:00:00+00:00 | 2026-10-29T23:17:17.213956+00:00 | 2026-10-29T23:17:32.997516+00:00
+loja_ingenua | scheduled__2026-10-29T09:00:00+00:00 | success | 2026-10-29T09:00:00+00:00        | 2026-10-29T09:00:00+00:00 | 2026-10-29T23:16:38.465829+00:00 | 2026-10-29T23:16:42.830061+00:00
+                                                                                                                                                                                                  
+[exit 0, 2,7 s, 2026-10-29T20:17:54-0300]
+
+$ ls logs/dag_id=loja_ingenua/run_id=retry_ingenuo/task_id=bronze/
+attempt=1.log
+attempt=2.log
+[exit 0, 0,0 s, 2026-10-29T20:18:03-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c 'SELECT * FROM gold.vendas_por_dia;'
+    dia     | pedidos | pedidos_pagos | receita_paga 
+------------+---------+---------------+--------------
+ 2026-10-20 |       8 |             4 |       861.80
+(1 row)
+
+[exit 0, 0,1 s, 2026-10-29T20:18:03-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow dags unpause loja_idempotente
+dag_id           | is_paused
+=================+==========
+loja_idempotente | True     
+                            
+[exit 0, 2,7 s, 2026-10-29T20:18:05-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow dags list-runs loja_idempotente
+dag_id           | run_id                                 | state   | run_after                        | logical_date              | start_date                       | end_date                        
+=================+========================================+=========+==================================+===========================+==================================+=================================
+loja_idempotente | manual__2026-10-29T23:14:00.457154+00: | success | 2026-10-29T23:14:00.457154+00:00 | 2026-10-22T00:00:00+00:00 | 2026-10-22T00:00:00+00:00        | 2026-10-29T23:14:10.591769+00:00
+                 | 00                                     |         |                                  |                           |                                  |                                 
+loja_idempotente | scheduled__2026-10-29T09:00:00+00:00   | success | 2026-10-29T09:00:00+00:00        | 2026-10-29T09:00:00+00:00 | 2026-10-29T23:18:06.076711+00:00 | 2026-10-29T23:18:10.986475+00:00
+                                                                                                                                                                                                        
+[exit 0, 3,3 s, 2026-10-29T20:18:29-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw   -c 'TRUNCATE bronze.pedidos, silver.pedidos, gold.vendas_por_dia, controle.carga RESTART IDENTITY;'
+TRUNCATE TABLE
+[exit 0, 0,1 s, 2026-10-29T20:18:29-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow dags trigger loja_idempotente   -l 2026-10-21T09:00:00+00:00 -r retry_idempotente -c '{"simular_queda": true}'
+2026-10-29T23:18:31.543035Z [info     ] creating dag run               [airflow.serialization.definitions.dag] loc=dag.py:615 logical_date=DateTime(2026, 10, 21, 9, 0, 0, tzinfo=FixedTimezone(0, name="+00:00")) partition_key=None run_after=datetime.datetime(2026, 10, 29, 23, 18, 31, 533208, tzinfo=Timezone('UTC')) run_id=retry_idempotente
+                   |                  |                   | data_interval_sta |                   |          | last_scheduling_ |                   |          |            |        | triggering_user_n
+conf               | dag_id           | dag_run_id        | rt                | data_interval_end | end_date | decision         | logical_date      | run_type | start_date | state  | ame              
+===================+==================+===================+===================+===================+==========+==================+===================+==========+============+========+==================
+{'simular_queda':  | loja_idempotente | retry_idempotente | 2026-10-29        | 2026-10-29        | None     | None             | 2026-10-21        | manual   | None       | queued | default          
+True}              |                  |                   | 23:18:31.533208+0 | 23:18:31.533208+0 |          |                  | 09:00:00+00:00    |          |            |        |                  
+                   |                  |                   | 0:00              | 0:00              |          |                  |                   |          |            |        |                  
+                                                                                                                                                                                                        
+[exit 0, 2,8 s, 2026-10-29T20:18:32-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow dags list-runs loja_idempotente
+dag_id           | run_id                                 | state   | run_after                        | logical_date              | start_date                       | end_date                        
+=================+========================================+=========+==================================+===========================+==================================+=================================
+loja_idempotente | retry_idempotente                      | success | 2026-10-29T23:18:31.533208+00:00 | 2026-10-21T09:00:00+00:00 | 2026-10-29T23:18:32.029007+00:00 | 2026-10-29T23:18:47.631056+00:00
+loja_idempotente | manual__2026-10-29T23:14:00.457154+00: | success | 2026-10-29T23:14:00.457154+00:00 | 2026-10-22T00:00:00+00:00 | 2026-10-22T00:00:00+00:00        | 2026-10-29T23:14:10.591769+00:00
+                 | 00                                     |         |                                  |                           |                                  |                                 
+loja_idempotente | scheduled__2026-10-29T09:00:00+00:00   | success | 2026-10-29T09:00:00+00:00        | 2026-10-29T09:00:00+00:00 | 2026-10-29T23:18:06.076711+00:00 | 2026-10-29T23:18:10.986475+00:00
+                                                                                                                                                                                                        
+[exit 0, 3,2 s, 2026-10-29T20:19:10-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow dags list-runs loja_idempotente -o plain
+dag_id            run_id                                    state    run_after                         logical_date               start_date                        end_date
+loja_idempotente  retry_idempotente                         success  2026-10-29T23:18:31.533208+00:00  2026-10-21T09:00:00+00:00  2026-10-29T23:18:32.029007+00:00  2026-10-29T23:18:47.631056+00:00
+loja_idempotente  manual__2026-10-29T23:14:00.457154+00:00  success  2026-10-29T23:14:00.457154+00:00  2026-10-22T00:00:00+00:00  2026-10-22T00:00:00+00:00         2026-10-29T23:14:10.591769+00:00
+loja_idempotente  scheduled__2026-10-29T09:00:00+00:00      success  2026-10-29T09:00:00+00:00         2026-10-29T09:00:00+00:00  2026-10-29T23:18:06.076711+00:00  2026-10-29T23:18:10.986475+00:00
+[exit 0, 2,9 s, 2026-10-29T20:19:19-0300]
+
+$ ls logs/dag_id=loja_idempotente/run_id=retry_idempotente/task_id=bronze/
+attempt=1.log
+attempt=2.log
+[exit 0, 0,0 s, 2026-10-29T20:19:19-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c 'SELECT * FROM gold.vendas_por_dia;'
+    dia     | pedidos | pedidos_pagos | receita_paga 
+------------+---------+---------------+--------------
+ 2026-10-20 |       4 |             2 |       430.90
+(1 row)
+
+[exit 0, 0,1 s, 2026-10-29T20:19:19-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow tasks states-for-dag-run loja_idempotente retry_idempotente
+dag_id           | logical_date              | task_id         | state   | start_date                       | end_date                        
+=================+===========================+=================+=========+==================================+=================================
+loja_idempotente | 2026-10-21T09:00:00+00:00 | gold            | success | 2026-10-29T23:18:45.482623+00:00 | 2026-10-29T23:18:46.056652+00:00
+loja_idempotente | 2026-10-21T09:00:00+00:00 | bronze          | success | 2026-10-29T23:18:43.163938+00:00 | 2026-10-29T23:18:43.737812+00:00
+loja_idempotente | 2026-10-21T09:00:00+00:00 | registrar_carga | success | 2026-10-29T23:18:46.567749+00:00 | 2026-10-29T23:18:47.139303+00:00
+loja_idempotente | 2026-10-21T09:00:00+00:00 | silver          | success | 2026-10-29T23:18:44.385460+00:00 | 2026-10-29T23:18:44.953259+00:00
+                                                                                                                                              
+[exit 0, 2,5 s, 2026-10-29T20:19:22-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow backfill create \
+  --dag-id loja_ingenua --from-date 2026-10-21 --to-date 2026-10-23 --dry-run
+Performing dry run of backfill.
+Printing params:
+    - dag_id = loja_ingenua
+    - from_date = 2026-10-21 00:00:00+00:00
+    - to_date = 2026-10-23 00:00:00+00:00
+    - max_active_runs = None
+    - reverse = False
+    - dag_run_conf = None
+    - reprocess_behavior = None
+    - run_on_latest_version = True
+Runs to be attempted:
++---------------------------+-----------------+------------------+
+| logical_date              | partition_key   | partition_date   |
++===========================+=================+==================+
+| 2026-10-22 09:00:00+00:00 |                 |                  |
++---------------------------+-----------------+------------------+
+[exit 0, 3,4 s, 2026-10-29T20:19:33-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw   -c 'TRUNCATE bronze.pedidos, silver.pedidos, gold.vendas_por_dia, controle.carga RESTART IDENTITY;'
+TRUNCATE TABLE
+[exit 0, 0,1 s, 2026-10-29T20:19:33-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow backfill create \
+  --dag-id loja_ingenua --from-date 2026-10-21 --to-date 2026-10-23T23:59:59+00:00 \
+  --reprocess-behavior completed
+2026-10-29T23:19:36.717560Z [info     ] Created backfill Dag run.      [airflow.models.backfill] backfill_id=1 dag_id=loja_ingenua loc=backfill.py:803 logical_date=DateTime(2026, 10, 21, 9, 0, 0, tzinfo=Timezone('UTC'))
+2026-10-29T23:19:36.719191Z [info     ] creating dag run               [airflow.serialization.definitions.dag] loc=dag.py:615 logical_date=DateTime(2026, 10, 22, 9, 0, 0, tzinfo=Timezone('UTC')) partition_key=None run_after=DateTime(2026, 10, 22, 9, 0, 0, tzinfo=Timezone('UTC')) run_id=backfill__2026-10-22T09:00:00+00:00
+2026-10-29T23:19:36.779541Z [info     ] Created backfill Dag run.      [airflow.models.backfill] backfill_id=1 dag_id=loja_ingenua loc=backfill.py:803 logical_date=DateTime(2026, 10, 22, 9, 0, 0, tzinfo=Timezone('UTC'))
+2026-10-29T23:19:36.781488Z [info     ] creating dag run               [airflow.serialization.definitions.dag] loc=dag.py:615 logical_date=DateTime(2026, 10, 23, 9, 0, 0, tzinfo=Timezone('UTC')) partition_key=None run_after=DateTime(2026, 10, 23, 9, 0, 0, tzinfo=Timezone('UTC')) run_id=backfill__2026-10-23T09:00:00+00:00
+2026-10-29T23:19:36.789880Z [info     ] Created backfill Dag run.      [airflow.models.backfill] backfill_id=1 dag_id=loja_ingenua loc=backfill.py:803 logical_date=DateTime(2026, 10, 23, 9, 0, 0, tzinfo=Timezone('UTC'))
+[exit 0, 3,8 s, 2026-10-29T20:19:37-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c 'SELECT * FROM gold.vendas_por_dia ORDER BY dia;'
+    dia     | pedidos | pedidos_pagos | receita_paga 
+------------+---------+---------------+--------------
+ 2026-10-20 |       4 |             2 |       430.90
+ 2026-10-21 |       3 |             2 |       111.90
+ 2026-10-22 |       3 |             3 |       293.30
+(3 rows)
+
+[exit 0, 0,1 s, 2026-10-29T20:20:17-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow backfill create \
+  --dag-id loja_ingenua --from-date 2026-10-21 --to-date 2026-10-23T23:59:59+00:00 \
+  --reprocess-behavior completed
+2026-10-29T23:20:49.079618Z [info     ] Created backfill Dag run.      [airflow.models.backfill] backfill_id=2 dag_id=loja_ingenua loc=backfill.py:803 logical_date=DateTime(2026, 10, 21, 9, 0, 0, tzinfo=Timezone('UTC'))
+2026-10-29T23:20:49.109534Z [info     ] Created backfill Dag run.      [airflow.models.backfill] backfill_id=2 dag_id=loja_ingenua loc=backfill.py:803 logical_date=DateTime(2026, 10, 22, 9, 0, 0, tzinfo=Timezone('UTC'))
+2026-10-29T23:20:49.139703Z [info     ] Created backfill Dag run.      [airflow.models.backfill] backfill_id=2 dag_id=loja_ingenua loc=backfill.py:803 logical_date=DateTime(2026, 10, 23, 9, 0, 0, tzinfo=Timezone('UTC'))
+[exit 0, 2,8 s, 2026-10-29T20:20:49-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c 'SELECT * FROM gold.vendas_por_dia ORDER BY dia;'
+    dia     | pedidos | pedidos_pagos | receita_paga 
+------------+---------+---------------+--------------
+ 2026-10-20 |       8 |             4 |       861.80
+ 2026-10-21 |       6 |             4 |       223.80
+ 2026-10-22 |       6 |             6 |       586.60
+(3 rows)
+
+[exit 0, 0,1 s, 2026-10-29T20:21:29-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw   -c 'TRUNCATE bronze.pedidos, silver.pedidos, gold.vendas_por_dia, controle.carga RESTART IDENTITY;'
+TRUNCATE TABLE
+[exit 0, 0,1 s, 2026-10-29T20:21:38-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow backfill create \
+  --dag-id loja_idempotente --from-date 2026-10-21 --to-date 2026-10-23T23:59:59+00:00 \
+  --reprocess-behavior completed
+2026-10-29T23:21:40.756524Z [info     ] Created backfill Dag run.      [airflow.models.backfill] backfill_id=3 dag_id=loja_idempotente loc=backfill.py:803 logical_date=DateTime(2026, 10, 21, 9, 0, 0, tzinfo=Timezone('UTC'))
+2026-10-29T23:21:40.758080Z [info     ] creating dag run               [airflow.serialization.definitions.dag] loc=dag.py:615 logical_date=DateTime(2026, 10, 22, 9, 0, 0, tzinfo=Timezone('UTC')) partition_key=None run_after=DateTime(2026, 10, 22, 9, 0, 0, tzinfo=Timezone('UTC')) run_id=backfill__2026-10-22T09:00:00+00:00
+2026-10-29T23:21:40.806203Z [info     ] Created backfill Dag run.      [airflow.models.backfill] backfill_id=3 dag_id=loja_idempotente loc=backfill.py:803 logical_date=DateTime(2026, 10, 22, 9, 0, 0, tzinfo=Timezone('UTC'))
+2026-10-29T23:21:40.808105Z [info     ] creating dag run               [airflow.serialization.definitions.dag] loc=dag.py:615 logical_date=DateTime(2026, 10, 23, 9, 0, 0, tzinfo=Timezone('UTC')) partition_key=None run_after=DateTime(2026, 10, 23, 9, 0, 0, tzinfo=Timezone('UTC')) run_id=backfill__2026-10-23T09:00:00+00:00
+2026-10-29T23:21:40.816334Z [info     ] Created backfill Dag run.      [airflow.models.backfill] backfill_id=3 dag_id=loja_idempotente loc=backfill.py:803 logical_date=DateTime(2026, 10, 23, 9, 0, 0, tzinfo=Timezone('UTC'))
+[exit 0, 2,8 s, 2026-10-29T20:21:41-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c 'SELECT * FROM gold.vendas_por_dia ORDER BY dia;'
+    dia     | pedidos | pedidos_pagos | receita_paga 
+------------+---------+---------------+--------------
+ 2026-10-20 |       4 |             2 |       430.90
+ 2026-10-21 |       3 |             2 |       111.90
+ 2026-10-22 |       3 |             3 |       293.30
+(3 rows)
+
+[exit 0, 0,1 s, 2026-10-29T20:22:26-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow backfill create \
+  --dag-id loja_idempotente --from-date 2026-10-21 --to-date 2026-10-23T23:59:59+00:00 \
+  --reprocess-behavior completed
+2026-10-29T23:22:28.706529Z [info     ] Created backfill Dag run.      [airflow.models.backfill] backfill_id=4 dag_id=loja_idempotente loc=backfill.py:803 logical_date=DateTime(2026, 10, 21, 9, 0, 0, tzinfo=Timezone('UTC'))
+2026-10-29T23:22:28.737649Z [info     ] Created backfill Dag run.      [airflow.models.backfill] backfill_id=4 dag_id=loja_idempotente loc=backfill.py:803 logical_date=DateTime(2026, 10, 22, 9, 0, 0, tzinfo=Timezone('UTC'))
+2026-10-29T23:22:28.773908Z [info     ] Created backfill Dag run.      [airflow.models.backfill] backfill_id=4 dag_id=loja_idempotente loc=backfill.py:803 logical_date=DateTime(2026, 10, 23, 9, 0, 0, tzinfo=Timezone('UTC'))
+[exit 0, 3,0 s, 2026-10-29T20:22:29-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c 'SELECT * FROM gold.vendas_por_dia ORDER BY dia;'
+    dia     | pedidos | pedidos_pagos | receita_paga 
+------------+---------+---------------+--------------
+ 2026-10-20 |       4 |             2 |       430.90
+ 2026-10-21 |       3 |             2 |       111.90
+ 2026-10-22 |       3 |             3 |       293.30
+(3 rows)
+
+[exit 0, 0,1 s, 2026-10-29T20:23:14-0300]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c 'SELECT id, executor, dia_referencia, linhas_bronze, linhas_silver, receita_paga FROM controle.carga ORDER BY id;'
+ id |     executor     | dia_referencia | linhas_bronze | linhas_silver | receita_paga 
+----+------------------+----------------+---------------+---------------+--------------
+  1 | airflow:backfill | 2026-10-20     |             4 |             4 |       430.90
+  2 | airflow:backfill | 2026-10-22     |             3 |             3 |       293.30
+  3 | airflow:backfill | 2026-10-21     |             3 |             3 |       111.90
+  4 | airflow:backfill | 2026-10-22     |             3 |             3 |       293.30
+  5 | airflow:backfill | 2026-10-20     |             4 |             4 |       430.90
+  6 | airflow:backfill | 2026-10-21     |             3 |             3 |       111.90
+(6 rows)
+
+[exit 0, 0,1 s, 2026-10-29T20:23:21-0300]
+
+$ docker compose --profile airflow exec -T airflow-scheduler airflow dags list-runs loja_idempotente -o plain
+dag_id            run_id                                    state    run_after                         logical_date               start_date                        end_date
+loja_idempotente  retry_idempotente                         success  2026-10-29T23:18:31.533208+00:00  2026-10-21T09:00:00+00:00  2026-10-29T23:22:28.895629+00:00  2026-10-29T23:22:33.353272+00:00
+loja_idempotente  manual__2026-10-29T23:14:00.457154+00:00  success  2026-10-29T23:14:00.457154+00:00  2026-10-22T00:00:00+00:00  2026-10-22T00:00:00+00:00         2026-10-29T23:14:10.591769+00:00
+loja_idempotente  scheduled__2026-10-29T09:00:00+00:00      success  2026-10-29T09:00:00+00:00         2026-10-29T09:00:00+00:00  2026-10-29T23:18:06.076711+00:00  2026-10-29T23:18:10.986475+00:00
+loja_idempotente  backfill__2026-10-23T09:00:00+00:00       success  2026-10-23T09:00:00+00:00         2026-10-23T09:00:00+00:00  2026-10-29T23:22:28.897124+00:00  2026-10-29T23:22:33.362595+00:00
+loja_idempotente  backfill__2026-10-22T09:00:00+00:00       success  2026-10-22T09:00:00+00:00         2026-10-22T09:00:00+00:00  2026-10-29T23:22:28.896430+00:00  2026-10-29T23:22:33.358557+00:00
+[exit 0, 2,9 s, 2026-10-29T20:23:24-0300]
+

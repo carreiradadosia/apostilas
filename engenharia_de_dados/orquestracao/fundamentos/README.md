@@ -23,13 +23,15 @@ outra posição.
 ## O que tem aqui
 
 - `apostila.md`, o material de estudo do módulo
+- `lab.json`, que liga os Labs 0 a 5 citados na apostila ao laboratório do módulo
+  `orquestracao/airflow`, onde ficam os comandos, as saídas e o nível de cada um
 
 ## O que ainda não existe
 
-Este módulo declara `lab: false` no `trilha.yml`, logo não tem `lab.json` nem `infrastructure/`.
-A apostila descreve o laboratório no capítulo 13, com o nível de verificação de cada bloco. O
-pacote do laboratório, um compose leve só com perfis para o fluxo à mão, o Airflow e o registro de
-carga, está em preparação no módulo `orquestracao/airflow`.
+Este módulo declara `lab: false` no `trilha.yml` e não tem `infrastructure/` próprio. A apostila
+descreve o laboratório no capítulo 13, com o nível de verificação de cada bloco. O laboratório,
+um compose leve só com o fluxo à mão, o Airflow e o registro de carga, fica no módulo
+`orquestracao/airflow`, na pasta `engenharia_de_dados/orquestracao/airflow/lab/`.
 
 Diretórios opcionais ausentes, declarados aqui de propósito:
 
@@ -40,7 +42,13 @@ Diretórios opcionais ausentes, declarados aqui de propósito:
 ## Como rodar
 
 Este módulo não tem laboratório próprio. O estudo é feito pela apostila, e quem decide não precisa
-instalar nada: o capítulo 0 traz o roteiro por perfil.
+instalar nada: o capítulo 0 traz o roteiro por perfil. Para a prática, a partir da raiz do
+repositório clonado:
+
+```bash
+cd engenharia_de_dados/orquestracao/airflow/lab
+cat README.md
+```
 
 ## Módulos vizinhos
 

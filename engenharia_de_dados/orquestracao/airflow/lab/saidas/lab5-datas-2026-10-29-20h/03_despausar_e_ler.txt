@@ -1,0 +1,28 @@
+$ docker compose exec airflow-scheduler airflow dags unpause datas_trigger_intervalo
+dag_id                  | is_paused
+========================+==========
+datas_trigger_intervalo | True     
+                                   
+[exit 0, 4,0 s, 2026-10-29T20:09:32-0300]
+
+$ docker compose exec airflow-scheduler airflow dags unpause datas_dia_brasilia
+dag_id             | is_paused
+===================+==========
+datas_dia_brasilia | True     
+                              
+[exit 0, 5,7 s, 2026-10-29T20:09:38-0300]
+
+$ docker compose exec airflow-scheduler airflow dags list-runs datas_trigger_intervalo
+dag_id                  | run_id                               | state   | run_after                 | logical_date              | start_date                       | end_date                        
+========================+======================================+=========+===========================+===========================+==================================+=================================
+datas_trigger_intervalo | scheduled__2026-10-29T00:00:00+00:00 | success | 2026-10-29T00:00:00+00:00 | 2026-10-28T00:00:00+00:00 | 2026-10-29T23:09:32.015491+00:00 | 2026-10-29T23:09:39.721887+00:00
+                                                                                                                                                                                                      
+[exit 0, 3,8 s, 2026-10-29T20:10:22-0300]
+
+$ docker compose exec airflow-scheduler airflow dags list-runs datas_dia_brasilia
+dag_id             | run_id                               | state   | run_after                 | logical_date              | start_date                       | end_date                        
+===================+======================================+=========+===========================+===========================+==================================+=================================
+datas_dia_brasilia | scheduled__2026-10-29T03:00:00+00:00 | success | 2026-10-29T03:00:00+00:00 | 2026-10-28T03:00:00+00:00 | 2026-10-29T23:09:37.466907+00:00 | 2026-10-29T23:09:39.711645+00:00
+                                                                                                                                                                                                 
+[exit 0, 4,0 s, 2026-10-29T20:10:26-0300]
+

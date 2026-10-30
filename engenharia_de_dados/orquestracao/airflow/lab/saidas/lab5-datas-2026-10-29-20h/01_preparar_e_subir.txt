@@ -1,0 +1,55 @@
+$ ./preparar.sh
+.env criado com AIRFLOW_UID=1001 e segredos aleatórios.
+[exit 0, 0,0 s, 2026-10-29T20:08:14-0300]
+
+$ docker compose --profile airflow up -d --wait --wait-timeout 300
+ Network orqlab-verif_default  Creating
+ Network orqlab-verif_default  Created
+ Volume "orqlab-verif_postgres-db-volume"  Creating
+ Volume "orqlab-verif_postgres-db-volume"  Created
+ Container orqlab-verif-postgres-1  Creating
+ Container orqlab-verif-postgres-1  Created
+ Container orqlab-verif-airflow-init-1  Creating
+ Container orqlab-verif-airflow-init-1  Created
+ Container orqlab-verif-airflow-scheduler-1  Creating
+ Container orqlab-verif-airflow-apiserver-1  Creating
+ Container orqlab-verif-airflow-dag-processor-1  Creating
+ Container orqlab-verif-airflow-apiserver-1  Created
+ Container orqlab-verif-airflow-scheduler-1  Created
+ Container orqlab-verif-airflow-dag-processor-1  Created
+ Container orqlab-verif-postgres-1  Starting
+ Container orqlab-verif-postgres-1  Started
+ Container orqlab-verif-postgres-1  Waiting
+ Container orqlab-verif-postgres-1  Healthy
+ Container orqlab-verif-airflow-init-1  Starting
+ Container orqlab-verif-airflow-init-1  Started
+ Container orqlab-verif-airflow-init-1  Waiting
+ Container orqlab-verif-postgres-1  Waiting
+ Container orqlab-verif-postgres-1  Waiting
+ Container orqlab-verif-postgres-1  Waiting
+ Container orqlab-verif-airflow-init-1  Waiting
+ Container orqlab-verif-airflow-init-1  Waiting
+ Container orqlab-verif-postgres-1  Healthy
+ Container orqlab-verif-postgres-1  Healthy
+ Container orqlab-verif-postgres-1  Healthy
+ Container orqlab-verif-airflow-init-1  Exited
+ Container orqlab-verif-airflow-apiserver-1  Starting
+ Container orqlab-verif-airflow-init-1  Exited
+ Container orqlab-verif-airflow-scheduler-1  Starting
+ Container orqlab-verif-airflow-init-1  Exited
+ Container orqlab-verif-airflow-dag-processor-1  Starting
+ Container orqlab-verif-airflow-dag-processor-1  Started
+ Container orqlab-verif-airflow-apiserver-1  Started
+ Container orqlab-verif-airflow-scheduler-1  Started
+ Container orqlab-verif-airflow-dag-processor-1  Waiting
+ Container orqlab-verif-airflow-init-1  Waiting
+ Container orqlab-verif-postgres-1  Waiting
+ Container orqlab-verif-airflow-apiserver-1  Waiting
+ Container orqlab-verif-airflow-scheduler-1  Waiting
+ Container orqlab-verif-airflow-init-1  Exited
+ Container orqlab-verif-postgres-1  Healthy
+ Container orqlab-verif-airflow-dag-processor-1  Healthy
+ Container orqlab-verif-airflow-scheduler-1  Healthy
+ Container orqlab-verif-airflow-apiserver-1  Healthy
+[exit 0, 54,4 s, 2026-10-29T20:09:08-0300]
+

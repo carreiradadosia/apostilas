@@ -1,0 +1,52 @@
+$ ruff --version
+ruff 0.12.12
+[exit 0, 0,0 s, 2026-10-29T20:26:19-0300]
+
+$ ruff check dags scripts checagens
+All checks passed!
+[exit 0, 0,0 s, 2026-10-29T20:26:19-0300]
+
+$ ruff check --select AIR,E,F,W --preview dags/ola_orquestracao.py dags/registro_de_carga.py
+All checks passed!
+[exit 0, 0,0 s, 2026-10-29T20:26:19-0300]
+
+$ ruff check --select AIR,E,F,W,I --preview dags/datas_por_timetable.py checagens/extrair_logs.py
+All checks passed!
+[exit 0, 0,0 s, 2026-10-29T20:26:19-0300]
+
+$ ruff check --select E,F,W,I,B,UP --line-length 120 dags/pipeline_loja.py scripts/pipeline.py
+All checks passed!
+[exit 0, 0,0 s, 2026-10-29T20:26:19-0300]
+
+$ ruff format --check dags/ola_orquestracao.py dags/registro_de_carga.py dags/datas_por_timetable.py checagens/extrair_logs.py
+4 files already formatted
+[exit 0, 0,0 s, 2026-10-29T20:26:19-0300]
+
+$ ruff format --check --line-length 120 dags/pipeline_loja.py scripts/pipeline.py
+2 files already formatted
+[exit 0, 0,0 s, 2026-10-29T20:26:19-0300]
+
+$ shellcheck --version | sed -n 2p; shellcheck preparar.sh postgres-init/01_loja.sh postgres-init/02_erp_e_dw.sh && echo 'shellcheck sem aviso'
+version: 0.11.0
+shellcheck sem aviso
+[exit 0, 0,0 s, 2026-10-29T20:26:19-0300]
+
+$ AIRFLOW_DB_PASSWORD=x LOJA_DB_PASSWORD=x ERP_DB_PASSWORD=x REPLICA_DB_PASSWORD=x DW_DB_PASSWORD=x JWT_SECRET=x docker compose --profile manual --profile airflow config -q && echo "compose valido com os dois perfis"
+compose valido com os dois perfis
+[exit 0, 0,1 s, 2026-10-29T20:26:19-0300]
+
+$ docker compose config -q; echo "sem .env: exit $?"
+error while interpolating x-airflow-common.environment.AIRFLOW__API_AUTH__JWT_SECRET: required variable JWT_SECRET is missing a value: run ./preparar.sh first
+sem .env: exit 1
+[exit 0, 0,1 s, 2026-10-29T20:26:19-0300]
+
+# Depois da troca das senhas do preparar.sh para um laço:
+
+$ shellcheck preparar.sh && echo 'shellcheck sem aviso'
+shellcheck sem aviso
+[exit 0, 0,0 s, 2026-10-29T20:38:48-0300]
+
+$ python3 -c "import sqlglot, pathlib; [sqlglot.parse(p.read_text(), read='postgres') for p in sorted(pathlib.Path('dags/sql').glob('*.sql'))]; print('sqlglot', sqlglot.__version__, 'dialeto postgres: 7 arquivos sem erro')"
+sqlglot 30.2.1 dialeto postgres: 7 arquivos sem erro
+[exit 0, 0,1 s, 2026-10-29T20:38:48-0300]
+

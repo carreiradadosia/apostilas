@@ -1,0 +1,18 @@
+$ docker compose exec airflow-scheduler airflow dags list-import-errors
+No data found
+[exit 0, 4,4 s, 2026-10-29T20:09:18-0300]
+
+$ docker compose exec airflow-scheduler airflow dags list -o plain
+dag_id                    fileloc                                   owners       is_paused    bundle_name    bundle_version
+datas_22h_brasilia        /opt/airflow/dags/datas_por_timetable.py  ['airflow']  True         dags-folder
+datas_cron_puro           /opt/airflow/dags/datas_por_timetable.py  ['airflow']  True         dags-folder
+datas_dia_brasilia        /opt/airflow/dags/datas_por_timetable.py  ['airflow']  True         dags-folder
+datas_intervalo_classico  /opt/airflow/dags/datas_por_timetable.py  ['airflow']  True         dags-folder
+datas_preset_daily        /opt/airflow/dags/datas_por_timetable.py  ['airflow']  True         dags-folder
+datas_trigger_intervalo   /opt/airflow/dags/datas_por_timetable.py  ['airflow']  True         dags-folder
+loja_idempotente          /opt/airflow/dags/pipeline_loja.py        ['airflow']  True         dags-folder
+loja_ingenua              /opt/airflow/dags/pipeline_loja.py        ['airflow']  True         dags-folder
+ola_orquestracao          /opt/airflow/dags/ola_orquestracao.py     ['airflow']  True         dags-folder
+registro_de_carga         /opt/airflow/dags/registro_de_carga.py    ['airflow']  True         dags-folder
+[exit 0, 3,8 s, 2026-10-29T20:09:22-0300]
+

@@ -1,21 +1,273 @@
 {
   "modulo": "orquestracao/airflow",
-  "verificado_em": "2026-07-30",
+  "verificado_em": "2026-10-29",
   "nivel_maximo_atingido": 2,
-  "observacao": "Nivel 3, execucao real dos containers, ainda nao foi rodado neste modulo. Os comandos rodam a partir de engenharia_de_dados/orquestracao/airflow, com o diretorio do modulo como ponto de partida.",
+  "observacao": "Laboratório unificado em lab/: os comandos de labs[] rodam de dentro de engenharia_de_dados/orquestracao/airflow/lab, depois do ./preparar.sh. labs[] registra o nível 3, executado em 2026-10-29 com a saída capturada em lab/saidas/. artefatos[] é o nível 2, estático: o docker-compose.yaml de lab/ só passa em docker compose config -q com o .env que o preparar.sh cria; o SQL de lab/dags/sql usa marcadores do psycopg, como %(dia)s, e foi conferido pelo sqlglot no dialeto postgres, porque no dialeto padrão o % vira operador e os cinco arquivos com marcador são reprovados. infrastructure/ é o laboratório anterior, mantido como legado; dele vêm, em versoes, a entrada redis e a chave ${AIRFLOW_IMAGE_NAME:-apache/airflow.",
   "versoes": {
     "${AIRFLOW_IMAGE_NAME:-apache/airflow": "3.1.7}",
-    "postgres": "16",
+    "apache/airflow": "3.3.2-python3.13",
+    "orquestracao-lab-runner": "local",
+    "postgres": "16.15-alpine",
     "redis": "7.2-bookworm"
   },
   "artefatos": [
     {
       "arquivo": "infrastructure/docker-compose.yml",
       "nivel": 2,
-      "comando": "docker compose -f infrastructure/docker-compose.yml config -q",
-      "verificado_em": "2026-07-30",
+      "comando": "docker compose -f orquestracao/airflow/infrastructure/docker-compose.yml config -q",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/checagens/extrair_logs.py",
+      "nivel": 2,
+      "comando": "ruff check orquestracao/airflow/lab/checagens/extrair_logs.py",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/dags/datas_por_timetable.py",
+      "nivel": 2,
+      "comando": "ruff check orquestracao/airflow/lab/dags/datas_por_timetable.py",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/dags/ola_orquestracao.py",
+      "nivel": 2,
+      "comando": "ruff check orquestracao/airflow/lab/dags/ola_orquestracao.py",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/dags/pipeline_loja.py",
+      "nivel": 2,
+      "comando": "ruff check orquestracao/airflow/lab/dags/pipeline_loja.py",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/dags/registro_de_carga.py",
+      "nivel": 2,
+      "comando": "ruff check orquestracao/airflow/lab/dags/registro_de_carga.py",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/dags/sql/bronze_pedidos.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(..., read='postgres')\"",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/dags/sql/bronze_pedidos_ingenuo.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(..., read='postgres')\"",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/dags/sql/carregar_pedidos_tratados.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(..., read='postgres')\"",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/dags/sql/criar_tabelas.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(..., read='postgres')\"",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/dags/sql/gold_vendas_por_dia.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(..., read='postgres')\"",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/dags/sql/registrar_carga.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(..., read='postgres')\"",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/dags/sql/silver_pedidos.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(..., read='postgres')\"",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/docker-compose.yaml",
+      "nivel": 2,
+      "comando": "docker compose -f orquestracao/airflow/lab/docker-compose.yaml config -q",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/postgres-init/01_loja.sh",
+      "nivel": 2,
+      "comando": "shellcheck orquestracao/airflow/lab/postgres-init/01_loja.sh",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/postgres-init/02_erp_e_dw.sh",
+      "nivel": 2,
+      "comando": "shellcheck orquestracao/airflow/lab/postgres-init/02_erp_e_dw.sh",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/preparar.sh",
+      "nivel": 2,
+      "comando": "shellcheck orquestracao/airflow/lab/preparar.sh",
+      "verificado_em": "2026-10-29",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/scripts/pipeline.py",
+      "nivel": 2,
+      "comando": "ruff check orquestracao/airflow/lab/scripts/pipeline.py",
+      "verificado_em": "2026-10-29",
       "saida": "sem erro"
     }
   ],
-  "labs": []
+  "labs": [
+    {
+      "id": "Lab 0",
+      "titulo": "Preparar a máquina",
+      "pasta": "lab",
+      "comandos": [
+        "./preparar.sh",
+        "docker compose --profile manual --profile airflow config -q"
+      ],
+      "saida_esperada": ".env criado com AIRFLOW_UID=<saída de id -u> e segredos aleatórios.",
+      "saida_observada": ".env criado com AIRFLOW_UID=1001 e segredos aleatórios.; .env com 7 chaves e modo 600; config sem erro",
+      "tempo_observado": "menos de 1 s",
+      "nivel": 3,
+      "verificado_em": "2026-10-29",
+      "ambiente": "Linux nativo, Docker Engine 28.3.3, Compose 2.39.1, apache/airflow:3.3.2-python3.13 (Python 3.13.15), postgres:16.15-alpine (PostgreSQL 16.15)",
+      "saida": "lab/saidas/lab0_preparar.txt",
+      "observacao": "wsl --install fica no nível 1 (documentação da Microsoft); Get-PSDrive C rodou no Windows do teste de pesquisa, não neste laboratório."
+    },
+    {
+      "id": "Lab 1",
+      "titulo": "Réplica só leitura e o fluxo à mão",
+      "pasta": "lab",
+      "comandos": [
+        "docker compose up -d --wait postgres",
+        "docker compose exec -T postgres psql -U dw -d dw -c \"SELECT count(*) AS pedidos_lidos_pela_replica FROM replica.pedidos;\"",
+        "docker compose exec -T postgres psql -U replica_leitura -h localhost -d erp -c \"BEGIN READ WRITE; UPDATE pedidos SET valor = 0 WHERE id = 101;\"",
+        "docker compose build runner",
+        "docker compose run --rm -T runner python scripts/pipeline.py --dia 2026-10-20",
+        "docker compose run --rm -T runner python scripts/pipeline.py --dia 2026-10-21",
+        "docker compose run --rm -T runner python scripts/pipeline.py --dia 2026-10-22"
+      ],
+      "saida_esperada": "contagem 10; ERROR:  permission denied for table pedidos; resultado: bronze=4 silver=4 receita_paga=430.90, bronze=3 silver=3 receita_paga=111.90, bronze=3 silver=3 receita_paga=293.30",
+      "saida_observada": "igual à esperada",
+      "tempo_observado": "Postgres saudável em 5,8 s; cerca de 1,4 s por dia no runner, com a imagem já construída",
+      "nivel": 3,
+      "verificado_em": "2026-10-29",
+      "ambiente": "Linux nativo, Docker Engine 28.3.3, Compose 2.39.1, apache/airflow:3.3.2-python3.13 (Python 3.13.15), postgres:16.15-alpine (PostgreSQL 16.15); runner python:3.13.15-alpine3.24 com psycopg[binary]==3.3.5",
+      "saida": "lab/saidas/lab1_replica_e_a_mao.txt"
+    },
+    {
+      "id": "Lab 2",
+      "titulo": "A primeira Dag",
+      "pasta": "lab",
+      "comandos": [
+        "docker compose --profile airflow up -d --wait --wait-timeout 300",
+        "docker compose exec airflow-scheduler airflow dags list-import-errors",
+        "docker compose exec airflow-scheduler airflow dags unpause ola_orquestracao",
+        "docker compose exec airflow-scheduler airflow dags trigger ola_orquestracao",
+        "docker compose exec airflow-scheduler airflow dags list-runs ola_orquestracao",
+        "docker compose exec airflow-scheduler python dags/pipeline_loja.py",
+        "docker compose exec airflow-scheduler airflow dags test loja_idempotente 2026-10-22"
+      ],
+      "saida_esperada": "No data found; execução de ola_orquestracao em success; Total do dia: 245.5 no log da tarefa carregar; pipeline_loja.py sem saída e código 0; dags test com a execução marcada como successful",
+      "saida_observada": "igual à esperada; o dags test gravou no registro de carga o dia 2026-10-21 com executor airflow:manual, 3 linhas e 111.90",
+      "tempo_observado": "Airflow saudável em 46 s com o Postgres já no ar, 54 s e 82 s partindo do zero; ola_orquestracao em cerca de 8 s; dags test em 15 s",
+      "nivel": 3,
+      "verificado_em": "2026-10-29",
+      "ambiente": "Linux nativo, Docker Engine 28.3.3, Compose 2.39.1, apache/airflow:3.3.2-python3.13 (Python 3.13.15), postgres:16.15-alpine (PostgreSQL 16.15)",
+      "saida": "lab/saidas/lab2_primeira_dag.txt; lab/saidas/cap12_inspecionar.txt"
+    },
+    {
+      "id": "Lab 3",
+      "titulo": "Registro de carga e alerta",
+      "pasta": "lab",
+      "comandos": [
+        "docker compose exec airflow-scheduler airflow dags unpause registro_de_carga",
+        "docker compose exec airflow-scheduler airflow dags list-runs registro_de_carga",
+        "docker compose exec postgres psql -U loja -d loja -c \"INSERT INTO pedidos_origem (id, cliente, valor, status, criado_em) VALUES (6, 'Cliente E', 99.90, 'pago', '2026-10-29 10:00:00'), (7, 'Cliente F', 15.00, NULL, '2026-10-29 11:30:00');\"",
+        "docker compose exec airflow-scheduler airflow dags trigger registro_de_carga",
+        "docker compose exec airflow-scheduler airflow dags trigger registro_de_carga",
+        "docker compose exec postgres psql -U loja -d loja -c \"SELECT id, run_id, tipo_execucao, linhas FROM controle_carga ORDER BY id;\""
+      ],
+      "saida_esperada": "controle_carga com 5 (scheduled), 7 (manual) e 7 (manual) linhas; a segunda manual em failed por checar_repeticao, com ValueError 'A contagem repetiu a carga anterior (7 linhas). A origem pode não ter sido atualizada.' e ALERTA no log",
+      "saida_observada": "igual à esperada",
+      "tempo_observado": "cada execução em cerca de 5 a 6 s",
+      "nivel": 3,
+      "verificado_em": "2026-10-29",
+      "ambiente": "Linux nativo, Docker Engine 28.3.3, Compose 2.39.1, apache/airflow:3.3.2-python3.13 (Python 3.13.15), postgres:16.15-alpine (PostgreSQL 16.15)",
+      "saida": "lab/saidas/lab3_registro_e_alerta.txt"
+    },
+    {
+      "id": "Lab 4",
+      "titulo": "Duplicar e consertar",
+      "pasta": "lab",
+      "comandos": [
+        "docker compose run --rm -T runner python scripts/pipeline.py --dia 2026-10-20 --modo ingenuo",
+        "docker compose run --rm -T runner python scripts/pipeline.py --dia 2026-10-20 --modo ingenuo",
+        "docker compose run --rm -T runner python scripts/pipeline.py --dia 2026-10-20",
+        "docker compose --profile airflow up -d --wait --wait-timeout 300",
+        "docker compose --profile airflow exec -T airflow-scheduler airflow dags list-import-errors",
+        "docker compose --profile airflow exec -T airflow-scheduler airflow dags unpause loja_ingenua",
+        "docker compose --profile airflow exec -T airflow-scheduler airflow dags list-runs loja_ingenua",
+        "docker compose exec -T postgres psql -U dw -d dw -c 'TRUNCATE bronze.pedidos, silver.pedidos, gold.vendas_por_dia, controle.carga RESTART IDENTITY;'",
+        "docker compose --profile airflow exec -T airflow-scheduler airflow dags trigger loja_ingenua -l 2026-10-21T09:00:00+00:00 -r retry_ingenuo -c '{\"simular_queda\": true}'",
+        "ls logs/dag_id=loja_ingenua/run_id=retry_ingenuo/task_id=bronze/",
+        "docker compose exec -T postgres psql -U dw -d dw -c 'SELECT * FROM gold.vendas_por_dia;'",
+        "docker compose --profile airflow exec -T airflow-scheduler airflow tasks states-for-dag-run loja_idempotente retry_idempotente",
+        "docker compose --profile airflow exec -T airflow-scheduler airflow backfill create --dag-id loja_ingenua --from-date 2026-10-21 --to-date 2026-10-23 --dry-run",
+        "docker compose --profile airflow exec -T airflow-scheduler airflow backfill create --dag-id loja_ingenua --from-date 2026-10-21 --to-date 2026-10-23T23:59:59+00:00 --reprocess-behavior completed",
+        "docker compose exec -T postgres psql -U dw -d dw -c 'SELECT * FROM gold.vendas_por_dia ORDER BY dia;'"
+      ],
+      "saida_esperada": "à mão: bronze=8 receita_paga=861.80, bronze=12 receita_paga=1292.70 e de volta a bronze=4 receita_paga=430.90; execução agendada ao despausar com zero linhas e success; retry_ingenuo com attempt=1.log e attempt=2.log e gold do dia 20 com 8 pedidos e 861.80; retry_idempotente com gold em 4 e 430.90; ensaio listando só 2026-10-22 09:00:00+00:00; backfill ingênuo de 430.90, 111.90 e 293.30 para 861.80, 223.80 e 586.60 na segunda vez; backfill idempotente em 430.90, 111.90 e 293.30 nas duas vezes",
+      "saida_observada": "igual à esperada; os dois backfills seguidos foram aceitos na primeira tentativa, sem AlreadyRunningBackfill",
+      "tempo_observado": "execução com a queda simulada em cerca de 16 s; cada reprocesso de três dias terminou em menos de 40 s",
+      "nivel": 3,
+      "verificado_em": "2026-10-29",
+      "ambiente": "Linux nativo, Docker Engine 28.3.3, Compose 2.39.1, apache/airflow:3.3.2-python3.13 (Python 3.13.15), postgres:16.15-alpine (PostgreSQL 16.15)",
+      "saida": "lab/saidas/lab4_duplicar_e_consertar.txt",
+      "observacao": "A falha da primeira tentativa é simulada de propósito pelo conf simular_queda."
+    },
+    {
+      "id": "Lab 5",
+      "titulo": "Meia-noite e datas",
+      "pasta": "lab",
+      "comandos": [
+        "docker compose exec -T postgres psql -U dw -d dw -c \"SET TimeZone = 'UTC';\" -c \"SELECT id, cliente, valor, status, criado_em_utc, dia_local FROM silver.pedidos ORDER BY id;\"",
+        "docker compose exec airflow-scheduler airflow dags unpause datas_trigger_intervalo",
+        "docker compose exec airflow-scheduler airflow dags unpause datas_dia_brasilia",
+        "docker compose cp checagens/extrair_logs.py airflow-scheduler:/tmp/extrair_logs.py",
+        "docker compose exec airflow-scheduler python /tmp/extrair_logs.py /opt/airflow/logs dag_id=datas_",
+        "docker compose --profile airflow --profile manual down --volumes --remove-orphans"
+      ],
+      "saida_esperada": "pedido 104 com 2026-10-21 00:30:00+00 e dia_local 2026-10-20; datas_trigger_intervalo (scheduled__2026-10-29T00:00:00+00:00) lendo 27/10 21:00, 27/10 21:45 e 28/10 10:05 de Brasília; datas_dia_brasilia (scheduled__2026-10-29T03:00:00+00:00) lendo 28/10 10:05 e 28/10 21:30; down removendo contêineres, volume e rede",
+      "saida_observada": "igual à esperada, em duas rodadas, às 20h10 e às 20h23 de Brasília; nenhum contêiner nem volume do projeto depois do down; a imagem orquestracao-lab-runner:local fica",
+      "tempo_observado": "cada execução das Dags de datas em 1 a 8 s; down em cerca de 4 s",
+      "nivel": 3,
+      "verificado_em": "2026-10-29",
+      "ambiente": "Linux nativo, Docker Engine 28.3.3, Compose 2.39.1, apache/airflow:3.3.2-python3.13 (Python 3.13.15), postgres:16.15-alpine (PostgreSQL 16.15)",
+      "saida": "lab/saidas/lab5_meia_noite_e_datas.txt; lab/saidas/lab5-datas-2026-10-29-20h/",
+      "observacao": "A tabela de visitas depende da data: as visitas sintéticas vão de 27 a 29/10/2026, e a Dag com janela em UTC passa a criar outra execução a partir das 21h de Brasília de 29/10."
+    }
+  ]
 }

@@ -1,0 +1,19 @@
+$ docker stats --no-stream --format "{{.Name}} {{.MemUsage}}" $(docker compose --profile airflow --profile manual ps -q)
+orqlab-verif-airflow-apiserver-1 280.3MiB / 30.82GiB
+orqlab-verif-airflow-dag-processor-1 187.4MiB / 30.82GiB
+orqlab-verif-airflow-scheduler-1 377.9MiB / 30.82GiB
+orqlab-verif-postgres-1 55.47MiB / 30.82GiB
+[exit 0, 2,6 s, 2026-10-29T20:24:29-0300]
+
+$ docker image inspect --format "{{.RepoTags}} {{.Size}}" apache/airflow:3.3.2-python3.13 postgres:16.15-alpine orquestracao-lab-runner:local
+[apache/airflow:3.3.2-python3.13] 2326622994
+[postgres:16.15-alpine] 294301549
+[orquestracao-lab-runner:local] 72699418
+[exit 0, 0,0 s, 2026-10-29T20:24:29-0300]
+
+$ docker compose exec airflow-scheduler python --version; docker compose exec airflow-scheduler airflow version; docker compose exec -T postgres postgres --version
+Python 3.13.15
+3.3.2
+postgres (PostgreSQL) 16.15
+[exit 0, 2,1 s, 2026-10-29T20:24:31-0300]
+

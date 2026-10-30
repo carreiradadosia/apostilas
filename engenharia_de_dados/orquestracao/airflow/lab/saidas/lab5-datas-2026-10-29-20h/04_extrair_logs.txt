@@ -1,0 +1,53 @@
+$ docker compose cp checagens/extrair_logs.py airflow-scheduler:/tmp/extrair_logs.py
+ orqlab-verif-airflow-scheduler-1 copy checagens/extrair_logs.py to orqlab-verif-airflow-scheduler-1:/tmp/extrair_logs.py Copying
+ orqlab-verif-airflow-scheduler-1 copy checagens/extrair_logs.py to orqlab-verif-airflow-scheduler-1:/tmp/extrair_logs.py Copied
+[exit 0, 0,1 s, 2026-10-29T20:10:31-0300]
+
+$ docker compose exec airflow-scheduler python /tmp/extrair_logs.py /opt/airflow/logs dag_id=datas_
+## datas_dia_brasilia | scheduled__2026-10-29T03:00:00+00:00 | mostrar_datas
+DATAS dag_id=datas_dia_brasilia
+DATAS timetable=CronTriggerTimetable
+DATAS run_id=scheduled__2026-10-29T03:00:00+00:00
+DATAS run_type=scheduled
+DATAS run_after=2026-10-29 03:00:00+00:00
+DATAS dag_run.logical_date=2026-10-28 03:00:00+00:00
+DATAS logical_date=2026-10-28T03:00:00+00:00 (Brasilia 28/10 00:00)
+DATAS data_interval_start=2026-10-28T03:00:00+00:00 (Brasilia 28/10 00:00)
+DATAS data_interval_end=2026-10-29T03:00:00+00:00 (Brasilia 29/10 00:00)
+DATAS ds=2026-10-28
+DATAS ts=2026-10-28T03:00:00+00:00
+## datas_dia_brasilia | scheduled__2026-10-29T03:00:00+00:00 | receita_particao
+RECEITA janela=[2026-10-28T03:00:00+00:00, 2026-10-29T03:00:00+00:00)
+RECEITA duracao=<Interval [2026-10-28 03:00:00+00:00 -> 2026-10-29 03:00:00+00:00]>
+RECEITA particao_gravada=dt=2026-10-28
+RECEITA linhas_lidas=2
+RECEITA linha utc=2026-10-28T13:05:00+00:00 brasilia=28/10 10:05
+RECEITA linha utc=2026-10-29T00:30:00+00:00 brasilia=28/10 21:30
+## datas_dia_brasilia | scheduled__2026-10-29T03:00:00+00:00 | template_ds
+Running command: ['/usr/bin/bash', '-c', 'echo "TEMPLATE ds=2026-10-28 data_interval_start=2026-10-28 03:00:00+00:00"']
+TEMPLATE ds=2026-10-28 data_interval_start=2026-10-28 03:00:00+00:00
+## datas_trigger_intervalo | scheduled__2026-10-29T00:00:00+00:00 | mostrar_datas
+DATAS dag_id=datas_trigger_intervalo
+DATAS timetable=CronTriggerTimetable
+DATAS run_id=scheduled__2026-10-29T00:00:00+00:00
+DATAS run_type=scheduled
+DATAS run_after=2026-10-29 00:00:00+00:00
+DATAS dag_run.logical_date=2026-10-28 00:00:00+00:00
+DATAS logical_date=2026-10-28T00:00:00+00:00 (Brasilia 27/10 21:00)
+DATAS data_interval_start=2026-10-28T00:00:00+00:00 (Brasilia 27/10 21:00)
+DATAS data_interval_end=2026-10-29T00:00:00+00:00 (Brasilia 28/10 21:00)
+DATAS ds=2026-10-28
+DATAS ts=2026-10-28T00:00:00+00:00
+## datas_trigger_intervalo | scheduled__2026-10-29T00:00:00+00:00 | receita_particao
+RECEITA janela=[2026-10-28T00:00:00+00:00, 2026-10-29T00:00:00+00:00)
+RECEITA duracao=<Interval [2026-10-28 00:00:00+00:00 -> 2026-10-29 00:00:00+00:00]>
+RECEITA particao_gravada=dt=2026-10-28
+RECEITA linhas_lidas=3
+RECEITA linha utc=2026-10-28T00:00:00+00:00 brasilia=27/10 21:00
+RECEITA linha utc=2026-10-28T00:45:00+00:00 brasilia=27/10 21:45
+RECEITA linha utc=2026-10-28T13:05:00+00:00 brasilia=28/10 10:05
+## datas_trigger_intervalo | scheduled__2026-10-29T00:00:00+00:00 | template_ds
+Running command: ['/usr/bin/bash', '-c', 'echo "TEMPLATE ds=2026-10-28 data_interval_start=2026-10-28 00:00:00+00:00"']
+TEMPLATE ds=2026-10-28 data_interval_start=2026-10-28 00:00:00+00:00
+[exit 0, 0,2 s, 2026-10-29T20:10:31-0300]
+
