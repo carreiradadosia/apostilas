@@ -17,7 +17,7 @@ falhou, mesmo quando ela termina verde.
 
 Status na trilha: **publicado**. A apostila foi escrita e conferida na versão 3.3.2 do Airflow,
 que é a que vale; a reconferência na 3.4.0 fica registrada no último capítulo. A ordem
-recomendada vive em `trilha.yml`, na raiz da trilha. Seu roteiro pode cursar este módulo em outra
+recomendada vive em `trilha.yml`, na raiz da trilha. Seu roteiro pode incluir este módulo em outra
 posição.
 
 ## O que tem aqui

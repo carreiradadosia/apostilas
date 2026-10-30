@@ -17,7 +17,7 @@ gold em SQL, registro de carga com alerta e o atendimento da meia-noite.
 Status na trilha: **publicado**. Este é um módulo só de laboratório: não tem apostila própria,
 porque o conceito é ensinado pela apostila do módulo `orquestracao/fundamentos`, que cita este
 laboratório no capítulo 13. A ordem recomendada vive em `trilha.yml`, na raiz da trilha. Seu
-roteiro pode cursar este módulo em outra posição.
+roteiro pode incluir este módulo em outra posição.
 
 ## O que tem aqui
 
