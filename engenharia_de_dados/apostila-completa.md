@@ -8,18 +8,18 @@ tags: [mentoria, apostila]
 
 # Apostila completa, Engenharia de Dados
 
-> Arquivo gerado a partir do `trilha.yml`. Nao edite a mao: rode `gerar_trilha.py` novamente, senao a edicao se perde e o documento diverge.
+> Arquivo gerado a partir do `trilha.yml`. Não edite à mão: rode `gerar_trilha.py` novamente, senão a edição se perde e o documento diverge.
 
-Cada capitulo abaixo e a apostila de um modulo, na ordem recomendada da
-trilha. Para estudar um assunto isolado, va direto ao modulo.
+Cada capítulo abaixo é a apostila de um módulo, na ordem recomendada da
+trilha. Para estudar um assunto isolado, vá direto ao módulo.
 
-## Sumario
+## Sumário
 
-- [Capitulo 1, Fundamentos de orquestração](#capitulo-1-fundamentos-de-orquestração)
+- [Capítulo 1, Fundamentos de orquestração](#capítulo-1-fundamentos-de-orquestração)
 
 ---
 
-## Capitulo 1, Fundamentos de orquestração
+## Capítulo 1, Fundamentos de orquestração
 
 Fonte: `orquestracao/fundamentos/apostila.md`
 
