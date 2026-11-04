@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Usage: bin/pg <postgres|replica> <role> <application_name> [psql arguments]
+# Goes through the container socket, so no password is typed.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+servico="$1"; papel="$2"; app="$3"; shift 3
+exec docker compose --profile replica exec -T -e PGAPPNAME="$app" "$servico" \
+  psql -X -U "$papel" -d rede "$@"

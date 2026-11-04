@@ -1,0 +1,112 @@
+# Lineage lab: which SQL does a report run, in Postgres 16 and SQL Server 2022.
+# No port is published on the host; every command goes through docker compose exec.
+name: linhagem-lab
+
+services:
+  postgres:
+    image: postgres:16.15-alpine
+    # Logging settings live in postgresql.auto.conf (see postgres-init) because command-line -c
+    # options would override ALTER SYSTEM and hide what the lab needs to show.
+    command: ["postgres", "-c", "shared_preload_libraries=pg_stat_statements"]
+    environment:
+      POSTGRES_USER: admin_lab
+      POSTGRES_PASSWORD: ${ADMIN_DB_PASSWORD:?run ./preparar.sh first}
+      POSTGRES_DB: postgres
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?run ./preparar.sh first}
+      MONITOR_DB_PASSWORD: ${MONITOR_DB_PASSWORD:?run ./preparar.sh first}
+      DBT_DB_PASSWORD: ${DBT_DB_PASSWORD:?run ./preparar.sh first}
+      REPLICATOR_DB_PASSWORD: ${REPLICATOR_DB_PASSWORD:?run ./preparar.sh first}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+      - ./postgres:/cenario:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "admin_lab", "-d", "rede"]
+      interval: 3s
+      retries: 20
+      start_period: 5s
+
+  # Physical streaming replica, read only. Under a profile because only one phase needs it.
+  replica:
+    image: postgres:16.15-alpine
+    profiles: ["replica"]
+    user: postgres
+    environment:
+      PGPASSWORD: ${REPLICATOR_DB_PASSWORD:?run ./preparar.sh first}
+    command:
+      - sh
+      - -ec
+      - |
+        if [ ! -s "$$PGDATA/PG_VERSION" ]; then
+          pg_basebackup -h postgres -U replicador -D "$$PGDATA" -R -X stream
+          chmod 700 "$$PGDATA"
+        fi
+        exec postgres -c "shared_preload_libraries=${REPLICA_PRELOAD-pg_stat_statements}"
+    volumes:
+      - replica-data:/var/lib/postgresql/data
+      - ./postgres:/cenario:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "admin_lab", "-d", "rede"]
+      interval: 3s
+      retries: 20
+      start_period: 5s
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-CU27-GDR1-ubuntu-22.04
+    # Shared machine: the engine and the container are both capped.
+    mem_limit: 3g
+    environment:
+      ACCEPT_EULA: ${ACCEPT_EULA:?Leia os termos da edicao Developer em https://www.microsoft.com/content/dam/microsoft/usetm/documents/sql-server/sql-server-2022-developer-express-evaluation/retail-packaged/SQLServer2022_SQLServer2022DeveloperExpressEvaluation_English.pdf e so entao exporte ACCEPT_EULA=Y}
+      MSSQL_PID: Developer
+      MSSQL_MEMORY_LIMIT_MB: "2048"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?run ./preparar.sh first}
+      MSSQL_APP_PASSWORD: ${MSSQL_APP_PASSWORD:?run ./preparar.sh first}
+      MSSQL_MONITOR_PASSWORD: ${MSSQL_MONITOR_PASSWORD:?run ./preparar.sh first}
+      # sqlcmd reads the password from here; -P would expose it in the process list.
+      SQLCMDPASSWORD: ${MSSQL_SA_PASSWORD:?run ./preparar.sh first}
+    volumes:
+      - mssql-data:/var/opt/mssql
+      - ./mssql:/scripts:ro
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-C", "-S", "localhost", "-U", "sa", "-b", "-l", "3", "-Q", "SELECT 1"]
+      interval: 5s
+      retries: 30
+      start_period: 15s
+
+  # Fictional application that generates the report through a real TDS driver: it sets an
+  # application name and sends RPC calls, which sqlcmd cannot do.
+  app:
+    build: ./app
+    image: linhagem-lab-app:local
+    profiles: ["app"]
+    environment:
+      MSSQL_APP_PASSWORD: ${MSSQL_APP_PASSWORD:?run ./preparar.sh first}
+    depends_on:
+      mssql:
+        condition: service_healthy
+
+  dbt:
+    build: ./runner
+    image: linhagem-lab-dbt:local
+    profiles: ["dbt"]
+    user: "${DBT_UID:-1000}:${DBT_GID:-1000}"
+    working_dir: /lab/dbt
+    environment:
+      HOME: /tmp
+      DBT_PROFILES_DIR: /lab/dbt
+      DBT_USE_COLORS: "false"
+      DBT_SEND_ANONYMOUS_USAGE_STATS: "false"
+      DBT_DB_PASSWORD: ${DBT_DB_PASSWORD:?run ./preparar.sh first}
+    volumes:
+      - ./dbt:/lab/dbt
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  replica-data:
+  mssql-data:

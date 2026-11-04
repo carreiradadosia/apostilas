@@ -1,0 +1,101 @@
+
+$ ./sq.sh dw 60_texto_e_collation.sql
+== Collation do servidor e do banco, e o que acontece com o UTF-8 deste arquivo.
+servidor|banco|unicode_de_a_til
+--------|-----|----------------
+SQL_Latin1_General_CP1_CI_AS|SQL_Latin1_General_CP1_CI_AS|227
+
+(1 rows affected)
+== TRIM e caixa. TRIM sem argumento só tira espaço; tab e espaço duro ficam.
+trim_espaco|upper_com_acento|lower_com_acento|len_com_tab|len_com_espaco_duro|len_com_lista_de_caracteres
+-----------|----------------|----------------|-----------|-------------------|---------------------------
+[Loja Centro]|SÃO JOÃO|são joão|3|3|1
+
+(1 rows affected)
+== INITCAP e unaccent, do Postgres, não existem em T-SQL.
+Msg 195, Level 15, State 10, Server e33b97b9de0f, Line 1
+'INITCAP' is not a recognized built-in function name.
+Msg 195, Level 15, State 10, Server e33b97b9de0f, Line 1
+'unaccent' is not a recognized built-in function name.
+== Collation padrão é insensível a caixa: comparação, DISTINCT e GROUP BY.
+padrao_ci|com_cs|padrao_as|com_ai
+---------|------|---------|------
+igual|diferente|diferente|igual
+
+(1 rows affected)
+
+(4 rows affected)
+distinct_padrao
+---------------
+Papelaria
+Papelária
+
+(2 rows affected)
+grupo_padrao|linhas
+------------|------
+Papelaria|3
+Papelária|1
+
+(2 rows affected)
+grupo_sensivel|linhas
+--------------|------
+papelaria |1
+Papelaria|1
+PAPELARIA|1
+Papelária|1
+
+(4 rows affected)
+grupo_ai|linhas
+--------|------
+Papelaria|4
+
+(1 rows affected)
+== Sem TRIM, a collation ainda salva a caixa e o espaço à direita. Não salva o espaço à esquerda.
+bruto|comparacao_direta
+-----|-----------------
+PAGO|casou
+pago |casou
+ Pago |não casou
+
+(3 rows affected)
+== Espaço à direita: igual em =, some em LEN, conta em DATALENGTH. Em LIKE, depende de ser nvarchar ou varchar.
+igual_com_espaco|igual_em_binaria|len|datalength_nvarchar|datalength_varchar|like_padrao_com_espaco|like_valor_nvarchar|like_valor_varchar
+----------------|----------------|---|-------------------|------------------|----------------------|-------------------|------------------
+igual|igual|3|12|6|não casou|não casou|casou
+
+(1 rows affected)
+== N e varchar: português cabe na página de código deste banco, o resto vira ? sem erro.
+em_varchar|em_nvarchar|literal_sem_n|literal_com_n|bytes_varchar|bytes_nvarchar
+----------|-----------|-------------|-------------|-------------|--------------
+São João ?|São João Ж|São João ?|São João Ж|10|20
+
+(1 rows affected)
+== Acento: collation compara ignorando, mas não remove. O valor sai igual.
+com_collate|compara_com_ai
+-----------|--------------
+São Paulo|igual
+
+(1 rows affected)
+== TRANSLATE é a forma documentada de trocar caractere por caractere. A collation da entrada muda o resultado.
+padrao_ci|binaria|ai_troca_sem_acento_tambem|ai_troca_com_acento_tambem
+---------|-------|--------------------------|--------------------------
+alvaro Sao Joao|Alvaro Sao Joao|XlvXro|XlvXro
+
+(1 rows affected)
+sem_acento_do_laboratorio|em_cadeia_sem_trim
+-------------------------|------------------
+Conceicao Acao Orgao Indio Unico| cafe 
+
+(1 rows affected)
+== TRANSLATE com listas de tamanho diferente é erro, não truncamento.
+Msg 9828, Level 16, State 3, Server e33b97b9de0f, Line 2
+The second and third arguments of the TRANSLATE built-in function must contain an equal number of characters.
+== Duas collations na mesma comparação: erro de compilação, comum entre o ERP e um banco novo.
+Msg 468, Level 16, State 9, Server e33b97b9de0f, Line 1
+Cannot resolve the collation conflict between "SQL_Latin1_General_CP1_CI_AS" and "Latin1_General_CI_AS" in the equal to operation.
+linhas_com_collate
+------------------
+0
+
+(1 rows affected)
+[exit 0, 2026-11-04]

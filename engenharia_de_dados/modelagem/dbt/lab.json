@@ -1,0 +1,1316 @@
+{
+  "modulo": "modelagem/dbt",
+  "verificado_em": "2026-11-04",
+  "nivel_maximo_atingido": 2,
+  "observacao": "Laboratório em lab/: os comandos de labs[] rodam de dentro de engenharia_de_dados/modelagem/dbt/lab, depois do ./preparar.sh; o Lab 8 em lab/sqlserver e o Lab 9 em lab/linhagem. labs[] registra o nível 3, executado em 2026-11-03 com a saída capturada; as provas curtas de lab/saidas/lab9_* são de 2026-11-04. artefatos[] é o nível 2, estático, com três ajustes ao gerador, registrados em cada artefato: os docker-compose.yaml passam em docker compose config -q com as variáveis do .env preenchidas por valor de teste, sem arquivo .env e sem subir nada; os .sql são conferidos pelo sqlglot no dialeto do motor que os roda (checagens/sql_por_dialeto.py), porque no dialeto padrão o meta-comando do psql, o T-SQL e o Jinja são reprovados; os modelos dbt com Jinja valem pelo dbt parse ou dbt build e pelo SQL compilado. 11 arquivos que o sqlglot não interpreta ficam no nível 3 pela execução, com a captura e o erro do parser no próprio artefato. Os dois comandos de SQL Server não rodam sem o aceite dos termos, no README.md de cada pasta.",
+  "versoes": {
+    "linhagem-lab-app": "local",
+    "linhagem-lab-dbt": "local",
+    "mcr.microsoft.com/mssql/server": "2022-CU27-GDR1-ubuntu-22.04 e 2025-CU10-ubuntu-24.04",
+    "modelagem-lab-airflow-dbt": "local",
+    "modelagem-lab-dbt": "local",
+    "postgres": "16.15-alpine"
+  },
+  "artefatos": [
+    {
+      "arquivo": "lab/alternativa_duckdb/projeto/conferir.py",
+      "nivel": 2,
+      "comando": "ruff check modelagem/dbt/lab/alternativa_duckdb/projeto/conferir.py",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/alternativa_duckdb/projeto/dbt_project.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/alternativa_duckdb/projeto/models/_models.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/alternativa_duckdb/projeto/models/stg_pedidos.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/alternativa_duckdb.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='duckdb')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/alternativa_duckdb/projeto/models/vendas_por_dia.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/alternativa_duckdb.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='duckdb')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/alternativa_duckdb/projeto/profiles.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/alternativa_duckdb/projeto/tests/assert_receita_igual_a_do_piloto.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/alternativa_duckdb.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='duckdb')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/capturar.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/capturar.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/checagens/comparar_select_pedidos.py",
+      "nivel": 2,
+      "comando": "ruff check modelagem/dbt/lab/checagens/comparar_select_pedidos.py",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/checagens/sql_por_dialeto.py",
+      "nivel": 2,
+      "comando": "ruff check modelagem/dbt/lab/checagens/sql_por_dialeto.py",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/checagens/sqlglot_por_dialeto.py",
+      "nivel": 2,
+      "comando": "ruff check modelagem/dbt/lab/checagens/sqlglot_por_dialeto.py",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/checagens/var_sem_padrao/dbt_project.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/docker-compose.yaml",
+      "nivel": 2,
+      "comando": "docker compose -f modelagem/dbt/lab/docker-compose.yaml config -q",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/app/gerar_relatorio.py",
+      "nivel": 2,
+      "comando": "ruff check modelagem/dbt/lab/linhagem/app/gerar_relatorio.py",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/capturar.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/linhagem/capturar.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/dbt/dbt_project.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/dbt/ler_manifesto.py",
+      "nivel": 2,
+      "comando": "ruff check modelagem/dbt/lab/linhagem/dbt/ler_manifesto.py",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/dbt/models/_sources.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/dbt/models/experimentos/copia_da_view_do_sistema.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/linhagem/saidas/dbt_01_linhagem.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/linhagem/dbt/models/experimentos/copia_sem_ref.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/dbt/models/exposures.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/dbt/models/gold/_gold.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/dbt/models/gold/mart_faturamento_por_loja.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/linhagem/saidas/dbt_01_linhagem.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/linhagem/dbt/models/silver/stg_itens.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/linhagem/saidas/dbt_01_linhagem.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/linhagem/dbt/models/silver/stg_lojas.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/linhagem/saidas/dbt_01_linhagem.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/linhagem/dbt/models/silver/stg_pedidos.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/linhagem/saidas/dbt_01_linhagem.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/linhagem/dbt/profiles.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/docker-compose.yaml",
+      "nivel": 2,
+      "comando": "docker compose -f modelagem/dbt/lab/linhagem/docker-compose.yaml config -q",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/00_cenario.sql",
+      "nivel": 3,
+      "comando": "docker compose exec -T mssql bash -c '/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -b -v APP_PW=\"$MSSQL_APP_PASSWORD\" -v MON_PW=\"$MSSQL_MONITOR_PASSWORD\" -I -i /scripts/00_cenario.sql > /dev/null && echo cenario criado'",
+      "verificado_em": "2026-11-03",
+      "saida": "executado, saída em lab/linhagem/saidas/mssql_00_ambiente.txt. sqlglot 30.2.1 não interpreta este arquivo: Invalid expression / Unexpected token. Line 123, Col: 28. relatorios.faturamento_lento @inicio date, @fim date AS BEGIN SET NOCOUNT ON; WAIT"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/01_ambiente.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/10_xe_criar.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/11_xe_ler_arquivo.sql",
+      "nivel": 3,
+      "comando": "bin/ms sa -i /scripts/11_xe_ler_arquivo.sql",
+      "verificado_em": "2026-11-03",
+      "saida": "executado, saída em lab/linhagem/saidas/mssql_01_extended_events.txt. sqlglot 30.2.1 não interpreta este arquivo: Invalid expression / Unexpected token. Line 3, Col: 24. ead the file target. Duration and CPU fields are left out on purpose. SET NOCOUNT ON"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/12_xe_ler_ring.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/13_xe_descricoes.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/20_dmv_stats.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/21_dmv_requests.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/30_qs_ler.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/31_qs_planos.sql",
+      "nivel": 3,
+      "comando": "bin/ms sa -i /scripts/31_qs_planos.sql",
+      "verificado_em": "2026-11-03",
+      "saida": "executado, saída em lab/linhagem/saidas/mssql_04_query_store.txt. sqlglot 30.2.1 não interpreta este arquivo: Expecting ). Line 4, Col: 86. though the procedure only mentions the view. SET NOCOUNT ON; USE rede; ;WITH XMLNAMESPACES (DEFAULT \u001b[4m'http:"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/32_qs_contagem.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/40_catalogo.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/50_perm_matriz.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/linhagem/mssql/51_perm_xe.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/linhagem/postgres/00_cenario.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/postgres/app_relatorio.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/postgres/app_relatorio_2.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/postgres/catalogo.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/postgres/ver_activity.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/postgres/ver_statements.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/postgres-init/01_rede.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/linhagem/postgres-init/01_rede.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/preparar.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/linhagem/preparar.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/rodar.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/linhagem/rodar.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/roteiro_dbt.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/linhagem/roteiro_dbt.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/roteiro_mssql.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/linhagem/roteiro_mssql.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/linhagem/roteiro_postgres.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/linhagem/roteiro_postgres.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/orquestrador/dags/dbt_rede_de_lojas.py",
+      "nivel": 2,
+      "comando": "ruff check modelagem/dbt/lab/orquestrador/dags/dbt_rede_de_lojas.py",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/postgres-init/01_erp_e_dw.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/postgres-init/01_erp_e_dw.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/preparar.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/preparar.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/dbt_project.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/_sources.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/experimentos/_experimentos.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/experimentos/exp_fct_fan_out.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/experimentos/exp_inc_com_chave.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/experimentos/exp_inc_sem_chave.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/gold/_gold.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/gold/dim_data.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/gold/dim_loja.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/gold/dim_produto.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/gold/fct_vendas.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/gold/obt_vendas.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/gold/vendas_por_dia.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/silver/_silver.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/silver/foto_do_dia.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/silver/stg_atendimentos.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/silver/stg_itens.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/silver/stg_lojas.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/silver/stg_pedidos.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/models/silver/stg_produtos.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/profiles.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/snapshots/_snapshots.yml",
+      "nivel": 2,
+      "comando": "python3 -c \"import yaml; yaml.safe_load_all(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/tests/assert_itens_batem_com_pedido.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/tests/assert_receita_igual_a_do_piloto.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/tests/assert_status_desconhecido.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/projeto_dbt/tests/assert_vendas_sem_versao.sql",
+      "nivel": 2,
+      "comando": "dbt parse ou dbt build, saída em lab/saidas/lab5_projeto_dbt.txt, e SQL compilado em target/compiled, conferido por python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/10_bronze_carga.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sql/11_bronze_foto_precos.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/12_bronze_itens_carga_dupla.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sql/20_silver.sql",
+      "nivel": 3,
+      "comando": "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/20_silver.sql",
+      "verificado_em": "2026-11-03",
+      "saida": "executado, saída em lab/saidas/lab1_silver_a_mao.txt. sqlglot 30.2.1 não interpreta este arquivo: Invalid expression / Unexpected token. Line 2, Col: 34. one clean row per business key. Rebuilt from bronze on every run. DROP TABLE IF EXIS"
+    },
+    {
+      "arquivo": "lab/sql/21_silver_antes_depois.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/22_fuso.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/30_gold.sql",
+      "nivel": 3,
+      "comando": "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/30_gold.sql",
+      "verificado_em": "2026-11-03",
+      "saida": "executado, saída em lab/saidas/lab3_gold_estrela_e_fan_out.txt. sqlglot 30.2.1 não interpreta este arquivo: Invalid expression / Unexpected token. Line 5, Col: 37. im_loja: one row per store. dim_data: one row per calendar day. DROP TABLE IF EXISTS"
+    },
+    {
+      "arquivo": "lab/sql/31_fan_out.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/40_preco_update_apaga.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/41_produto_fora_da_ultima_foto.sql",
+      "nivel": 3,
+      "comando": "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/41_produto_fora_da_ultima_foto.sql",
+      "verificado_em": "2026-11-03",
+      "saida": "executado, saída em lab/saidas/produto_fora_da_ultima_foto.txt. sqlglot 30.2.1 não interpreta este arquivo: Invalid expression / Unexpected token. Line 3, Col: 22. tten: the photo of day 23 exists only inside the CTE, in a read-only transaction. ST"
+    },
+    {
+      "arquivo": "lab/sql/50_comparar_a_mao_e_dbt.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/60_exercicio_devolucoes_bronze.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sql/61_exercicio_recarga_preparar.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sql/62_exercicio_recarga_que_falha.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sql/63_exercicio_recarga_estado.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sql/70_fuso_por_sessao.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/71_texto_antes_do_cast.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/72_ligacao_com_a_versao.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/73_chave_identidade_reconstrucao.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/74_receita_tres_precos.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/75_venda_sem_versao.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/75b_vendas_sinteticas_na_bronze.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sql/76_reprocesso_sintetico.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/77_provas_curtas_do_join.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/78_fatos_da_carga.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='postgres')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sql/79a_psql_erro_preparar.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sql/79b_psql_erro_recarga.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sql/79c_psql_erro_estado.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sql/erp_noite_21.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sql/erp_noite_22.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/capturar.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/sqlserver/capturar.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/comparar_edicoes_2025.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/sqlserver/comparar_edicoes_2025.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/comparar_versoes.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/sqlserver/comparar_versoes.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/contraprova_postgres.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/sqlserver/contraprova_postgres.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/docker-compose.yaml",
+      "nivel": 2,
+      "comando": "docker compose -f modelagem/dbt/lab/sqlserver/docker-compose.yaml config -q",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/edicoes_2025.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/sqlserver/edicoes_2025.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/preparar.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/sqlserver/preparar.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/roteiro.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/sqlserver/roteiro.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sq.sh",
+      "nivel": 2,
+      "comando": "shellcheck modelagem/dbt/lab/sqlserver/sq.sh",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/00_erp_e_dw.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/01_utf8.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/10_bronze_carga.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/11_bronze_foto_precos.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/12_bronze_itens_carga_dupla.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/20_silver.sql",
+      "nivel": 3,
+      "comando": "./sq.sh dw 20_silver.sql -b",
+      "verificado_em": "2026-11-03",
+      "saida": "executado, saída em lab/sqlserver/saidas/2022/lab1_silver_a_mao.txt. sqlglot 30.2.1 não interpreta este arquivo: Required keyword: 'this' missing for <class 'sqlglot.expressions.core.EQ'>. Line 15, Col: 19. ' SET @saida = STUFF(@saida, @i, 1, UPPER(SUBS"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/21_silver_antes_depois.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/22_fuso.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/30_gold.sql",
+      "nivel": 3,
+      "comando": "./sq.sh dw 30_gold.sql -b",
+      "verificado_em": "2026-11-03",
+      "saida": "executado, saída em lab/sqlserver/saidas/2022/lab3_gold_estrela_e_fan_out.txt. sqlglot 30.2.1 não interpreta este arquivo: Invalid expression / Unexpected token. Line 12, Col: 41. ; BEGIN TRANSACTION; DROP VIEW IF EXISTS gold.obt_vendas; DROP TABLE IF EXISTS gold"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/31_fan_out.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/40_preco_update_apaga.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/60_texto_e_collation.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/61_datas_em_texto.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/62_nulos.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/63_dedup.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/64a_merge_chave_repetida.sql",
+      "nivel": 3,
+      "comando": "./sq.sh dw 64a_merge_chave_repetida.sql",
+      "verificado_em": "2026-11-03",
+      "saida": "executado, saída em lab/sqlserver/saidas/2022/lab10_merge_e_recarga.txt. sqlglot 30.2.1 não interpreta este arquivo: Invalid expression / Unexpected token. Line 1, Col: 39. DROP TABLE IF EXISTS silver.merge_demo\u001b[4m,\u001b[0m silver.merge_sem_chave; CREATE TABLE"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/64b_recarga_preparar.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/64c_recarga_sem_xact_abort.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/64d_recarga_com_xact_abort.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/64e_recarga_estado.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/64f_ddl_em_transacao.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/64g_ddl_estado.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/65_chave_substituta.sql",
+      "nivel": 3,
+      "comando": "./sq.sh dw 65_chave_substituta.sql",
+      "verificado_em": "2026-11-03",
+      "saida": "executado, saída em lab/sqlserver/saidas/2022/lab11_chave_substituta.txt. sqlglot 30.2.1 não interpreta este arquivo: Invalid expression / Unexpected token. Line 15, Col: 17. 1), produto_id int NOT NULL); INSERT INTO gold.dim_sem_pk (produto_id) VALUES (10);"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/66_versoes.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/67_sintaxe_do_postgres.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/68a_recarga_raiserror.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/68b_recarga_throw.sql",
+      "nivel": 3,
+      "comando": "./sq.sh dw 68b_recarga_throw.sql -b",
+      "verificado_em": "2026-11-03",
+      "saida": "executado, saída em lab/sqlserver/saidas/2022/lab14_erro_na_recarga.txt. sqlglot 30.2.1 não interpreta este arquivo: Invalid expression / Unexpected token. Line 7, Col: 12. SACTION; DELETE FROM silver.recarga_demo; INSERT INTO silver.recarga_demo VALUES (1,"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/68c_recarga_try_catch.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/68d_recarga_varios_lotes.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/69_datas_com_tab.sql",
+      "nivel": 2,
+      "comando": "python3 checagens/sql_por_dialeto.py (sqlglot 30.2.1, read='tsql')",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro; lab/saidas/nivel2_sql_por_dialeto.txt"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/70_conferencia_postgres.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/erp_noite_21.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/erp_noite_22.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    },
+    {
+      "arquivo": "lab/sqlserver/sql/postgres_contraprova.sql",
+      "nivel": 2,
+      "comando": "python3 -c \"import sqlglot; sqlglot.parse(...)\"",
+      "verificado_em": "2026-11-04",
+      "saida": "sem erro"
+    }
+  ],
+  "labs": [
+    {
+      "id": "Lab 0",
+      "titulo": "Subir o ambiente",
+      "pasta": "lab",
+      "comandos": [
+        "./preparar.sh",
+        "docker compose --profile dbt down -v",
+        "docker compose --profile dbt config -q && echo compose ok",
+        "docker compose up -d --wait postgres",
+        "docker compose exec -T postgres psql -U dw -d dw -c \"select version()\" -c \"\\dn\" -c \"select count(*) as tabelas_na_replica from information_schema.foreign_tables\"",
+        "docker compose --profile dbt build --no-cache --progress=plain dbt",
+        "docker image ls --format \"{{.Repository}}:{{.Tag}} {{.Size}}\" | grep -E \"^(postgres:16.15-alpine|modelagem-lab-dbt:local|python:3.13.15-slim-bookworm) \"",
+        "docker build --network host --no-cache --progress=plain -t modelagem-lab-dbt:local runner"
+      ],
+      "saida_esperada": ".env criado pelo preparar.sh; compose ok; Postgres saudável; schemas e tabelas estrangeiras da réplica listados; imagem modelagem-lab-dbt:local construída com o lock de 59 pacotes",
+      "saida_observada": "igual à esperada; na captura, o .env já existia",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "ambiente": "Linux, Docker 28.3.3, Compose v2.39.1, postgres:16.15-alpine (PostgreSQL 16.15), python:3.13.15-slim-bookworm",
+      "saida": "lab/saidas/lab0_subir_do_zero.txt e lab/saidas/lab0_construir_imagem_dbt.txt"
+    },
+    {
+      "id": "Lab 1",
+      "titulo": "A silver à mão",
+      "pasta": "lab",
+      "comandos": [
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/10_bronze_carga.sql",
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -v dia=2026-10-20 -f /sql/11_bronze_foto_precos.sql",
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/20_silver.sql",
+        "docker compose exec -T postgres psql -U dw -d dw -f /sql/21_silver_antes_depois.sql"
+      ],
+      "saida_esperada": "bronze com 11 pedidos e silver com 10; status nulo vira desconhecido; custo nulo segue nulo",
+      "saida_observada": "igual à esperada",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "ambiente": "Linux, Docker 28.3.3, Compose v2.39.1, postgres:16.15-alpine (PostgreSQL 16.15)",
+      "saida": "lab/saidas/lab1_silver_a_mao.txt"
+    },
+    {
+      "id": "Lab 2",
+      "titulo": "Fuso e datas",
+      "pasta": "lab",
+      "comandos": [
+        "docker compose exec -T postgres psql -U dw -d dw -f /sql/22_fuso.sql"
+      ],
+      "saida_esperada": "atendimentos 2 e 3 mudam de dia depois da conversão; ERROR de propósito em 31/02/2026, com saída 0",
+      "saida_observada": "igual à esperada",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "ambiente": "Linux, Docker 28.3.3, Compose v2.39.1, postgres:16.15-alpine (PostgreSQL 16.15)",
+      "saida": "lab/saidas/lab2_fuso_e_datas.txt"
+    },
+    {
+      "id": "Lab 3",
+      "titulo": "Estrela, one big table e fan-out",
+      "pasta": "lab",
+      "comandos": [
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/30_gold.sql",
+        "docker compose exec -T postgres psql -U dw -d dw -f /sql/31_fan_out.sql"
+      ],
+      "saida_esperada": "receita paga de 430,90 no dia 20, e 850,90 com o JOIN a mais; o teste do grão acusa",
+      "saida_observada": "igual à esperada",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "ambiente": "Linux, Docker 28.3.3, Compose v2.39.1, postgres:16.15-alpine (PostgreSQL 16.15)",
+      "saida": "lab/saidas/lab3_gold_estrela_e_fan_out.txt"
+    },
+    {
+      "id": "Lab 4",
+      "titulo": "O preço, o UPDATE e o tipo 2",
+      "pasta": "lab",
+      "comandos": [
+        "docker compose exec -T postgres psql -U erp -d erp -v ON_ERROR_STOP=1 -f /sql/erp_noite_21.sql",
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -v dia=2026-10-21 -f /sql/11_bronze_foto_precos.sql",
+        "docker compose exec -T postgres psql -U erp -d erp -v ON_ERROR_STOP=1 -f /sql/erp_noite_22.sql",
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -v dia=2026-10-22 -f /sql/11_bronze_foto_precos.sql",
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -q -f /sql/20_silver.sql",
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -q -f /sql/30_gold.sql",
+        "docker compose exec -T postgres psql -U dw -d dw -f /sql/40_preco_update_apaga.sql"
+      ],
+      "saida_esperada": "fotos com 15 linhas e tipo 2 com 7 versões; receita segue em 430,90, 111,90 e 293,30",
+      "saida_observada": "igual à esperada",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "ambiente": "Linux, Docker 28.3.3, Compose v2.39.1, postgres:16.15-alpine (PostgreSQL 16.15)",
+      "saida": "lab/saidas/lab4_preco_update_e_scd2.txt"
+    },
+    {
+      "id": "Lab 5",
+      "titulo": "O mesmo fluxo em dbt",
+      "pasta": "lab",
+      "comandos": [
+        "docker compose --profile dbt run --rm dbt dbt --version",
+        "docker compose --profile dbt run --rm dbt dbt debug",
+        "docker compose --profile dbt run --rm dbt dbt parse",
+        "docker compose --profile dbt run --rm dbt dbt seed",
+        "docker compose --profile dbt run --rm dbt dbt snapshot --vars '{dia_foto: \"2026-10-20\"}'",
+        "docker compose --profile dbt run --rm dbt dbt snapshot --vars '{dia_foto: \"2026-10-21\"}'",
+        "docker compose --profile dbt run --rm dbt dbt snapshot --vars '{dia_foto: \"2026-10-22\"}'",
+        "docker compose exec -T postgres psql -U dw -d dw -c \"select id, preco, dbt_valid_from, dbt_valid_to from dbt_snapshots.snap_produtos_preco order by id, dbt_valid_from\" -c \"select (select count(*) from dbt_snapshots.snap_produtos_preco) as linhas_check, (select count(*) from dbt_snapshots.snap_produtos_por_timestamp) as linhas_timestamp\"",
+        "docker compose --profile dbt run --rm dbt dbt build",
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/50_comparar_a_mao_e_dbt.sql",
+        "cat projeto_dbt/target/compiled/rede_de_lojas/models/gold/fct_vendas.sql",
+        "docker compose --profile dbt run --rm dbt dbt docs generate",
+        "ls -la projeto_dbt/target/index.html projeto_dbt/target/catalog.json projeto_dbt/target/manifest.json | awk \"{print \\$5, \\$9}\" && python3 -c \"import json; m = json.load(open(\\\"projeto_dbt/target/manifest.json\\\")); print(\\\"pais de fct_vendas:\\\", sorted(m[\\\"parent_map\\\"][\\\"model.rede_de_lojas.fct_vendas\\\"]))\""
+      ],
+      "saida_esperada": "PASS=44 WARN=2 ERROR=0 SKIP=0 TOTAL=46; EXCEPT 0 e 0 contra o SQL à mão",
+      "saida_observada": "igual à esperada",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "ambiente": "Linux, Docker 28.3.3, Compose v2.39.1, postgres:16.15-alpine (PostgreSQL 16.15), dbt-core 1.12.6, dbt-postgres 1.11.0",
+      "saida": "lab/saidas/lab5_projeto_dbt.txt"
+    },
+    {
+      "id": "Lab 6",
+      "titulo": "Testes que param",
+      "pasta": "lab",
+      "comandos": [
+        "docker compose --profile dbt run --rm dbt dbt build --select tag:experimento --vars '{experimentos: true}'",
+        "docker compose --profile dbt run --rm dbt dbt build --select exp_inc_sem_chave exp_inc_com_chave --vars '{experimentos: true}'",
+        "docker compose exec -T postgres psql -U dw -d dw -c \"select 'sem_chave' as modelo, count(*) as linhas, count(distinct atendimento_id) as atendimentos from dbt_experimentos.exp_inc_sem_chave union all select 'com_chave', count(*), count(distinct atendimento_id) from dbt_experimentos.exp_inc_com_chave\"",
+        "docker compose --profile dbt run --rm dbt dbt build --select exp_inc_sem_chave --full-refresh --vars '{experimentos: true}'",
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/12_bronze_itens_carga_dupla.sql",
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -q -f /sql/20_silver.sql -f /sql/30_gold.sql",
+        "docker compose --profile dbt run --rm dbt dbt build",
+        "docker compose exec -T postgres psql -U dw -d dw -c \"select g.dia, g.receita_paga as gold_a_mao, d.receita_paga as gold_dbt from gold.vendas_por_dia g join dbt_gold.vendas_por_dia d using (dia) order by dia\"",
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -q -f /sql/10_bronze_carga.sql -f /sql/20_silver.sql -f /sql/30_gold.sql",
+        "docker compose --profile dbt run --rm dbt dbt build"
+      ],
+      "saida_esperada": "exit 1 de propósito em três comandos; carga dupla com PASS=27 WARN=2 ERROR=2 SKIP=15; gold do dbt em 430,90 e SQL à mão em 741,80",
+      "saida_observada": "igual à esperada",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "ambiente": "Linux, Docker 28.3.3, Compose v2.39.1, postgres:16.15-alpine (PostgreSQL 16.15), dbt-core 1.12.6, dbt-postgres 1.11.0",
+      "saida": "lab/saidas/lab6_testes_que_param.txt"
+    },
+    {
+      "id": "Lab 7",
+      "titulo": "O dbt numa Dag",
+      "pasta": "lab",
+      "comandos": [
+        "docker build --network host --progress=plain -f orquestrador/Dockerfile -t modelagem-lab-airflow-dbt:local .",
+        "docker compose --profile orquestrador run --rm airflow-teste bash -c \"airflow db migrate > /tmp/migrate.log 2>&1 && airflow dags test dbt_rede_de_lojas 2026-10-22\"",
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/12_bronze_itens_carga_dupla.sql",
+        "docker compose --profile orquestrador run --rm airflow-teste bash -c \"airflow db migrate > /tmp/migrate.log 2>&1 && airflow dags test dbt_rede_de_lojas 2026-10-22\"",
+        "docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -q -f /sql/10_bronze_carga.sql -f /sql/20_silver.sql -f /sql/30_gold.sql",
+        "docker compose --profile orquestrador run --rm airflow-teste bash -c \"airflow db migrate > /tmp/migrate.log 2>&1 && airflow dags test dbt_rede_de_lojas 2026-10-22\""
+      ],
+      "saida_esperada": "rodada 1 em sucesso, rodada 2 em falha com exit 1 e DagRun failed, rodada 3 em sucesso depois do conserto do dado",
+      "saida_observada": "igual à esperada",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "ambiente": "Linux, Docker 28.3.3, Compose v2.39.1, postgres:16.15-alpine (PostgreSQL 16.15), dbt-core 1.12.6, dbt-postgres 1.11.0, apache/airflow:3.3.2-python3.13",
+      "saida": "lab/saidas/lab7_orquestrador_construir_imagem.txt e lab/saidas/lab7_orquestrador_roda_dbt.txt"
+    },
+    {
+      "id": "Lab 8",
+      "titulo": "Silver e gold em T-SQL",
+      "pasta": "lab/sqlserver",
+      "comandos": [
+        "./preparar.sh",
+        "ACCEPT_EULA=Y ./roteiro.sh 2022",
+        "./sq.sh master 00_erp_e_dw.sql -b",
+        "./sq.sh dw 10_bronze_carga.sql -b",
+        "./sq.sh dw 11_bronze_foto_precos.sql -b -v dia=2026-10-20",
+        "./sq.sh dw 20_silver.sql -b",
+        "./sq.sh dw 21_silver_antes_depois.sql",
+        "./sq.sh dw 22_fuso.sql",
+        "./sq.sh dw 30_gold.sql -b",
+        "./sq.sh dw 31_fan_out.sql",
+        "./sq.sh erp erp_noite_21.sql -b",
+        "./sq.sh dw 11_bronze_foto_precos.sql -b -v dia=2026-10-21",
+        "./sq.sh erp erp_noite_22.sql -b",
+        "./sq.sh dw 11_bronze_foto_precos.sql -b -v dia=2026-10-22",
+        "./sq.sh dw 20_silver.sql -b",
+        "./sq.sh dw 30_gold.sql -b",
+        "./sq.sh dw 40_preco_update_apaga.sql",
+        "./sq.sh dw 70_conferencia_postgres.sql",
+        "ACCEPT_EULA=Y ./roteiro.sh 2025",
+        "ACCEPT_EULA=Y ./edicoes_2025.sh",
+        "ACCEPT_EULA=Y MSSQL_PID=StandardDeveloper SAIDA=/tmp/standard ./roteiro.sh 2025"
+      ],
+      "saida_esperada": "32 de 32 linhas batem com o Postgres; sem ACCEPT_EULA o compose para com uma mensagem",
+      "saida_observada": "igual à esperada, na 2022, na 2025 Enterprise Developer e na 2025 Standard Developer",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "ambiente": "Linux, mcr.microsoft.com/mssql/server:2022-CU27-GDR1-ubuntu-22.04 e 2025-CU10-ubuntu-24.04",
+      "saida": "lab/sqlserver/saidas/",
+      "observacao": "Roda SQL Server na edição Developer: leia os termos no README.md da pasta antes de passar ACCEPT_EULA=Y. Sem medida de tempo nem de memória, pelos termos."
+    },
+    {
+      "id": "Lab 9",
+      "titulo": "Que SQL um relatório roda",
+      "pasta": "lab/linhagem",
+      "comandos": [
+        "./preparar.sh",
+        "ACCEPT_EULA=Y ./rodar.sh"
+      ],
+      "saida_esperada": "pg_stat_statements com calls igual a 2 e trim(cliente) = $1; Extended Events com a chamada e os valores; a exposição do dbt lista o que alimenta o painel",
+      "saida_observada": "igual à esperada; a página gráfica de linhagem não foi aberta em navegador, a prova é o HTTP 200 de dentro do contêiner e o manifesto",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "ambiente": "Linux, Docker 28.3.3, Compose v2.39.1, postgres:16.15-alpine (PostgreSQL 16.15), dbt-core 1.12.6, dbt-postgres 1.11.0, mcr.microsoft.com/mssql/server:2022-CU27-GDR1-ubuntu-22.04",
+      "saida": "lab/linhagem/saidas/",
+      "observacao": "Roda SQL Server na edição Developer: leia os termos no README.md da pasta antes de passar ACCEPT_EULA=Y. Sem medida de tempo nem de memória, pelos termos."
+    }
+  ]
+}

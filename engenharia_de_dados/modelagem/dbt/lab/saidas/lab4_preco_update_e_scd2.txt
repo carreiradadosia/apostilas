@@ -1,0 +1,154 @@
+
+$ docker compose exec -T postgres psql -U erp -d erp -v ON_ERROR_STOP=1 -f /sql/erp_noite_21.sql
+UPDATE 5
+ id | preco |    atualizado_em    
+----+-------+---------------------
+ 10 | 60.00 | 2026-10-21 03:00:00
+ 20 | 33.30 | 2026-10-21 03:00:00
+ 30 | 15.00 | 2026-10-21 03:00:00
+ 40 | 20.50 | 2026-10-21 03:00:00
+ 50 | 12.00 | 2026-10-21 03:00:00
+(5 rows)
+
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -v dia=2026-10-21 -f /sql/11_bronze_foto_precos.sql
+DELETE 0
+INSERT 0 5
+ _dia_referencia | linhas 
+-----------------+--------
+ 2026-10-20      |      5
+ 2026-10-21      |      5
+(2 rows)
+
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U erp -d erp -v ON_ERROR_STOP=1 -f /sql/erp_noite_22.sql
+UPDATE 5
+UPDATE 1
+UPDATE 1
+ id | preco |    atualizado_em    
+----+-------+---------------------
+ 10 | 60.00 | 2026-10-22 03:00:00
+ 20 | 33.30 | 2026-10-22 03:00:00
+ 30 | 17.00 | 2026-10-22 03:00:00
+ 40 | 20.00 | 2026-10-22 03:00:00
+ 50 | 12.00 | 2026-10-22 03:00:00
+(5 rows)
+
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -v dia=2026-10-22 -f /sql/11_bronze_foto_precos.sql
+DELETE 0
+INSERT 0 5
+ _dia_referencia | linhas 
+-----------------+--------
+ 2026-10-20      |      5
+ 2026-10-21      |      5
+ 2026-10-22      |      5
+(3 rows)
+
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -q -f /sql/20_silver.sql
+          tabela          | linhas 
+--------------------------+--------
+ silver.pedidos           |     10
+ silver.itens             |     13
+ silver.lojas             |      3
+ silver.produtos          |      5
+ silver.produtos_vigencia |      7
+ silver.atendimentos      |      4
+(6 rows)
+
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -q -f /sql/30_gold.sql
+psql:/sql/30_gold.sql:5: NOTICE:  drop cascades to view gold.obt_vendas
+    dia     | pedidos | pedidos_pagos | receita_paga 
+------------+---------+---------------+--------------
+ 2026-10-20 |       4 |             2 |       430.90
+ 2026-10-21 |       3 |             2 |       111.90
+ 2026-10-22 |       3 |             3 |       293.30
+(3 rows)
+
+ linhas_fct | chaves_fct | itens_silver | linhas_obt | receita_obt 
+------------+------------+--------------+------------+-------------
+         13 |         13 |           13 |         13 |      836.10
+(1 row)
+
+ executor | linhas_bronze | linhas_silver | receita_paga 
+----------+---------------+---------------+--------------
+ a_mao    |            11 |            10 |       836.10
+ a_mao    |            11 |            10 |       836.10
+(2 rows)
+
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -f /sql/40_preco_update_apaga.sql
+Border style is 1.
+== O que sobra na origem: só o preço de hoje. Não há como pedir o de ontem.
+ id | preco |    atualizado_em    
+----+-------+---------------------
+ 30 | 17.00 | 2026-10-22 03:00:00
+ 40 | 20.00 | 2026-10-22 03:00:00
+(2 rows)
+
+== O pedido 102, do dia 20, vendeu o caderno a 20,50. A origem diz outra coisa agora.
+ pedido_id | preco_unitario | preco_na_origem_hoje 
+-----------+----------------+----------------------
+       102 |          20.50 |                20.00
+(1 row)
+
+== As fotos guardam os três dias.
+ _dia_referencia | id | preco 
+-----------------+----+-------
+ 2026-10-20      | 30 | 15.00
+ 2026-10-21      | 30 | 15.00
+ 2026-10-22      | 30 | 17.00
+ 2026-10-20      | 40 | 20.50
+ 2026-10-21      | 40 | 20.50
+ 2026-10-22      | 40 | 20.00
+(6 rows)
+
+== SCD tipo 2 derivado das fotos, por vigência.
+ produto_id | preco | valido_de  | valido_ate 
+------------+-------+------------+------------
+         10 | 60.00 | 2026-10-20 | 
+         20 | 33.30 | 2026-10-20 | 
+         30 | 15.00 | 2026-10-20 | 2026-10-22
+         30 | 17.00 | 2026-10-22 | 
+         40 | 20.50 | 2026-10-20 | 2026-10-22
+         40 | 20.00 | 2026-10-22 | 
+         50 | 12.00 | 2026-10-20 | 
+(7 rows)
+
+== Custo de cada caminho: linhas guardadas.
+ linhas_nas_fotos | linhas_no_tipo_2 
+------------------+------------------
+               15 |                7
+(1 row)
+
+== Cada venda encontra uma versão só, sem fan-out.
+ pedido_id | item_seq |  data_id   | produto_id | preco_unitario | preco_tabela | desconto 
+-----------+----------+------------+------------+----------------+--------------+----------
+       102 |        2 | 2026-10-20 |         40 |          20.50 |        20.50 |     0.00
+       103 |        1 | 2026-10-20 |         30 |          15.00 |        15.00 |     0.00
+       104 |        2 | 2026-10-20 |         30 |          10.90 |        15.00 |    -4.10
+       107 |        1 | 2026-10-21 |         30 |          15.00 |        15.00 |     0.00
+       108 |        2 | 2026-10-22 |         40 |          20.00 |        20.00 |     0.00
+(5 rows)
+
+== BETWEEN com limites fechados: a venda no dia da troca casa com duas versões.
+ pedido_id | item_seq | dia_local  | versoes_casadas | valor_somado 
+-----------+----------+------------+-----------------+--------------
+       108 |        2 | 2026-10-22 |               2 |       160.00
+(1 row)
+
+== Venda anterior à primeira foto: o preço de tabela daquele dia não existe em lugar nenhum.
+ produto_id |    dia     | preco_tabela 
+------------+------------+--------------
+         10 | 2026-10-19 |             
+(1 row)
+
+[exit 0, 2026-11-03]

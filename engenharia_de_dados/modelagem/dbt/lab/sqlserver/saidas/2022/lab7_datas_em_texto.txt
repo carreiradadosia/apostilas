@@ -1,0 +1,64 @@
+
+$ ./sq.sh dw 61_datas_em_texto.sql
+== Estilo explícito: 103 é dd/mm/aaaa, 112 é aaaammdd, 23 é aaaa-mm-dd. Inválida vira NULL.
+estilo_103|estilo_112|estilo_23|impossivel|nulo|lixo
+----------|----------|---------|----------|----|----
+2026-10-20|2026-10-20|2026-10-20|NULL|NULL|NULL
+
+(1 rows affected)
+== Texto vazio não é erro: vira 1900-01-01 em data e 0 em int. NULLIF(TRIM(x), N'') cobre vazio e espaços, não cobre tab (Lab 15).
+vazio_em_date|so_espacos_em_date|try_cast_vazio|com_nullif|vazio_em_int|vazio_em_numeric
+-------------|------------------|--------------|----------|------------|----------------
+1900-01-01|1900-01-01|1900-01-01|NULL|0|NULL
+
+(1 rows affected)
+== A carga não aborta, mas o nulo precisa ser contado: quem não mede perde a linha em silêncio.
+linhas|texto_invalido
+------|--------------
+3|1
+
+(1 rows affected)
+== CONVERT aborta. Severidade 16.
+Msg 241, Level 16, State 1, Server fa328d9a43b9, Line 2
+Conversion failed when converting date and/or time from character string.
+== TRY_CONVERT não salva conversão proibida entre tipos: isso é erro, não NULL.
+Msg 529, Level 16, State 1, Server fa328d9a43b9, Line 1
+Explicit conversion from data type int to date is not allowed.
+== TRY_CAST não aceita estilo: depende de DATEFORMAT.
+idioma|dateformat_da_sessao|dia_20_mes_10|ambigua|ambigua_com_estilo_103
+------|--------------------|-------------|-------|----------------------
+us_english|mdy|NULL|2026-02-03|2026-03-02
+
+(1 rows affected)
+idioma|dateformat_da_sessao|dia_20_mes_10|ambigua|ambigua_com_estilo_103
+------|--------------------|-------------|-------|----------------------
+us_english|dmy|2026-10-20|2026-03-02|2026-03-02
+
+(1 rows affected)
+== SET LANGUAGE muda o DATEFORMAT. O DATEFIRST muda em alguns idiomas: Brasil fica em 7, Itália vai a 1.
+Changed language setting to us_english.
+idioma|datefirst|weekday_da_segunda|ambigua
+------|---------|------------------|-------
+us_english|7|2|2026-02-03
+
+(1 rows affected)
+Definição do idioma alterada para Português (Brasil).
+idioma|datefirst|weekday_da_segunda|ambigua
+------|---------|------------------|-------
+Português (Brasil)|7|2|2026-03-02
+
+(1 rows affected)
+L'impostazione della lingua è stata sostituita con Italiano.
+idioma|datefirst|weekday_da_segunda|ambigua|formula_da_dim_data
+------|---------|------------------|-------|-------------------
+Italiano|1|1|2026-03-02|1
+
+(1 rows affected)
+Changed language setting to us_english.
+== Mesmo texto ISO com traços: date e datetime2 ignoram DATEFORMAT, datetime não.
+em_date|em_datetime2|em_datetime|em_datetime_sem_tracos
+-------|------------|-----------|----------------------
+2026-02-03|2026-02-03 00:00:00|2026-03-02 00:00:00.000|2026-02-03 00:00:00.000
+
+(1 rows affected)
+[exit 0, 2026-11-03]

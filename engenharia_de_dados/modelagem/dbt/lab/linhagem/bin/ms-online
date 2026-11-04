@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Starts the SQL Server service and waits for the lab database to finish recovery: the container
+# turns healthy before that, and a query against the database right after a crash fails to log in.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+timeout 120 docker compose up -d --wait mssql 2>&1 | { grep -E 'Healthy|rror' || true; }
+sql="SET NOCOUNT ON; SELECT state_desc FROM sys.databases WHERE name = N'rede';"
+timeout 120 bash -c "until bin/ms sa -h -1 -Q \"$sql\" 2>/dev/null | grep -q ONLINE; do sleep 1; done"

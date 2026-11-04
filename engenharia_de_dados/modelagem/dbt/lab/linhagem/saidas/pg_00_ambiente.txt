@@ -1,0 +1,38 @@
+
+$ bin/pg postgres admin_lab lab -c "SELECT version();"
+                                         version                                          
+------------------------------------------------------------------------------------------
+ PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+(1 row)
+
+[exit 0, 2026-11-03]
+
+$ bin/pg postgres admin_lab lab <<'SQL'
+SELECT name, setting, context
+FROM pg_settings
+WHERE name IN ('shared_preload_libraries', 'compute_query_id', 'pg_stat_statements.track',
+               'pg_stat_statements.max', 'pg_stat_statements.save',
+               'log_min_duration_statement', 'log_statement', 'log_min_duration_sample',
+               'log_statement_sample_rate', 'log_parameter_max_length', 'log_line_prefix',
+               'track_activities', 'track_activity_query_size', 'session_preload_libraries')
+ORDER BY name;
+SQL
+            name            |            setting            |  context   
+----------------------------+-------------------------------+------------
+ compute_query_id           | auto                          | superuser
+ log_line_prefix            | %m [%p] app=%a user=%u db=%d  | sighup
+ log_min_duration_sample    | -1                            | superuser
+ log_min_duration_statement | 250                           | superuser
+ log_parameter_max_length   | -1                            | superuser
+ log_statement              | none                          | superuser
+ log_statement_sample_rate  | 1                             | superuser
+ pg_stat_statements.max     | 5000                          | postmaster
+ pg_stat_statements.save    | on                            | sighup
+ pg_stat_statements.track   | top                           | superuser
+ session_preload_libraries  |                               | superuser
+ shared_preload_libraries   | pg_stat_statements            | postmaster
+ track_activities           | on                            | superuser
+ track_activity_query_size  | 1024                          | postmaster
+(14 rows)
+
+[exit 0, 2026-11-03]

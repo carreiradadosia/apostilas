@@ -1,0 +1,68 @@
+# 2026-11-04. postgres:16.15-alpine (PostgreSQL 16.15, psql 16.15). Projeto Compose modelagem-provas.
+# Dados sintéticos em tabelas temporárias: não dependem do estado do banco.
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -v ON_ERROR_STOP=1 -q -f /sql/77_provas_curtas_do_join.sql
+== 1. Fan-out: os itens dos pedidos 1 e 2 juntados com fornecedor, e os mesmos itens no grão do item.
+ linhas | receita 
+--------+---------
+      5 |  230.00
+(1 row)
+
+ linhas | receita 
+--------+---------
+      3 |  130.00
+(1 row)
+
+ produto_id | linhas 
+------------+--------
+         10 |      2
+(1 row)
+
+== 2. Dois lados muitos do mesmo pedido, SUM(DISTINCT) e cada lado no grão do pedido.
+ soma_itens | soma_pagamentos | soma_distinct_itens 
+------------+-----------------+---------------------
+     210.00 |          210.00 |               80.00
+(1 row)
+
+ soma_itens | soma_pagamentos 
+------------+-----------------
+     130.00 |          130.00
+(1 row)
+
+== 3. DISTINCT sem a chave junta vendas legítimas: três itens do produto 10, uma linha.
+ itens_do_produto_10 
+---------------------
+                   3
+(1 row)
+
+ produto_id | valor 
+------------+-------
+         10 | 50.00
+(1 row)
+
+== 4. DISTINCT não deduplica por chave: o pedido 2 chegou como pendente e depois como pago.
+ pedido_id |  status  | valor 
+-----------+----------+-------
+         1 | pago     | 80.00
+         2 | pago     | 50.00
+         2 | pendente | 50.00
+(3 rows)
+
+ pedido_id | status | valor 
+-----------+--------+-------
+         1 | pago   | 80.00
+         2 | pago   | 50.00
+(2 rows)
+
+== 5. Pedido pago sem pagamento: o JOIN no grão do pedido o tira das duas somas; o LEFT JOIN mostra.
+ receita |  pago  | diferenca 
+---------+--------+-----------
+  150.00 | 150.00 |      0.00
+(1 row)
+
+ receita |  pago  | diferenca | pedidos_sem_pagamento 
+---------+--------+-----------+-----------------------
+  180.00 | 150.00 |     30.00 |                     1
+(1 row)
+
+[exit 0, 2026-11-04]

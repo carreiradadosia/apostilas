@@ -1,0 +1,161 @@
+
+$ ./sq.sh dw 64a_merge_chave_repetida.sql
+
+(1 rows affected)
+
+(1 rows affected)
+== Chave repetida no lote, e ela já existe no alvo: erro 8672, nada gravado.
+Msg 8672, Level 16, State 1, Server 64219b88e525, Line 2
+The MERGE statement attempted to UPDATE or DELETE the same row more than once. This happens when a target row matches more than one source row. A MERGE statement cannot UPDATE/DELETE the same row of the target table multiple times. Refine the ON clause to ensure a target row matches at most one source row, or use the GROUP BY clause to group the source rows.
+pedido_id|status
+---------|------
+103|pendente
+
+(1 rows affected)
+== Chave repetida no lote, nova no alvo com PRIMARY KEY: não é 8672, é violação de chave, 2627.
+Msg 2627, Level 14, State 1, Server 64219b88e525, Line 2
+Violation of PRIMARY KEY constraint 'PK__merge_de__CBE760763BB37B79'. Cannot insert duplicate key in object 'silver.merge_demo'. The duplicate key value is (104).
+The statement has been terminated.
+pedido_id|status
+---------|------
+103|pendente
+
+(1 rows affected)
+== Chave repetida no lote, nova no alvo sem chave: grava as duas e não reclama.
+
+(2 rows affected)
+pedido_id|status
+---------|------
+103|pendente
+104|estornado
+104|pago
+
+(3 rows affected)
+== Sem ponto e vírgula no fim: erro 10713.
+Msg 10713, Level 15, State 1, Server 64219b88e525, Line 4
+A MERGE statement must be terminated by a semi-colon (;).
+== O conserto: deduplicar a fonte antes, no próprio grão.
+
+(2 rows affected)
+pedido_id|status
+---------|------
+103|cancelado
+104|pago
+
+(2 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64b_recarga_preparar.sql -b
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64c_recarga_sem_xact_abort.sql
+
+(3 rows affected)
+
+(1 rows affected)
+Msg 2627, Level 14, State 1, Server 64219b88e525, Line 5
+Violation of PRIMARY KEY constraint 'PK__recarga___CBE7607623A5A941'. Cannot insert duplicate key in object 'silver.recarga_demo'. The duplicate key value is (1).
+The statement has been terminated.
+
+(1 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64e_recarga_estado.sql
+pedido_id|valor
+---------|-----
+1|11.00
+2|22.00
+
+(2 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64b_recarga_preparar.sql -b
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64c_recarga_sem_xact_abort.sql -b
+
+(3 rows affected)
+
+(1 rows affected)
+Msg 2627, Level 14, State 1, Server 64219b88e525, Line 5
+Violation of PRIMARY KEY constraint 'PK__recarga___CBE760764083E4BA'. Cannot insert duplicate key in object 'silver.recarga_demo'. The duplicate key value is (1).
+The statement has been terminated.
+
+(1 rows affected)
+[exit 1, 2026-11-03]
+
+$ ./sq.sh dw 64e_recarga_estado.sql
+pedido_id|valor
+---------|-----
+1|11.00
+2|22.00
+
+(2 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64b_recarga_preparar.sql -b
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64d_recarga_com_xact_abort.sql
+
+(3 rows affected)
+
+(1 rows affected)
+Msg 2627, Level 14, State 1, Server 64219b88e525, Line 6
+Violation of PRIMARY KEY constraint 'PK__recarga___CBE7607673BABE8A'. Cannot insert duplicate key in object 'silver.recarga_demo'. The duplicate key value is (1).
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64e_recarga_estado.sql
+pedido_id|valor
+---------|-----
+1|10.00
+2|20.00
+3|30.00
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64b_recarga_preparar.sql -b
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64d_recarga_com_xact_abort.sql -b
+
+(3 rows affected)
+
+(1 rows affected)
+Msg 2627, Level 14, State 1, Server 64219b88e525, Line 6
+Violation of PRIMARY KEY constraint 'PK__recarga___CBE7607612314461'. Cannot insert duplicate key in object 'silver.recarga_demo'. The duplicate key value is (1).
+[exit 1, 2026-11-03]
+
+$ ./sq.sh dw 64e_recarga_estado.sql
+pedido_id|valor
+---------|-----
+1|10.00
+2|20.00
+3|30.00
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64f_ddl_em_transacao.sql -b
+
+(1 rows affected)
+Msg 241, Level 16, State 1, Server 64219b88e525, Line 8
+Conversion failed when converting date and/or time from character string.
+[exit 1, 2026-11-03]
+
+$ ./sq.sh dw 64g_ddl_estado.sql
+versao|conteudo
+------|--------
+1|tabela antiga
+
+(1 rows affected)
+[exit 0, 2026-11-03]

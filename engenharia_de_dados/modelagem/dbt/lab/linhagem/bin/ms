@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Usage: bin/ms <sa|app_relatorio|leitor_monitor> [sqlcmd arguments]
+# The password stays in the container environment and reaches sqlcmd through SQLCMDPASSWORD, never -P.
+# -I turns QUOTED_IDENTIFIER on, which the XML methods used by the scripts require.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+login="$1"; shift
+case "$login" in
+  sa) var=MSSQL_SA_PASSWORD ;;
+  app_relatorio) var=MSSQL_APP_PASSWORD ;;
+  leitor_monitor) var=MSSQL_MONITOR_PASSWORD ;;
+  *) echo "login desconhecido: $login" >&2; exit 2 ;;
+esac
+exec docker compose exec -T -e "SQL_LOGIN=$login" -e "SQL_VAR=$var" mssql bash -c \
+  'export SQLCMDPASSWORD="${!SQL_VAR}"; exec /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U "$SQL_LOGIN" -I -W -s "|" "$@"' -- "$@"

@@ -1,0 +1,883 @@
+
+$ docker compose --profile dbt build --no-cache --progress=plain dbt
+--progress is a global compose flag, better use `docker compose --progress xx build ...
+#1 [internal] load local bake definitions
+#1 reading from stdin 721B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 372B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.13.15-slim-bookworm
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B 0.0s done
+#4 DONE 0.0s
+
+#5 [1/4] FROM docker.io/library/python:3.13.15-slim-bookworm
+#5 CACHED
+
+#6 [internal] load build context
+#6 transferring context: 1.16kB 0.1s done
+#6 DONE 0.1s
+
+#7 [2/4] RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+#7 0.926 Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+#7 1.027 Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+#7 1.029 Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [34.8 kB]
+#7 1.336 Get:4 http://deb.debian.org/debian bookworm/main amd64 Packages [8790 kB]
+#7 1.808 Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [6924 B]
+#7 2.112 Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [360 kB]
+#7 4.203 Fetched 9398 kB in 3s (2845 kB/s)
+#7 4.203 Reading package lists...
+#7 5.484 Reading package lists...
+#7 6.770 Building dependency tree...
+#7 7.106 Reading state information...
+#7 7.481 The following additional packages will be installed:
+#7 7.482   git-man libbrotli1 libcurl3-gnutls liberror-perl libexpat1 libgdbm-compat4
+#7 7.482   libgssapi-krb5-2 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0
+#7 7.482   libldap-2.5-0 libnghttp2-14 libperl5.36 libpsl5 librtmp1 libsasl2-2
+#7 7.483   libsasl2-modules-db libssh2-1 perl perl-base perl-modules-5.36
+#7 7.485 Suggested packages:
+#7 7.485   gettext-base git-daemon-run | git-daemon-sysvinit git-doc git-email git-gui
+#7 7.485   gitk gitweb git-cvs git-mediawiki git-svn krb5-doc krb5-user sensible-utils
+#7 7.485   perl-doc libterm-readline-gnu-perl | libterm-readline-perl-perl make
+#7 7.485   libtap-harness-archive-perl
+#7 7.485 Recommended packages:
+#7 7.485   patch less ssh-client krb5-locales libldap-common publicsuffix
+#7 7.485   libsasl2-modules
+#7 7.717 The following NEW packages will be installed:
+#7 7.717   git git-man libbrotli1 libcurl3-gnutls liberror-perl libexpat1
+#7 7.717   libgdbm-compat4 libgssapi-krb5-2 libk5crypto3 libkeyutils1 libkrb5-3
+#7 7.717   libkrb5support0 libldap-2.5-0 libnghttp2-14 libperl5.36 libpsl5 librtmp1
+#7 7.718   libsasl2-2 libsasl2-modules-db libssh2-1 perl perl-modules-5.36
+#7 7.720 The following packages will be upgraded:
+#7 7.720   perl-base
+#7 7.797 1 upgraded, 22 newly installed, 0 to remove and 5 not upgraded.
+#7 7.797 Need to get 20.3 MB of archives.
+#7 7.797 After this operation, 102 MB of additional disk space will be used.
+#7 7.797 Get:1 http://deb.debian.org/debian-security bookworm-security/main amd64 perl-base amd64 5.36.0-7+deb12u4 [1610 kB]
+#7 7.909 Get:2 http://deb.debian.org/debian-security bookworm-security/main amd64 perl-modules-5.36 all 5.36.0-7+deb12u4 [2817 kB]
+#7 7.988 Get:3 http://deb.debian.org/debian bookworm/main amd64 libgdbm-compat4 amd64 1.23-3 [48.2 kB]
+#7 7.990 Get:4 http://deb.debian.org/debian-security bookworm-security/main amd64 libperl5.36 amd64 5.36.0-7+deb12u4 [4208 kB]
+#7 8.117 Get:5 http://deb.debian.org/debian-security bookworm-security/main amd64 perl amd64 5.36.0-7+deb12u4 [239 kB]
+#7 8.123 Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 libbrotli1 amd64 1.0.9-2+deb12u1 [275 kB]
+#7 8.129 Get:7 http://deb.debian.org/debian bookworm/main amd64 libkrb5support0 amd64 1.20.1-2+deb12u5 [33.2 kB]
+#7 8.129 Get:8 http://deb.debian.org/debian bookworm/main amd64 libk5crypto3 amd64 1.20.1-2+deb12u5 [79.7 kB]
+#7 8.130 Get:9 http://deb.debian.org/debian bookworm/main amd64 libkeyutils1 amd64 1.6.3-2 [8808 B]
+#7 8.131 Get:10 http://deb.debian.org/debian bookworm/main amd64 libkrb5-3 amd64 1.20.1-2+deb12u5 [332 kB]
+#7 8.145 Get:11 http://deb.debian.org/debian bookworm/main amd64 libgssapi-krb5-2 amd64 1.20.1-2+deb12u5 [135 kB]
+#7 8.152 Get:12 http://deb.debian.org/debian-security bookworm-security/main amd64 libsasl2-modules-db amd64 2.1.28+dfsg-10+deb12u1 [20.5 kB]
+#7 8.152 Get:13 http://deb.debian.org/debian-security bookworm-security/main amd64 libsasl2-2 amd64 2.1.28+dfsg-10+deb12u1 [59.9 kB]
+#7 8.155 Get:14 http://deb.debian.org/debian bookworm/main amd64 libldap-2.5-0 amd64 2.5.13+dfsg-5 [183 kB]
+#7 8.160 Get:15 http://deb.debian.org/debian bookworm/main amd64 libnghttp2-14 amd64 1.52.0-1+deb12u3 [72.4 kB]
+#7 8.162 Get:16 http://deb.debian.org/debian bookworm/main amd64 libpsl5 amd64 0.21.2-1 [58.7 kB]
+#7 8.167 Get:17 http://deb.debian.org/debian bookworm/main amd64 librtmp1 amd64 2.4+20151223.gitfa8646d.1-2+b2 [60.8 kB]
+#7 8.168 Get:18 http://deb.debian.org/debian-security bookworm-security/main amd64 libssh2-1 amd64 1.10.0-3+deb12u1 [176 kB]
+#7 8.176 Get:19 http://deb.debian.org/debian bookworm/main amd64 libcurl3-gnutls amd64 7.88.1-10+deb12u15 [386 kB]
+#7 8.201 Get:20 http://deb.debian.org/debian-security bookworm-security/main amd64 libexpat1 amd64 2.5.0-1+deb12u5 [108 kB]
+#7 8.211 Get:21 http://deb.debian.org/debian bookworm/main amd64 liberror-perl all 0.17029-2 [29.0 kB]
+#7 8.215 Get:22 http://deb.debian.org/debian bookworm/main amd64 git-man all 1:2.39.5-0+deb12u3 [2053 kB]
+#7 8.262 Get:23 http://deb.debian.org/debian bookworm/main amd64 git amd64 1:2.39.5-0+deb12u3 [7264 kB]
+#7 8.821 debconf: delaying package configuration, since apt-utils is not installed
+#7 8.875 Fetched 20.3 MB in 1s (25.7 MB/s)
+#7 8.956 (Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6647 files and directories currently installed.)
+#7 9.014 Preparing to unpack .../perl-base_5.36.0-7+deb12u4_amd64.deb ...
+#7 9.055 Unpacking perl-base (5.36.0-7+deb12u4) over (5.36.0-7+deb12u3) ...
+#7 11.76 Setting up perl-base (5.36.0-7+deb12u4) ...
+#7 11.82 Selecting previously unselected package perl-modules-5.36.
+#7 11.82 (Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6648 files and directories currently installed.)
+#7 11.85 Preparing to unpack .../00-perl-modules-5.36_5.36.0-7+deb12u4_all.deb ...
+#7 11.86 Unpacking perl-modules-5.36 (5.36.0-7+deb12u4) ...
+#7 13.46 Selecting previously unselected package libgdbm-compat4:amd64.
+#7 13.46 Preparing to unpack .../01-libgdbm-compat4_1.23-3_amd64.deb ...
+#7 13.48 Unpacking libgdbm-compat4:amd64 (1.23-3) ...
+#7 13.55 Selecting previously unselected package libperl5.36:amd64.
+#7 13.55 Preparing to unpack .../02-libperl5.36_5.36.0-7+deb12u4_amd64.deb ...
+#7 13.55 Unpacking libperl5.36:amd64 (5.36.0-7+deb12u4) ...
+#7 14.43 Selecting previously unselected package perl.
+#7 14.43 Preparing to unpack .../03-perl_5.36.0-7+deb12u4_amd64.deb ...
+#7 14.45 Unpacking perl (5.36.0-7+deb12u4) ...
+#7 14.55 Selecting previously unselected package libbrotli1:amd64.
+#7 14.55 Preparing to unpack .../04-libbrotli1_1.0.9-2+deb12u1_amd64.deb ...
+#7 14.55 Unpacking libbrotli1:amd64 (1.0.9-2+deb12u1) ...
+#7 14.65 Selecting previously unselected package libkrb5support0:amd64.
+#7 14.65 Preparing to unpack .../05-libkrb5support0_1.20.1-2+deb12u5_amd64.deb ...
+#7 14.65 Unpacking libkrb5support0:amd64 (1.20.1-2+deb12u5) ...
+#7 14.73 Selecting previously unselected package libk5crypto3:amd64.
+#7 14.74 Preparing to unpack .../06-libk5crypto3_1.20.1-2+deb12u5_amd64.deb ...
+#7 14.74 Unpacking libk5crypto3:amd64 (1.20.1-2+deb12u5) ...
+#7 14.81 Selecting previously unselected package libkeyutils1:amd64.
+#7 14.82 Preparing to unpack .../07-libkeyutils1_1.6.3-2_amd64.deb ...
+#7 14.82 Unpacking libkeyutils1:amd64 (1.6.3-2) ...
+#7 14.86 Selecting previously unselected package libkrb5-3:amd64.
+#7 14.87 Preparing to unpack .../08-libkrb5-3_1.20.1-2+deb12u5_amd64.deb ...
+#7 14.87 Unpacking libkrb5-3:amd64 (1.20.1-2+deb12u5) ...
+#7 14.97 Selecting previously unselected package libgssapi-krb5-2:amd64.
+#7 14.97 Preparing to unpack .../09-libgssapi-krb5-2_1.20.1-2+deb12u5_amd64.deb ...
+#7 14.98 Unpacking libgssapi-krb5-2:amd64 (1.20.1-2+deb12u5) ...
+#7 15.06 Selecting previously unselected package libsasl2-modules-db:amd64.
+#7 15.06 Preparing to unpack .../10-libsasl2-modules-db_2.1.28+dfsg-10+deb12u1_amd64.deb ...
+#7 15.06 Unpacking libsasl2-modules-db:amd64 (2.1.28+dfsg-10+deb12u1) ...
+#7 15.12 Selecting previously unselected package libsasl2-2:amd64.
+#7 15.12 Preparing to unpack .../11-libsasl2-2_2.1.28+dfsg-10+deb12u1_amd64.deb ...
+#7 15.13 Unpacking libsasl2-2:amd64 (2.1.28+dfsg-10+deb12u1) ...
+#7 15.18 Selecting previously unselected package libldap-2.5-0:amd64.
+#7 15.19 Preparing to unpack .../12-libldap-2.5-0_2.5.13+dfsg-5_amd64.deb ...
+#7 15.19 Unpacking libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+#7 15.28 Selecting previously unselected package libnghttp2-14:amd64.
+#7 15.28 Preparing to unpack .../13-libnghttp2-14_1.52.0-1+deb12u3_amd64.deb ...
+#7 15.28 Unpacking libnghttp2-14:amd64 (1.52.0-1+deb12u3) ...
+#7 15.34 Selecting previously unselected package libpsl5:amd64.
+#7 15.34 Preparing to unpack .../14-libpsl5_0.21.2-1_amd64.deb ...
+#7 15.34 Unpacking libpsl5:amd64 (0.21.2-1) ...
+#7 15.40 Selecting previously unselected package librtmp1:amd64.
+#7 15.40 Preparing to unpack .../15-librtmp1_2.4+20151223.gitfa8646d.1-2+b2_amd64.deb ...
+#7 15.40 Unpacking librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+#7 15.46 Selecting previously unselected package libssh2-1:amd64.
+#7 15.47 Preparing to unpack .../16-libssh2-1_1.10.0-3+deb12u1_amd64.deb ...
+#7 15.47 Unpacking libssh2-1:amd64 (1.10.0-3+deb12u1) ...
+#7 15.55 Selecting previously unselected package libcurl3-gnutls:amd64.
+#7 15.55 Preparing to unpack .../17-libcurl3-gnutls_7.88.1-10+deb12u15_amd64.deb ...
+#7 15.56 Unpacking libcurl3-gnutls:amd64 (7.88.1-10+deb12u15) ...
+#7 15.77 Selecting previously unselected package libexpat1:amd64.
+#7 15.77 Preparing to unpack .../18-libexpat1_2.5.0-1+deb12u5_amd64.deb ...
+#7 15.78 Unpacking libexpat1:amd64 (2.5.0-1+deb12u5) ...
+#7 15.95 Selecting previously unselected package liberror-perl.
+#7 15.96 Preparing to unpack .../19-liberror-perl_0.17029-2_all.deb ...
+#7 15.98 Unpacking liberror-perl (0.17029-2) ...
+#7 16.13 Selecting previously unselected package git-man.
+#7 16.14 Preparing to unpack .../20-git-man_1%3a2.39.5-0+deb12u3_all.deb ...
+#7 16.17 Unpacking git-man (1:2.39.5-0+deb12u3) ...
+#7 16.49 Selecting previously unselected package git.
+#7 16.49 Preparing to unpack .../21-git_1%3a2.39.5-0+deb12u3_amd64.deb ...
+#7 16.54 Unpacking git (1:2.39.5-0+deb12u3) ...
+#7 17.80 Setting up libexpat1:amd64 (2.5.0-1+deb12u5) ...
+#7 17.84 Setting up libkeyutils1:amd64 (1.6.3-2) ...
+#7 17.88 Setting up libpsl5:amd64 (0.21.2-1) ...
+#7 17.95 Setting up libbrotli1:amd64 (1.0.9-2+deb12u1) ...
+#7 18.03 Setting up libnghttp2-14:amd64 (1.52.0-1+deb12u3) ...
+#7 18.08 Setting up libkrb5support0:amd64 (1.20.1-2+deb12u5) ...
+#7 18.16 Setting up libsasl2-modules-db:amd64 (2.1.28+dfsg-10+deb12u1) ...
+#7 18.21 Setting up perl-modules-5.36 (5.36.0-7+deb12u4) ...
+#7 18.28 Setting up librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+#7 18.30 Setting up libgdbm-compat4:amd64 (1.23-3) ...
+#7 18.34 Setting up libk5crypto3:amd64 (1.20.1-2+deb12u5) ...
+#7 18.40 Setting up libsasl2-2:amd64 (2.1.28+dfsg-10+deb12u1) ...
+#7 18.41 Setting up git-man (1:2.39.5-0+deb12u3) ...
+#7 18.43 Setting up libssh2-1:amd64 (1.10.0-3+deb12u1) ...
+#7 18.48 Setting up libkrb5-3:amd64 (1.20.1-2+deb12u5) ...
+#7 18.53 Setting up libperl5.36:amd64 (5.36.0-7+deb12u4) ...
+#7 18.56 Setting up libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+#7 18.65 Setting up perl (5.36.0-7+deb12u4) ...
+#7 18.75 Setting up libgssapi-krb5-2:amd64 (1.20.1-2+deb12u5) ...
+#7 18.81 Setting up libcurl3-gnutls:amd64 (7.88.1-10+deb12u15) ...
+#7 18.88 Setting up liberror-perl (0.17029-2) ...
+#7 18.90 Setting up git (1:2.39.5-0+deb12u3) ...
+#7 18.98 Processing triggers for libc-bin (2.36-9+deb12u14) ...
+#7 DONE 19.3s
+
+#8 [3/4] COPY requirements.lock /tmp/requirements.lock
+#8 DONE 0.1s
+
+#9 [4/4] RUN pip install --no-cache-dir -r /tmp/requirements.lock
+#9 12.42 Collecting agate==1.9.1 (from -r /tmp/requirements.lock (line 1))
+#9 12.58   Downloading agate-1.9.1-py2.py3-none-any.whl.metadata (3.2 kB)
+#9 12.62 Collecting annotated-types==0.8.0 (from -r /tmp/requirements.lock (line 2))
+#9 12.63   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+#9 12.68 Collecting attrs==26.1.0 (from -r /tmp/requirements.lock (line 3))
+#9 12.69   Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+#9 12.73 Collecting babel==2.18.0 (from -r /tmp/requirements.lock (line 4))
+#9 12.74   Downloading babel-2.18.0-py3-none-any.whl.metadata (2.2 kB)
+#9 12.78 Collecting certifi==2026.10.23 (from -r /tmp/requirements.lock (line 5))
+#9 12.79   Downloading certifi-2026.10.23-py3-none-any.whl.metadata (2.5 kB)
+#9 13.02 Collecting charset-normalizer==3.5.2 (from -r /tmp/requirements.lock (line 6))
+#9 13.04   Downloading charset_normalizer-3.5.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+#9 13.09 Collecting click==8.5.0 (from -r /tmp/requirements.lock (line 7))
+#9 13.10   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+#9 13.12 Collecting colorama==0.4.6 (from -r /tmp/requirements.lock (line 8))
+#9 13.14   Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+#9 13.17 Collecting daff==1.4.2 (from -r /tmp/requirements.lock (line 9))
+#9 13.18   Downloading daff-1.4.2-py3-none-any.whl.metadata (10 kB)
+#9 13.22 Collecting dbt-adapters==1.24.5 (from -r /tmp/requirements.lock (line 10))
+#9 13.23   Downloading dbt_adapters-1.24.5-py3-none-any.whl.metadata (4.6 kB)
+#9 13.27 Collecting dbt-common==1.39.0 (from -r /tmp/requirements.lock (line 11))
+#9 13.28   Downloading dbt_common-1.39.0-py3-none-any.whl.metadata (5.1 kB)
+#9 13.35 Collecting dbt-core==1.12.6 (from -r /tmp/requirements.lock (line 12))
+#9 13.36   Downloading dbt_core-1.12.6-py3-none-any.whl.metadata (5.3 kB)
+#9 13.39 Collecting dbt-core-experimental-parser==2.0.8 (from -r /tmp/requirements.lock (line 13))
+#9 13.40   Downloading dbt_core_experimental_parser-2.0.8.tar.gz (4.8 kB)
+#9 13.45   Installing build dependencies: started
+#9 16.54   Installing build dependencies: finished with status 'done'
+#9 16.55   Getting requirements to build wheel: started
+#9 16.77   Getting requirements to build wheel: finished with status 'done'
+#9 16.77   Preparing metadata (pyproject.toml): started
+#9 19.78   Preparing metadata (pyproject.toml): finished with status 'done'
+#9 19.82 Collecting dbt-extractor==0.6.0 (from -r /tmp/requirements.lock (line 14))
+#9 19.85   Downloading dbt_extractor-0.6.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.6 kB)
+#9 19.91 Collecting dbt-postgres==1.11.0 (from -r /tmp/requirements.lock (line 15))
+#9 19.93   Downloading dbt_postgres-1.11.0-py3-none-any.whl.metadata (3.9 kB)
+#9 19.96 Collecting dbt-protos==1.0.615 (from -r /tmp/requirements.lock (line 16))
+#9 19.97   Downloading dbt_protos-1.0.615-py3-none-any.whl.metadata (859 bytes)
+#9 20.09 Collecting deepdiff==8.6.2 (from -r /tmp/requirements.lock (line 17))
+#9 20.10   Downloading deepdiff-8.6.2-py3-none-any.whl.metadata (8.8 kB)
+#9 20.13 Collecting idna==3.20 (from -r /tmp/requirements.lock (line 18))
+#9 20.15   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+#9 20.19 Collecting importlib-metadata==10.1.0 (from -r /tmp/requirements.lock (line 19))
+#9 20.21   Downloading importlib_metadata-10.1.0-py3-none-any.whl.metadata (4.5 kB)
+#9 20.23 Collecting isodate==0.7.2 (from -r /tmp/requirements.lock (line 20))
+#9 20.24   Downloading isodate-0.7.2-py3-none-any.whl.metadata (11 kB)
+#9 20.30 Collecting jinja2==3.1.6 (from -r /tmp/requirements.lock (line 21))
+#9 20.31   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+#9 20.35 Collecting jsonschema==4.26.0 (from -r /tmp/requirements.lock (line 22))
+#9 20.36   Downloading jsonschema-4.26.0-py3-none-any.whl.metadata (7.6 kB)
+#9 20.38 Collecting jsonschema-specifications==2025.9.1 (from -r /tmp/requirements.lock (line 23))
+#9 20.40   Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)
+#9 20.42 Collecting leather==0.4.1 (from -r /tmp/requirements.lock (line 24))
+#9 20.43   Downloading leather-0.4.1-py3-none-any.whl.metadata (3.0 kB)
+#9 20.51 Collecting markupsafe==3.0.4 (from -r /tmp/requirements.lock (line 25))
+#9 20.52   Downloading markupsafe-3.0.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+#9 20.55 Collecting mashumaro==3.17 (from -r /tmp/requirements.lock (line 26))
+#9 20.57   Downloading mashumaro-3.17-py3-none-any.whl.metadata (118 kB)
+#9 20.62 Collecting metricflow==0.213.0 (from -r /tmp/requirements.lock (line 27))
+#9 20.63   Downloading metricflow-0.213.0-py3-none-any.whl.metadata (23 kB)
+#9 20.69 Collecting more-itertools==10.8.0 (from -r /tmp/requirements.lock (line 28))
+#9 20.70   Downloading more_itertools-10.8.0-py3-none-any.whl.metadata (39 kB)
+#9 20.81 Collecting msgpack==1.2.4 (from -r /tmp/requirements.lock (line 29))
+#9 20.82   Downloading msgpack-1.2.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.3 kB)
+#9 20.86 Collecting networkx==3.7 (from -r /tmp/requirements.lock (line 30))
+#9 20.86   Downloading networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+#9 20.90 Collecting opentelemetry-api==1.45.2 (from -r /tmp/requirements.lock (line 31))
+#9 20.90   Downloading opentelemetry_api-1.45.2-py3-none-any.whl.metadata (1.4 kB)
+#9 20.92 Collecting orderly-set==5.5.0 (from -r /tmp/requirements.lock (line 32))
+#9 20.94   Downloading orderly_set-5.5.0-py3-none-any.whl.metadata (6.6 kB)
+#9 20.96 Collecting packaging==26.3 (from -r /tmp/requirements.lock (line 33))
+#9 20.98   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+#9 20.99 Collecting parsedatetime==2.6 (from -r /tmp/requirements.lock (line 34))
+#9 21.00   Downloading parsedatetime-2.6-py3-none-any.whl.metadata (4.7 kB)
+#9 21.02 Collecting pathspec==1.0.4 (from -r /tmp/requirements.lock (line 35))
+#9 21.03   Downloading pathspec-1.0.4-py3-none-any.whl.metadata (13 kB)
+#9 21.22 Collecting protobuf==6.33.6 (from -r /tmp/requirements.lock (line 36))
+#9 21.24   Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+#9 21.33 Collecting psycopg2-binary==2.9.13 (from -r /tmp/requirements.lock (line 37))
+#9 21.33   Downloading psycopg2_binary-2.9.13-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (4.9 kB)
+#9 21.46 Collecting pydantic==2.14.2 (from -r /tmp/requirements.lock (line 38))
+#9 21.47   Downloading pydantic-2.14.2-py3-none-any.whl.metadata (137 kB)
+#9 22.65 Collecting pydantic-core==2.50.2 (from -r /tmp/requirements.lock (line 39))
+#9 22.66   Downloading pydantic_core-2.50.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.5 kB)
+#9 22.69 Collecting python-dateutil==2.9.0.post0 (from -r /tmp/requirements.lock (line 40))
+#9 22.70   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+#9 22.73 Collecting python-dotenv==1.2.4 (from -r /tmp/requirements.lock (line 41))
+#9 22.75   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+#9 22.79 Collecting python-slugify==9.1.3 (from -r /tmp/requirements.lock (line 42))
+#9 22.80   Downloading python_slugify-9.1.3-py3-none-any.whl.metadata (12 kB)
+#9 22.82 Collecting pytimeparse==1.1.10 (from -r /tmp/requirements.lock (line 43))
+#9 22.83   Downloading pytimeparse-1.1.10-py3-none-any.whl.metadata (3.6 kB)
+#9 22.89 Collecting pytz==2026.6 (from -r /tmp/requirements.lock (line 44))
+#9 22.90   Downloading pytz-2026.6-py2.py3-none-any.whl.metadata (22 kB)
+#9 22.97 Collecting pyyaml==6.0.3 (from -r /tmp/requirements.lock (line 45))
+#9 22.98   Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+#9 23.60 Collecting rapidfuzz==3.14.6 (from -r /tmp/requirements.lock (line 46))
+#9 23.61   Downloading rapidfuzz-3.14.6-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (12 kB)
+#9 23.65 Collecting referencing==0.37.0 (from -r /tmp/requirements.lock (line 47))
+#9 23.66   Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)
+#9 23.69 Collecting requests==2.34.2 (from -r /tmp/requirements.lock (line 48))
+#9 23.70   Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+#9 24.08 Collecting rpds-py==2026.9.1 (from -r /tmp/requirements.lock (line 49))
+#9 24.09   Downloading rpds_py-2026.9.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)
+#9 24.11 Collecting six==1.17.0 (from -r /tmp/requirements.lock (line 50))
+#9 24.12   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+#9 24.15 Collecting snowplow-tracker==1.1.0 (from -r /tmp/requirements.lock (line 51))
+#9 24.16   Downloading snowplow_tracker-1.1.0-py3-none-any.whl.metadata (5.7 kB)
+#9 24.28 Collecting sqlglot==30.27.0 (from -r /tmp/requirements.lock (line 52))
+#9 24.30   Downloading sqlglot-30.27.0-py3-none-any.whl.metadata (25 kB)
+#9 24.32 Collecting sqlparse==0.6.0 (from -r /tmp/requirements.lock (line 53))
+#9 24.33   Downloading sqlparse-0.6.0-py3-none-any.whl.metadata (6.0 kB)
+#9 24.36 Collecting tabulate==0.10.0 (from -r /tmp/requirements.lock (line 54))
+#9 24.37   Downloading tabulate-0.10.0-py3-none-any.whl.metadata (40 kB)
+#9 24.39 Collecting text-unidecode==1.3 (from -r /tmp/requirements.lock (line 55))
+#9 24.40   Downloading text_unidecode-1.3-py2.py3-none-any.whl.metadata (2.4 kB)
+#9 24.43 Collecting typing-extensions==4.16.0 (from -r /tmp/requirements.lock (line 56))
+#9 24.44   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#9 24.46 Collecting typing-inspection==0.4.4 (from -r /tmp/requirements.lock (line 57))
+#9 24.47   Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+#9 24.50 Collecting urllib3==2.8.0 (from -r /tmp/requirements.lock (line 58))
+#9 24.51   Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+#9 24.54 Collecting zipp==4.1.2 (from -r /tmp/requirements.lock (line 59))
+#9 24.55   Downloading zipp-4.1.2-py3-none-any.whl.metadata (3.6 kB)
+#9 24.71 Downloading agate-1.9.1-py2.py3-none-any.whl (95 kB)
+#9 24.73 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#9 24.74 Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+#9 24.75 Downloading babel-2.18.0-py3-none-any.whl (10.2 MB)
+#9 25.20    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.2/10.2 MB 22.8 MB/s  0:00:00
+#9 25.22 Downloading certifi-2026.10.23-py3-none-any.whl (135 kB)
+#9 25.24 Downloading charset_normalizer-3.5.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (254 kB)
+#9 25.26 Downloading click-8.5.0-py3-none-any.whl (125 kB)
+#9 25.27 Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+#9 25.29 Downloading daff-1.4.2-py3-none-any.whl (144 kB)
+#9 25.31 Downloading dbt_adapters-1.24.5-py3-none-any.whl (177 kB)
+#9 25.33 Downloading dbt_common-1.39.0-py3-none-any.whl (89 kB)
+#9 25.34 Downloading dbt_protos-1.0.615-py3-none-any.whl (303 kB)
+#9 25.36 Downloading deepdiff-8.6.2-py3-none-any.whl (91 kB)
+#9 25.37 Downloading isodate-0.7.2-py3-none-any.whl (22 kB)
+#9 25.40 Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+#9 25.43 Downloading jsonschema-4.26.0-py3-none-any.whl (90 kB)
+#9 25.44 Downloading mashumaro-3.17-py3-none-any.whl (94 kB)
+#9 25.46 Downloading opentelemetry_api-1.45.2-py3-none-any.whl (60 kB)
+#9 25.47 Downloading orderly_set-5.5.0-py3-none-any.whl (13 kB)
+#9 25.48 Downloading pathspec-1.0.4-py3-none-any.whl (55 kB)
+#9 25.49 Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)
+#9 25.51 Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+#9 25.53 Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+#9 25.54 Downloading idna-3.20-py3-none-any.whl (69 kB)
+#9 25.55 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#9 25.56 Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+#9 25.58 Downloading dbt_core-1.12.6-py3-none-any.whl (1.1 MB)
+#9 25.61    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 34.5 MB/s  0:00:00
+#9 25.62 Downloading dbt_extractor-0.6.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (442 kB)
+#9 25.65 Downloading metricflow-0.213.0-py3-none-any.whl (999 kB)
+#9 25.68    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 999.5/999.5 kB 34.7 MB/s  0:00:00
+#9 25.69 Downloading more_itertools-10.8.0-py3-none-any.whl (69 kB)
+#9 25.70 Downloading networkx-3.7-py3-none-any.whl (2.1 MB)
+#9 25.78    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 29.5 MB/s  0:00:00
+#9 25.79 Downloading pydantic-2.14.2-py3-none-any.whl (490 kB)
+#9 25.81 Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (801 kB)
+#9 25.83    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 801.6/801.6 kB 37.0 MB/s  0:00:00
+#9 25.86 Downloading rapidfuzz-3.14.6-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (3.2 MB)
+#9 25.96    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.2/3.2 MB 28.8 MB/s  0:00:00
+#9 25.98 Downloading snowplow_tracker-1.1.0-py3-none-any.whl (44 kB)
+#9 25.99 Downloading sqlparse-0.6.0-py3-none-any.whl (50 kB)
+#9 26.01 Downloading dbt_postgres-1.11.0-py3-none-any.whl (36 kB)
+#9 26.03 Downloading psycopg2_binary-2.9.13-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.3 MB)
+#9 26.17    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.3/4.3 MB 29.8 MB/s  0:00:00
+#9 26.18 Downloading importlib_metadata-10.1.0-py3-none-any.whl (32 kB)
+#9 26.19 Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+#9 26.22 Downloading leather-0.4.1-py3-none-any.whl (30 kB)
+#9 26.23 Downloading markupsafe-3.0.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (23 kB)
+#9 26.25 Downloading msgpack-1.2.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (469 kB)
+#9 26.27 Downloading packaging-26.3-py3-none-any.whl (129 kB)
+#9 26.29 Downloading parsedatetime-2.6-py3-none-any.whl (42 kB)
+#9 26.30 Downloading pydantic_core-2.50.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.2 MB)
+#9 26.37    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 30.7 MB/s  0:00:00
+#9 26.39 Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+#9 26.40 Downloading python_slugify-9.1.3-py3-none-any.whl (16 kB)
+#9 26.41 Downloading pytimeparse-1.1.10-py3-none-any.whl (10 kB)
+#9 26.42 Downloading pytz-2026.6-py2.py3-none-any.whl (506 kB)
+#9 26.45 Downloading referencing-0.37.0-py3-none-any.whl (26 kB)
+#9 26.47 Downloading rpds_py-2026.9.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (370 kB)
+#9 26.49 Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+#9 26.50 Downloading sqlglot-30.27.0-py3-none-any.whl (801 kB)
+#9 26.53    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 802.0/802.0 kB 37.7 MB/s  0:00:00
+#9 26.54 Downloading tabulate-0.10.0-py3-none-any.whl (39 kB)
+#9 26.56 Downloading text_unidecode-1.3-py2.py3-none-any.whl (78 kB)
+#9 26.58 Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+#9 26.59 Downloading zipp-4.1.2-py3-none-any.whl (10 kB)
+#9 27.01 Building wheels for collected packages: dbt-core-experimental-parser
+#9 27.01   Building wheel for dbt-core-experimental-parser (pyproject.toml): started
+#9 27.22   Building wheel for dbt-core-experimental-parser (pyproject.toml): finished with status 'done'
+#9 27.28   Created wheel for dbt-core-experimental-parser: filename=dbt_core_experimental_parser-2.0.8-py3-none-manylinux_2_28_x86_64.whl size=55496990 sha256=2186d331522b2a8a0f09d2f5c81ff5f1a433160ad7cd212906dccc0d4951d2a1
+#9 27.28   Stored in directory: /tmp/pip-ephem-wheel-cache-aiag0ai8/wheels/19/a2/88/bed435679441b8f58a31c997b0c83bd39b76d690e7762a9f8a
+#9 27.28 Successfully built dbt-core-experimental-parser
+#9 27.57 Installing collected packages: text-unidecode, pytz, parsedatetime, leather, daff, zipp, urllib3, typing-extensions, tabulate, sqlparse, sqlglot, six, rpds-py, rapidfuzz, pyyaml, pytimeparse, python-slugify, python-dotenv, psycopg2-binary, protobuf, pathspec, packaging, orderly-set, networkx, msgpack, more-itertools, markupsafe, isodate, idna, dbt-extractor, dbt-core-experimental-parser, colorama, click, charset-normalizer, certifi, babel, attrs, annotated-types, typing-inspection, requests, referencing, python-dateutil, pydantic-core, opentelemetry-api, mashumaro, jinja2, importlib-metadata, deepdiff, dbt-protos, agate, snowplow-tracker, pydantic, jsonschema-specifications, jsonschema, metricflow, dbt-common, dbt-adapters, dbt-core, dbt-postgres
+#9 52.43 
+#9 52.44 Successfully installed agate-1.9.1 annotated-types-0.8.0 attrs-26.1.0 babel-2.18.0 certifi-2026.10.23 charset-normalizer-3.5.2 click-8.5.0 colorama-0.4.6 daff-1.4.2 dbt-adapters-1.24.5 dbt-common-1.39.0 dbt-core-1.12.6 dbt-core-experimental-parser-2.0.8 dbt-extractor-0.6.0 dbt-postgres-1.11.0 dbt-protos-1.0.615 deepdiff-8.6.2 idna-3.20 importlib-metadata-10.1.0 isodate-0.7.2 jinja2-3.1.6 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 leather-0.4.1 markupsafe-3.0.4 mashumaro-3.17 metricflow-0.213.0 more-itertools-10.8.0 msgpack-1.2.4 networkx-3.7 opentelemetry-api-1.45.2 orderly-set-5.5.0 packaging-26.3 parsedatetime-2.6 pathspec-1.0.4 protobuf-6.33.6 psycopg2-binary-2.9.13 pydantic-2.14.2 pydantic-core-2.50.2 python-dateutil-2.9.0.post0 python-dotenv-1.2.4 python-slugify-9.1.3 pytimeparse-1.1.10 pytz-2026.6 pyyaml-6.0.3 rapidfuzz-3.14.6 referencing-0.37.0 requests-2.34.2 rpds-py-2026.9.1 six-1.17.0 snowplow-tracker-1.1.0 sqlglot-30.27.0 sqlparse-0.6.0 tabulate-0.10.0 text-unidecode-1.3 typing-extensions-4.16.0 typing-inspection-0.4.4 urllib3-2.8.0 zipp-4.1.2
+#9 52.44 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#9 52.45 
+#9 52.45 [notice] A new release of pip is available: 26.2.1 -> 26.3
+#9 52.45 [notice] To update, run: pip install --upgrade pip
+#9 DONE 53.3s
+
+#10 exporting to image
+#10 exporting layers
+#10 exporting layers 3.4s done
+#10 writing image sha256:992291cde029713d1d73fb7234d0063b81d6dd36561a5fc9054d2a9b0b07da13 done
+#10 naming to docker.io/library/modelagem-lab-dbt:local 0.0s done
+#10 DONE 3.5s
+
+#11 resolving provenance for metadata file
+#11 DONE 0.0s
+ modelagem-lab-dbt:local  Built
+[exit 0, 2026-11-03]
+
+[2026-11-03: a construção acima, pela rede bridge, terminou nesta execução. Mais cedo no mesmo dia essa rede ficou sem saída para a internet, DNS e TCP 53 com timeout, problema do host e não do laboratório. Por isso a mesma construção segue registrada abaixo também com --network host, mesmo Dockerfile e mesmo lock.]
+
+$ docker build --network host --no-cache --progress=plain -t modelagem-lab-dbt:local runner
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 372B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.13.15-slim-bookworm
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/4] FROM docker.io/library/python:3.13.15-slim-bookworm
+#4 CACHED
+
+#5 [internal] load build context
+#5 transferring context: 39B done
+#5 DONE 0.0s
+
+#6 [2/4] RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+#6 0.265 Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+#6 0.297 Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+#6 0.303 Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [34.8 kB]
+#6 0.465 Get:4 http://deb.debian.org/debian bookworm/main amd64 Packages [8790 kB]
+#6 0.859 Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [6924 B]
+#6 0.859 Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [360 kB]
+#6 2.383 Fetched 9398 kB in 2s (4320 kB/s)
+#6 2.383 Reading package lists...
+#6 3.288 Reading package lists...
+#6 4.171 Building dependency tree...
+#6 4.393 Reading state information...
+#6 4.717 The following additional packages will be installed:
+#6 4.718   git-man libbrotli1 libcurl3-gnutls liberror-perl libexpat1 libgdbm-compat4
+#6 4.718   libgssapi-krb5-2 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0
+#6 4.718   libldap-2.5-0 libnghttp2-14 libperl5.36 libpsl5 librtmp1 libsasl2-2
+#6 4.719   libsasl2-modules-db libssh2-1 perl perl-base perl-modules-5.36
+#6 4.721 Suggested packages:
+#6 4.721   gettext-base git-daemon-run | git-daemon-sysvinit git-doc git-email git-gui
+#6 4.721   gitk gitweb git-cvs git-mediawiki git-svn krb5-doc krb5-user sensible-utils
+#6 4.721   perl-doc libterm-readline-gnu-perl | libterm-readline-perl-perl make
+#6 4.721   libtap-harness-archive-perl
+#6 4.721 Recommended packages:
+#6 4.721   patch less ssh-client krb5-locales libldap-common publicsuffix
+#6 4.721   libsasl2-modules
+#6 4.920 The following NEW packages will be installed:
+#6 4.920   git git-man libbrotli1 libcurl3-gnutls liberror-perl libexpat1
+#6 4.920   libgdbm-compat4 libgssapi-krb5-2 libk5crypto3 libkeyutils1 libkrb5-3
+#6 4.921   libkrb5support0 libldap-2.5-0 libnghttp2-14 libperl5.36 libpsl5 librtmp1
+#6 4.922   libsasl2-2 libsasl2-modules-db libssh2-1 perl perl-modules-5.36
+#6 4.924 The following packages will be upgraded:
+#6 4.924   perl-base
+#6 5.016 1 upgraded, 22 newly installed, 0 to remove and 5 not upgraded.
+#6 5.016 Need to get 20.3 MB of archives.
+#6 5.016 After this operation, 102 MB of additional disk space will be used.
+#6 5.016 Get:1 http://deb.debian.org/debian-security bookworm-security/main amd64 perl-base amd64 5.36.0-7+deb12u4 [1610 kB]
+#6 5.115 Get:2 http://deb.debian.org/debian-security bookworm-security/main amd64 perl-modules-5.36 all 5.36.0-7+deb12u4 [2817 kB]
+#6 5.212 Get:3 http://deb.debian.org/debian bookworm/main amd64 libgdbm-compat4 amd64 1.23-3 [48.2 kB]
+#6 5.213 Get:4 http://deb.debian.org/debian-security bookworm-security/main amd64 libperl5.36 amd64 5.36.0-7+deb12u4 [4208 kB]
+#6 5.354 Get:5 http://deb.debian.org/debian-security bookworm-security/main amd64 perl amd64 5.36.0-7+deb12u4 [239 kB]
+#6 5.363 Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 libbrotli1 amd64 1.0.9-2+deb12u1 [275 kB]
+#6 5.373 Get:7 http://deb.debian.org/debian bookworm/main amd64 libkrb5support0 amd64 1.20.1-2+deb12u5 [33.2 kB]
+#6 5.374 Get:8 http://deb.debian.org/debian bookworm/main amd64 libk5crypto3 amd64 1.20.1-2+deb12u5 [79.7 kB]
+#6 5.375 Get:9 http://deb.debian.org/debian bookworm/main amd64 libkeyutils1 amd64 1.6.3-2 [8808 B]
+#6 5.385 Get:10 http://deb.debian.org/debian bookworm/main amd64 libkrb5-3 amd64 1.20.1-2+deb12u5 [332 kB]
+#6 5.394 Get:11 http://deb.debian.org/debian bookworm/main amd64 libgssapi-krb5-2 amd64 1.20.1-2+deb12u5 [135 kB]
+#6 5.398 Get:12 http://deb.debian.org/debian-security bookworm-security/main amd64 libsasl2-modules-db amd64 2.1.28+dfsg-10+deb12u1 [20.5 kB]
+#6 5.398 Get:13 http://deb.debian.org/debian-security bookworm-security/main amd64 libsasl2-2 amd64 2.1.28+dfsg-10+deb12u1 [59.9 kB]
+#6 5.400 Get:14 http://deb.debian.org/debian bookworm/main amd64 libldap-2.5-0 amd64 2.5.13+dfsg-5 [183 kB]
+#6 5.405 Get:15 http://deb.debian.org/debian bookworm/main amd64 libnghttp2-14 amd64 1.52.0-1+deb12u3 [72.4 kB]
+#6 5.408 Get:16 http://deb.debian.org/debian bookworm/main amd64 libpsl5 amd64 0.21.2-1 [58.7 kB]
+#6 5.410 Get:17 http://deb.debian.org/debian bookworm/main amd64 librtmp1 amd64 2.4+20151223.gitfa8646d.1-2+b2 [60.8 kB]
+#6 5.410 Get:18 http://deb.debian.org/debian-security bookworm-security/main amd64 libssh2-1 amd64 1.10.0-3+deb12u1 [176 kB]
+#6 5.435 Get:19 http://deb.debian.org/debian bookworm/main amd64 libcurl3-gnutls amd64 7.88.1-10+deb12u15 [386 kB]
+#6 5.448 Get:20 http://deb.debian.org/debian-security bookworm-security/main amd64 libexpat1 amd64 2.5.0-1+deb12u5 [108 kB]
+#6 5.453 Get:21 http://deb.debian.org/debian bookworm/main amd64 liberror-perl all 0.17029-2 [29.0 kB]
+#6 5.453 Get:22 http://deb.debian.org/debian bookworm/main amd64 git-man all 1:2.39.5-0+deb12u3 [2053 kB]
+#6 5.554 Get:23 http://deb.debian.org/debian bookworm/main amd64 git amd64 1:2.39.5-0+deb12u3 [7264 kB]
+#6 6.128 debconf: delaying package configuration, since apt-utils is not installed
+#6 6.187 Fetched 20.3 MB in 1s (22.1 MB/s)
+#6 6.250 (Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6647 files and directories currently installed.)
+#6 6.293 Preparing to unpack .../perl-base_5.36.0-7+deb12u4_amd64.deb ...
+#6 6.364 Unpacking perl-base (5.36.0-7+deb12u4) over (5.36.0-7+deb12u3) ...
+#6 8.758 Setting up perl-base (5.36.0-7+deb12u4) ...
+#6 8.821 Selecting previously unselected package perl-modules-5.36.
+#6 8.821 (Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6648 files and directories currently installed.)
+#6 8.841 Preparing to unpack .../00-perl-modules-5.36_5.36.0-7+deb12u4_all.deb ...
+#6 8.847 Unpacking perl-modules-5.36 (5.36.0-7+deb12u4) ...
+#6 9.818 Selecting previously unselected package libgdbm-compat4:amd64.
+#6 9.820 Preparing to unpack .../01-libgdbm-compat4_1.23-3_amd64.deb ...
+#6 9.826 Unpacking libgdbm-compat4:amd64 (1.23-3) ...
+#6 9.917 Selecting previously unselected package libperl5.36:amd64.
+#6 9.918 Preparing to unpack .../02-libperl5.36_5.36.0-7+deb12u4_amd64.deb ...
+#6 9.921 Unpacking libperl5.36:amd64 (5.36.0-7+deb12u4) ...
+#6 10.61 Selecting previously unselected package perl.
+#6 10.62 Preparing to unpack .../03-perl_5.36.0-7+deb12u4_amd64.deb ...
+#6 10.63 Unpacking perl (5.36.0-7+deb12u4) ...
+#6 10.72 Selecting previously unselected package libbrotli1:amd64.
+#6 10.72 Preparing to unpack .../04-libbrotli1_1.0.9-2+deb12u1_amd64.deb ...
+#6 10.72 Unpacking libbrotli1:amd64 (1.0.9-2+deb12u1) ...
+#6 10.81 Selecting previously unselected package libkrb5support0:amd64.
+#6 10.81 Preparing to unpack .../05-libkrb5support0_1.20.1-2+deb12u5_amd64.deb ...
+#6 10.82 Unpacking libkrb5support0:amd64 (1.20.1-2+deb12u5) ...
+#6 10.87 Selecting previously unselected package libk5crypto3:amd64.
+#6 10.87 Preparing to unpack .../06-libk5crypto3_1.20.1-2+deb12u5_amd64.deb ...
+#6 10.87 Unpacking libk5crypto3:amd64 (1.20.1-2+deb12u5) ...
+#6 10.93 Selecting previously unselected package libkeyutils1:amd64.
+#6 10.93 Preparing to unpack .../07-libkeyutils1_1.6.3-2_amd64.deb ...
+#6 10.93 Unpacking libkeyutils1:amd64 (1.6.3-2) ...
+#6 10.99 Selecting previously unselected package libkrb5-3:amd64.
+#6 10.99 Preparing to unpack .../08-libkrb5-3_1.20.1-2+deb12u5_amd64.deb ...
+#6 10.99 Unpacking libkrb5-3:amd64 (1.20.1-2+deb12u5) ...
+#6 11.10 Selecting previously unselected package libgssapi-krb5-2:amd64.
+#6 11.10 Preparing to unpack .../09-libgssapi-krb5-2_1.20.1-2+deb12u5_amd64.deb ...
+#6 11.10 Unpacking libgssapi-krb5-2:amd64 (1.20.1-2+deb12u5) ...
+#6 11.17 Selecting previously unselected package libsasl2-modules-db:amd64.
+#6 11.18 Preparing to unpack .../10-libsasl2-modules-db_2.1.28+dfsg-10+deb12u1_amd64.deb ...
+#6 11.18 Unpacking libsasl2-modules-db:amd64 (2.1.28+dfsg-10+deb12u1) ...
+#6 11.23 Selecting previously unselected package libsasl2-2:amd64.
+#6 11.23 Preparing to unpack .../11-libsasl2-2_2.1.28+dfsg-10+deb12u1_amd64.deb ...
+#6 11.24 Unpacking libsasl2-2:amd64 (2.1.28+dfsg-10+deb12u1) ...
+#6 11.30 Selecting previously unselected package libldap-2.5-0:amd64.
+#6 11.30 Preparing to unpack .../12-libldap-2.5-0_2.5.13+dfsg-5_amd64.deb ...
+#6 11.31 Unpacking libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+#6 11.38 Selecting previously unselected package libnghttp2-14:amd64.
+#6 11.39 Preparing to unpack .../13-libnghttp2-14_1.52.0-1+deb12u3_amd64.deb ...
+#6 11.39 Unpacking libnghttp2-14:amd64 (1.52.0-1+deb12u3) ...
+#6 11.46 Selecting previously unselected package libpsl5:amd64.
+#6 11.46 Preparing to unpack .../14-libpsl5_0.21.2-1_amd64.deb ...
+#6 11.47 Unpacking libpsl5:amd64 (0.21.2-1) ...
+#6 11.52 Selecting previously unselected package librtmp1:amd64.
+#6 11.52 Preparing to unpack .../15-librtmp1_2.4+20151223.gitfa8646d.1-2+b2_amd64.deb ...
+#6 11.52 Unpacking librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+#6 11.68 Selecting previously unselected package libssh2-1:amd64.
+#6 11.68 Preparing to unpack .../16-libssh2-1_1.10.0-3+deb12u1_amd64.deb ...
+#6 11.71 Unpacking libssh2-1:amd64 (1.10.0-3+deb12u1) ...
+#6 11.85 Selecting previously unselected package libcurl3-gnutls:amd64.
+#6 11.85 Preparing to unpack .../17-libcurl3-gnutls_7.88.1-10+deb12u15_amd64.deb ...
+#6 11.87 Unpacking libcurl3-gnutls:amd64 (7.88.1-10+deb12u15) ...
+#6 12.04 Selecting previously unselected package libexpat1:amd64.
+#6 12.04 Preparing to unpack .../18-libexpat1_2.5.0-1+deb12u5_amd64.deb ...
+#6 12.07 Unpacking libexpat1:amd64 (2.5.0-1+deb12u5) ...
+#6 12.21 Selecting previously unselected package liberror-perl.
+#6 12.22 Preparing to unpack .../19-liberror-perl_0.17029-2_all.deb ...
+#6 12.24 Unpacking liberror-perl (0.17029-2) ...
+#6 12.41 Selecting previously unselected package git-man.
+#6 12.41 Preparing to unpack .../20-git-man_1%3a2.39.5-0+deb12u3_all.deb ...
+#6 12.45 Unpacking git-man (1:2.39.5-0+deb12u3) ...
+#6 12.76 Selecting previously unselected package git.
+#6 12.76 Preparing to unpack .../21-git_1%3a2.39.5-0+deb12u3_amd64.deb ...
+#6 12.81 Unpacking git (1:2.39.5-0+deb12u3) ...
+#6 13.87 Setting up libexpat1:amd64 (2.5.0-1+deb12u5) ...
+#6 13.96 Setting up libkeyutils1:amd64 (1.6.3-2) ...
+#6 14.04 Setting up libpsl5:amd64 (0.21.2-1) ...
+#6 14.09 Setting up libbrotli1:amd64 (1.0.9-2+deb12u1) ...
+#6 14.15 Setting up libnghttp2-14:amd64 (1.52.0-1+deb12u3) ...
+#6 14.22 Setting up libkrb5support0:amd64 (1.20.1-2+deb12u5) ...
+#6 14.30 Setting up libsasl2-modules-db:amd64 (2.1.28+dfsg-10+deb12u1) ...
+#6 14.34 Setting up perl-modules-5.36 (5.36.0-7+deb12u4) ...
+#6 14.37 Setting up librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+#6 14.45 Setting up libgdbm-compat4:amd64 (1.23-3) ...
+#6 14.51 Setting up libk5crypto3:amd64 (1.20.1-2+deb12u5) ...
+#6 14.56 Setting up libsasl2-2:amd64 (2.1.28+dfsg-10+deb12u1) ...
+#6 14.61 Setting up git-man (1:2.39.5-0+deb12u3) ...
+#6 14.67 Setting up libssh2-1:amd64 (1.10.0-3+deb12u1) ...
+#6 14.73 Setting up libkrb5-3:amd64 (1.20.1-2+deb12u5) ...
+#6 14.77 Setting up libperl5.36:amd64 (5.36.0-7+deb12u4) ...
+#6 14.83 Setting up libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+#6 14.89 Setting up perl (5.36.0-7+deb12u4) ...
+#6 14.99 Setting up libgssapi-krb5-2:amd64 (1.20.1-2+deb12u5) ...
+#6 15.01 Setting up libcurl3-gnutls:amd64 (7.88.1-10+deb12u15) ...
+#6 15.07 Setting up liberror-perl (0.17029-2) ...
+#6 15.12 Setting up git (1:2.39.5-0+deb12u3) ...
+#6 15.21 Processing triggers for libc-bin (2.36-9+deb12u14) ...
+#6 DONE 15.5s
+
+#7 [3/4] COPY requirements.lock /tmp/requirements.lock
+#7 DONE 0.1s
+
+#8 [4/4] RUN pip install --no-cache-dir -r /tmp/requirements.lock
+#8 3.763 Collecting agate==1.9.1 (from -r /tmp/requirements.lock (line 1))
+#8 3.899   Downloading agate-1.9.1-py2.py3-none-any.whl.metadata (3.2 kB)
+#8 3.930 Collecting annotated-types==0.8.0 (from -r /tmp/requirements.lock (line 2))
+#8 3.948   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+#8 3.978 Collecting attrs==26.1.0 (from -r /tmp/requirements.lock (line 3))
+#8 3.990   Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+#8 4.016 Collecting babel==2.18.0 (from -r /tmp/requirements.lock (line 4))
+#8 4.031   Downloading babel-2.18.0-py3-none-any.whl.metadata (2.2 kB)
+#8 4.068 Collecting certifi==2026.10.23 (from -r /tmp/requirements.lock (line 5))
+#8 4.076   Downloading certifi-2026.10.23-py3-none-any.whl.metadata (2.5 kB)
+#8 4.262 Collecting charset-normalizer==3.5.2 (from -r /tmp/requirements.lock (line 6))
+#8 4.270   Downloading charset_normalizer-3.5.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+#8 4.310 Collecting click==8.5.0 (from -r /tmp/requirements.lock (line 7))
+#8 4.326   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+#8 4.358 Collecting colorama==0.4.6 (from -r /tmp/requirements.lock (line 8))
+#8 4.371   Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+#8 4.403 Collecting daff==1.4.2 (from -r /tmp/requirements.lock (line 9))
+#8 4.417   Downloading daff-1.4.2-py3-none-any.whl.metadata (10 kB)
+#8 4.465 Collecting dbt-adapters==1.24.5 (from -r /tmp/requirements.lock (line 10))
+#8 4.475   Downloading dbt_adapters-1.24.5-py3-none-any.whl.metadata (4.6 kB)
+#8 4.506 Collecting dbt-common==1.39.0 (from -r /tmp/requirements.lock (line 11))
+#8 4.517   Downloading dbt_common-1.39.0-py3-none-any.whl.metadata (5.1 kB)
+#8 4.595 Collecting dbt-core==1.12.6 (from -r /tmp/requirements.lock (line 12))
+#8 4.603   Downloading dbt_core-1.12.6-py3-none-any.whl.metadata (5.3 kB)
+#8 4.625 Collecting dbt-core-experimental-parser==2.0.8 (from -r /tmp/requirements.lock (line 13))
+#8 4.638   Downloading dbt_core_experimental_parser-2.0.8.tar.gz (4.8 kB)
+#8 4.685   Installing build dependencies: started
+#8 7.833   Installing build dependencies: finished with status 'done'
+#8 7.835   Getting requirements to build wheel: started
+#8 8.112   Getting requirements to build wheel: finished with status 'done'
+#8 8.116   Preparing metadata (pyproject.toml): started
+#8 10.64   Preparing metadata (pyproject.toml): finished with status 'done'
+#8 10.69 Collecting dbt-extractor==0.6.0 (from -r /tmp/requirements.lock (line 14))
+#8 10.70   Downloading dbt_extractor-0.6.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.6 kB)
+#8 10.78 Collecting dbt-postgres==1.11.0 (from -r /tmp/requirements.lock (line 15))
+#8 10.80   Downloading dbt_postgres-1.11.0-py3-none-any.whl.metadata (3.9 kB)
+#8 10.83 Collecting dbt-protos==1.0.615 (from -r /tmp/requirements.lock (line 16))
+#8 10.84   Downloading dbt_protos-1.0.615-py3-none-any.whl.metadata (859 bytes)
+#8 10.89 Collecting deepdiff==8.6.2 (from -r /tmp/requirements.lock (line 17))
+#8 10.90   Downloading deepdiff-8.6.2-py3-none-any.whl.metadata (8.8 kB)
+#8 10.94 Collecting idna==3.20 (from -r /tmp/requirements.lock (line 18))
+#8 10.95   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+#8 11.00 Collecting importlib-metadata==10.1.0 (from -r /tmp/requirements.lock (line 19))
+#8 11.01   Downloading importlib_metadata-10.1.0-py3-none-any.whl.metadata (4.5 kB)
+#8 11.03 Collecting isodate==0.7.2 (from -r /tmp/requirements.lock (line 20))
+#8 11.04   Downloading isodate-0.7.2-py3-none-any.whl.metadata (11 kB)
+#8 11.08 Collecting jinja2==3.1.6 (from -r /tmp/requirements.lock (line 21))
+#8 11.09   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+#8 11.13 Collecting jsonschema==4.26.0 (from -r /tmp/requirements.lock (line 22))
+#8 11.14   Downloading jsonschema-4.26.0-py3-none-any.whl.metadata (7.6 kB)
+#8 11.18 Collecting jsonschema-specifications==2025.9.1 (from -r /tmp/requirements.lock (line 23))
+#8 11.18   Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)
+#8 11.21 Collecting leather==0.4.1 (from -r /tmp/requirements.lock (line 24))
+#8 11.22   Downloading leather-0.4.1-py3-none-any.whl.metadata (3.0 kB)
+#8 11.30 Collecting markupsafe==3.0.4 (from -r /tmp/requirements.lock (line 25))
+#8 11.32   Downloading markupsafe-3.0.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+#8 11.35 Collecting mashumaro==3.17 (from -r /tmp/requirements.lock (line 26))
+#8 11.36   Downloading mashumaro-3.17-py3-none-any.whl.metadata (118 kB)
+#8 11.43 Collecting metricflow==0.213.0 (from -r /tmp/requirements.lock (line 27))
+#8 11.44   Downloading metricflow-0.213.0-py3-none-any.whl.metadata (23 kB)
+#8 11.50 Collecting more-itertools==10.8.0 (from -r /tmp/requirements.lock (line 28))
+#8 11.51   Downloading more_itertools-10.8.0-py3-none-any.whl.metadata (39 kB)
+#8 11.66 Collecting msgpack==1.2.4 (from -r /tmp/requirements.lock (line 29))
+#8 11.68   Downloading msgpack-1.2.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.3 kB)
+#8 11.71 Collecting networkx==3.7 (from -r /tmp/requirements.lock (line 30))
+#8 11.72   Downloading networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+#8 11.77 Collecting opentelemetry-api==1.45.2 (from -r /tmp/requirements.lock (line 31))
+#8 11.78   Downloading opentelemetry_api-1.45.2-py3-none-any.whl.metadata (1.4 kB)
+#8 11.80 Collecting orderly-set==5.5.0 (from -r /tmp/requirements.lock (line 32))
+#8 11.81   Downloading orderly_set-5.5.0-py3-none-any.whl.metadata (6.6 kB)
+#8 11.87 Collecting packaging==26.3 (from -r /tmp/requirements.lock (line 33))
+#8 11.88   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+#8 11.90 Collecting parsedatetime==2.6 (from -r /tmp/requirements.lock (line 34))
+#8 11.92   Downloading parsedatetime-2.6-py3-none-any.whl.metadata (4.7 kB)
+#8 11.94 Collecting pathspec==1.0.4 (from -r /tmp/requirements.lock (line 35))
+#8 11.95   Downloading pathspec-1.0.4-py3-none-any.whl.metadata (13 kB)
+#8 12.18 Collecting protobuf==6.33.6 (from -r /tmp/requirements.lock (line 36))
+#8 12.19   Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+#8 12.28 Collecting psycopg2-binary==2.9.13 (from -r /tmp/requirements.lock (line 37))
+#8 12.31   Downloading psycopg2_binary-2.9.13-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (4.9 kB)
+#8 12.47 Collecting pydantic==2.14.2 (from -r /tmp/requirements.lock (line 38))
+#8 12.48   Downloading pydantic-2.14.2-py3-none-any.whl.metadata (137 kB)
+#8 13.66 Collecting pydantic-core==2.50.2 (from -r /tmp/requirements.lock (line 39))
+#8 13.67   Downloading pydantic_core-2.50.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.5 kB)
+#8 13.70 Collecting python-dateutil==2.9.0.post0 (from -r /tmp/requirements.lock (line 40))
+#8 13.71   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+#8 13.74 Collecting python-dotenv==1.2.4 (from -r /tmp/requirements.lock (line 41))
+#8 13.75   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+#8 13.78 Collecting python-slugify==9.1.3 (from -r /tmp/requirements.lock (line 42))
+#8 13.79   Downloading python_slugify-9.1.3-py3-none-any.whl.metadata (12 kB)
+#8 13.82 Collecting pytimeparse==1.1.10 (from -r /tmp/requirements.lock (line 43))
+#8 13.84   Downloading pytimeparse-1.1.10-py3-none-any.whl.metadata (3.6 kB)
+#8 13.90 Collecting pytz==2026.6 (from -r /tmp/requirements.lock (line 44))
+#8 13.91   Downloading pytz-2026.6-py2.py3-none-any.whl.metadata (22 kB)
+#8 13.99 Collecting pyyaml==6.0.3 (from -r /tmp/requirements.lock (line 45))
+#8 14.00   Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+#8 14.79 Collecting rapidfuzz==3.14.6 (from -r /tmp/requirements.lock (line 46))
+#8 14.81   Downloading rapidfuzz-3.14.6-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (12 kB)
+#8 14.84 Collecting referencing==0.37.0 (from -r /tmp/requirements.lock (line 47))
+#8 14.85   Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)
+#8 14.89 Collecting requests==2.34.2 (from -r /tmp/requirements.lock (line 48))
+#8 14.90   Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+#8 15.30 Collecting rpds-py==2026.9.1 (from -r /tmp/requirements.lock (line 49))
+#8 15.31   Downloading rpds_py-2026.9.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)
+#8 15.33 Collecting six==1.17.0 (from -r /tmp/requirements.lock (line 50))
+#8 15.34   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+#8 15.37 Collecting snowplow-tracker==1.1.0 (from -r /tmp/requirements.lock (line 51))
+#8 15.39   Downloading snowplow_tracker-1.1.0-py3-none-any.whl.metadata (5.7 kB)
+#8 15.50 Collecting sqlglot==30.27.0 (from -r /tmp/requirements.lock (line 52))
+#8 15.51   Downloading sqlglot-30.27.0-py3-none-any.whl.metadata (25 kB)
+#8 15.54 Collecting sqlparse==0.6.0 (from -r /tmp/requirements.lock (line 53))
+#8 15.55   Downloading sqlparse-0.6.0-py3-none-any.whl.metadata (6.0 kB)
+#8 15.57 Collecting tabulate==0.10.0 (from -r /tmp/requirements.lock (line 54))
+#8 15.59   Downloading tabulate-0.10.0-py3-none-any.whl.metadata (40 kB)
+#8 15.61 Collecting text-unidecode==1.3 (from -r /tmp/requirements.lock (line 55))
+#8 15.61   Downloading text_unidecode-1.3-py2.py3-none-any.whl.metadata (2.4 kB)
+#8 15.64 Collecting typing-extensions==4.16.0 (from -r /tmp/requirements.lock (line 56))
+#8 15.66   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#8 15.68 Collecting typing-inspection==0.4.4 (from -r /tmp/requirements.lock (line 57))
+#8 15.69   Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+#8 15.72 Collecting urllib3==2.8.0 (from -r /tmp/requirements.lock (line 58))
+#8 15.74   Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+#8 15.77 Collecting zipp==4.1.2 (from -r /tmp/requirements.lock (line 59))
+#8 15.79   Downloading zipp-4.1.2-py3-none-any.whl.metadata (3.6 kB)
+#8 15.95 Downloading agate-1.9.1-py2.py3-none-any.whl (95 kB)
+#8 15.97 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#8 15.98 Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+#8 15.99 Downloading babel-2.18.0-py3-none-any.whl (10.2 MB)
+#8 16.46    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.2/10.2 MB 21.6 MB/s  0:00:00
+#8 16.47 Downloading certifi-2026.10.23-py3-none-any.whl (135 kB)
+#8 16.49 Downloading charset_normalizer-3.5.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (254 kB)
+#8 16.50 Downloading click-8.5.0-py3-none-any.whl (125 kB)
+#8 16.51 Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+#8 16.53 Downloading daff-1.4.2-py3-none-any.whl (144 kB)
+#8 16.54 Downloading dbt_adapters-1.24.5-py3-none-any.whl (177 kB)
+#8 16.57 Downloading dbt_common-1.39.0-py3-none-any.whl (89 kB)
+#8 16.58 Downloading dbt_protos-1.0.615-py3-none-any.whl (303 kB)
+#8 16.60 Downloading deepdiff-8.6.2-py3-none-any.whl (91 kB)
+#8 16.61 Downloading isodate-0.7.2-py3-none-any.whl (22 kB)
+#8 16.62 Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+#8 16.65 Downloading jsonschema-4.26.0-py3-none-any.whl (90 kB)
+#8 16.66 Downloading mashumaro-3.17-py3-none-any.whl (94 kB)
+#8 16.68 Downloading opentelemetry_api-1.45.2-py3-none-any.whl (60 kB)
+#8 16.69 Downloading orderly_set-5.5.0-py3-none-any.whl (13 kB)
+#8 16.70 Downloading pathspec-1.0.4-py3-none-any.whl (55 kB)
+#8 16.72 Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)
+#8 16.74 Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+#8 16.77 Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+#8 16.78 Downloading idna-3.20-py3-none-any.whl (69 kB)
+#8 16.79 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#8 16.80 Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+#8 16.82 Downloading dbt_core-1.12.6-py3-none-any.whl (1.1 MB)
+#8 16.90    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 14.3 MB/s  0:00:00
+#8 16.92 Downloading dbt_extractor-0.6.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (442 kB)
+#8 16.95 Downloading metricflow-0.213.0-py3-none-any.whl (999 kB)
+#8 16.97    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 999.5/999.5 kB 32.6 MB/s  0:00:00
+#8 16.98 Downloading more_itertools-10.8.0-py3-none-any.whl (69 kB)
+#8 17.00 Downloading networkx-3.7-py3-none-any.whl (2.1 MB)
+#8 17.10    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 20.3 MB/s  0:00:00
+#8 17.11 Downloading pydantic-2.14.2-py3-none-any.whl (490 kB)
+#8 17.14 Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (801 kB)
+#8 17.17    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 801.6/801.6 kB 33.7 MB/s  0:00:00
+#8 17.18 Downloading rapidfuzz-3.14.6-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (3.2 MB)
+#8 17.37    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.2/3.2 MB 16.9 MB/s  0:00:00
+#8 17.38 Downloading snowplow_tracker-1.1.0-py3-none-any.whl (44 kB)
+#8 17.39 Downloading sqlparse-0.6.0-py3-none-any.whl (50 kB)
+#8 17.40 Downloading dbt_postgres-1.11.0-py3-none-any.whl (36 kB)
+#8 17.42 Downloading psycopg2_binary-2.9.13-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.3 MB)
+#8 17.62    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.3/4.3 MB 21.3 MB/s  0:00:00
+#8 17.63 Downloading importlib_metadata-10.1.0-py3-none-any.whl (32 kB)
+#8 17.64 Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+#8 17.65 Downloading leather-0.4.1-py3-none-any.whl (30 kB)
+#8 17.66 Downloading markupsafe-3.0.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (23 kB)
+#8 17.67 Downloading msgpack-1.2.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (469 kB)
+#8 17.70 Downloading packaging-26.3-py3-none-any.whl (129 kB)
+#8 17.71 Downloading parsedatetime-2.6-py3-none-any.whl (42 kB)
+#8 17.72 Downloading pydantic_core-2.50.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.2 MB)
+#8 17.87    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 14.0 MB/s  0:00:00
+#8 17.89 Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+#8 17.90 Downloading python_slugify-9.1.3-py3-none-any.whl (16 kB)
+#8 17.91 Downloading pytimeparse-1.1.10-py3-none-any.whl (10 kB)
+#8 17.92 Downloading pytz-2026.6-py2.py3-none-any.whl (506 kB)
+#8 17.95 Downloading referencing-0.37.0-py3-none-any.whl (26 kB)
+#8 17.96 Downloading rpds_py-2026.9.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (370 kB)
+#8 17.99 Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+#8 18.00 Downloading sqlglot-30.27.0-py3-none-any.whl (801 kB)
+#8 18.05    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 802.0/802.0 kB 40.2 MB/s  0:00:00
+#8 18.07 Downloading tabulate-0.10.0-py3-none-any.whl (39 kB)
+#8 18.08 Downloading text_unidecode-1.3-py2.py3-none-any.whl (78 kB)
+#8 18.09 Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+#8 18.10 Downloading zipp-4.1.2-py3-none-any.whl (10 kB)
+#8 18.46 Building wheels for collected packages: dbt-core-experimental-parser
+#8 18.47   Building wheel for dbt-core-experimental-parser (pyproject.toml): started
+#8 18.58   Building wheel for dbt-core-experimental-parser (pyproject.toml): finished with status 'done'
+#8 18.64   Created wheel for dbt-core-experimental-parser: filename=dbt_core_experimental_parser-2.0.8-py3-none-manylinux_2_28_x86_64.whl size=55496990 sha256=2186d331522b2a8a0f09d2f5c81ff5f1a433160ad7cd212906dccc0d4951d2a1
+#8 18.64   Stored in directory: /tmp/pip-ephem-wheel-cache-qkaul081/wheels/19/a2/88/bed435679441b8f58a31c997b0c83bd39b76d690e7762a9f8a
+#8 18.64 Successfully built dbt-core-experimental-parser
+#8 18.94 Installing collected packages: text-unidecode, pytz, parsedatetime, leather, daff, zipp, urllib3, typing-extensions, tabulate, sqlparse, sqlglot, six, rpds-py, rapidfuzz, pyyaml, pytimeparse, python-slugify, python-dotenv, psycopg2-binary, protobuf, pathspec, packaging, orderly-set, networkx, msgpack, more-itertools, markupsafe, isodate, idna, dbt-extractor, dbt-core-experimental-parser, colorama, click, charset-normalizer, certifi, babel, attrs, annotated-types, typing-inspection, requests, referencing, python-dateutil, pydantic-core, opentelemetry-api, mashumaro, jinja2, importlib-metadata, deepdiff, dbt-protos, agate, snowplow-tracker, pydantic, jsonschema-specifications, jsonschema, metricflow, dbt-common, dbt-adapters, dbt-core, dbt-postgres
+#8 49.75 
+#8 49.77 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#8 49.77 Successfully installed agate-1.9.1 annotated-types-0.8.0 attrs-26.1.0 babel-2.18.0 certifi-2026.10.23 charset-normalizer-3.5.2 click-8.5.0 colorama-0.4.6 daff-1.4.2 dbt-adapters-1.24.5 dbt-common-1.39.0 dbt-core-1.12.6 dbt-core-experimental-parser-2.0.8 dbt-extractor-0.6.0 dbt-postgres-1.11.0 dbt-protos-1.0.615 deepdiff-8.6.2 idna-3.20 importlib-metadata-10.1.0 isodate-0.7.2 jinja2-3.1.6 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 leather-0.4.1 markupsafe-3.0.4 mashumaro-3.17 metricflow-0.213.0 more-itertools-10.8.0 msgpack-1.2.4 networkx-3.7 opentelemetry-api-1.45.2 orderly-set-5.5.0 packaging-26.3 parsedatetime-2.6 pathspec-1.0.4 protobuf-6.33.6 psycopg2-binary-2.9.13 pydantic-2.14.2 pydantic-core-2.50.2 python-dateutil-2.9.0.post0 python-dotenv-1.2.4 python-slugify-9.1.3 pytimeparse-1.1.10 pytz-2026.6 pyyaml-6.0.3 rapidfuzz-3.14.6 referencing-0.37.0 requests-2.34.2 rpds-py-2026.9.1 six-1.17.0 snowplow-tracker-1.1.0 sqlglot-30.27.0 sqlparse-0.6.0 tabulate-0.10.0 text-unidecode-1.3 typing-extensions-4.16.0 typing-inspection-0.4.4 urllib3-2.8.0 zipp-4.1.2
+#8 49.77 
+#8 49.77 [notice] A new release of pip is available: 26.2.1 -> 26.3
+#8 49.77 [notice] To update, run: pip install --upgrade pip
+#8 DONE 50.5s
+
+#9 exporting to image
+#9 exporting layers
+#9 exporting layers 7.8s done
+#9 writing image sha256:510c8aa41e331538af1141a7250b9dcf2e60f0829c307d2df3017c7659f1d52b done
+#9 naming to docker.io/library/modelagem-lab-dbt:local 0.0s done
+#9 DONE 8.0s
+[exit 0, 2026-11-03]

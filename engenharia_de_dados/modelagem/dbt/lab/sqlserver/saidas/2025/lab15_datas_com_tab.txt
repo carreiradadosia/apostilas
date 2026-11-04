@@ -1,0 +1,15 @@
+
+$ ./sq.sh dw 69_datas_com_tab.sql
+== NULLIF(TRIM(x), N'') cobre vazio e espaços, não cobre tab. TRIM com lista de caracteres cobre os três e mantém o valor real.
+caso|nullif_trim|trim_com_lista
+----|-----------|--------------
+vazio|NULL|NULL
+espacos|NULL|NULL
+tab|1900-01-01|NULL
+tab_e_espaco|1900-01-01|NULL
+espaco_duro|NULL|NULL
+valor_real|2026-10-20|2026-10-20
+valor_real_com_tab|NULL|2026-10-20
+
+(7 rows affected)
+[exit 0, 2026-11-03]

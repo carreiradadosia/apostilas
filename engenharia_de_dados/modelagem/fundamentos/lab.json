@@ -1,0 +1,100 @@
+{
+  "modulo": "modelagem/fundamentos",
+  "verificado_em": "2026-11-04",
+  "nivel_maximo_atingido": 0,
+  "observacao": "Módulo conceitual, sem código próprio: artefatos[] fica vazio e o gerador registra nivel_maximo_atingido 0 por não haver artefato a verificar, não por falha. Os Labs 0 a 9 citados na apostila rodam no laboratório do módulo modelagem/dbt, em engenharia_de_dados/modelagem/dbt/lab; comandos, saídas esperadas e saídas capturadas ficam no lab.json daquele módulo, com o mesmo id. Cada entrada de labs[] aqui só aponta para lá, para não manter os comandos em dois lugares.",
+  "versoes": {},
+  "artefatos": [],
+  "labs": [
+    {
+      "id": "Lab 0",
+      "titulo": "Subir o ambiente",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "laboratorio": "modelagem/dbt",
+      "pasta": "modelagem/dbt/lab",
+      "comandos_e_saidas": "labs[] de modelagem/dbt/lab.json, id 'Lab 0'"
+    },
+    {
+      "id": "Lab 1",
+      "titulo": "A silver à mão",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "laboratorio": "modelagem/dbt",
+      "pasta": "modelagem/dbt/lab",
+      "comandos_e_saidas": "labs[] de modelagem/dbt/lab.json, id 'Lab 1'"
+    },
+    {
+      "id": "Lab 2",
+      "titulo": "Fuso e datas",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "laboratorio": "modelagem/dbt",
+      "pasta": "modelagem/dbt/lab",
+      "comandos_e_saidas": "labs[] de modelagem/dbt/lab.json, id 'Lab 2'"
+    },
+    {
+      "id": "Lab 3",
+      "titulo": "Estrela, one big table e fan-out",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "laboratorio": "modelagem/dbt",
+      "pasta": "modelagem/dbt/lab",
+      "comandos_e_saidas": "labs[] de modelagem/dbt/lab.json, id 'Lab 3'"
+    },
+    {
+      "id": "Lab 4",
+      "titulo": "O preço, o UPDATE e o tipo 2",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "laboratorio": "modelagem/dbt",
+      "pasta": "modelagem/dbt/lab",
+      "comandos_e_saidas": "labs[] de modelagem/dbt/lab.json, id 'Lab 4'"
+    },
+    {
+      "id": "Lab 5",
+      "titulo": "O mesmo fluxo em dbt",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "laboratorio": "modelagem/dbt",
+      "pasta": "modelagem/dbt/lab",
+      "comandos_e_saidas": "labs[] de modelagem/dbt/lab.json, id 'Lab 5'"
+    },
+    {
+      "id": "Lab 6",
+      "titulo": "Testes que param",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "laboratorio": "modelagem/dbt",
+      "pasta": "modelagem/dbt/lab",
+      "comandos_e_saidas": "labs[] de modelagem/dbt/lab.json, id 'Lab 6'"
+    },
+    {
+      "id": "Lab 7",
+      "titulo": "O dbt numa Dag",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "laboratorio": "modelagem/dbt",
+      "pasta": "modelagem/dbt/lab",
+      "comandos_e_saidas": "labs[] de modelagem/dbt/lab.json, id 'Lab 7'"
+    },
+    {
+      "id": "Lab 8",
+      "titulo": "Silver e gold em T-SQL",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "laboratorio": "modelagem/dbt",
+      "pasta": "modelagem/dbt/lab/sqlserver",
+      "comandos_e_saidas": "labs[] de modelagem/dbt/lab.json, id 'Lab 8'"
+    },
+    {
+      "id": "Lab 9",
+      "titulo": "Que SQL um relatório roda",
+      "nivel": 3,
+      "verificado_em": "2026-11-03",
+      "laboratorio": "modelagem/dbt",
+      "pasta": "modelagem/dbt/lab/linhagem",
+      "comandos_e_saidas": "labs[] de modelagem/dbt/lab.json, id 'Lab 9'"
+    }
+  ]
+}

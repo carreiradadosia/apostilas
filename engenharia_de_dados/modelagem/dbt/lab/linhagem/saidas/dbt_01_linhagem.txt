@@ -1,0 +1,98 @@
+
+$ docker compose --profile dbt run --rm -T --no-deps dbt dbt --version 2>&1 | grep -E 'installed|postgres:|Update' || true
+  - installed: 1.12.6
+  - postgres: 1.11.0 - Up to date!
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm -T --no-deps dbt dbt parse --no-partial-parse 2>&1 | tail -4
+Running with dbt=1.12.6
+Registered adapter: postgres=1.11.0
+Performance info: /lab/dbt/target/perf_info.json
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm -T --no-deps dbt dbt run 2>&1 | grep -E 'Completed|Done\.|ERROR|OK created' || true
+1 of 6 OK created sql view model dw.copia_da_view_do_sistema ................... [CREATE VIEW in 0.26s]
+2 of 6 OK created sql view model dw.copia_sem_ref .............................. [CREATE VIEW in 0.26s]
+4 of 6 OK created sql view model dw.stg_lojas .................................. [CREATE VIEW in 0.08s]
+3 of 6 OK created sql view model dw.stg_itens .................................. [CREATE VIEW in 0.08s]
+5 of 6 OK created sql view model dw.stg_pedidos ................................ [CREATE VIEW in 0.05s]
+6 of 6 OK created sql table model dw.mart_faturamento_por_loja ................. [SELECT 7 in 0.10s]
+Completed successfully
+Done. PASS=6 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=6
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm -T --no-deps dbt dbt docs generate 2>&1 | tail -2
+ls dbt/target | grep -E '^(index\.html|manifest\.json|catalog\.json)$'
+Building catalog
+Catalog written to /lab/dbt/target/catalog.json
+catalog.json
+index.html
+manifest.json
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm -T --no-deps dbt python ler_manifesto.py
+dbt_version do manifesto: 1.12.6
+pais de model.linhagem.mart_faturamento_por_loja: ['model.linhagem.stg_itens', 'model.linhagem.stg_lojas', 'model.linhagem.stg_pedidos']
+pais de model.linhagem.stg_pedidos: ['source.linhagem.erp.pedidos']
+pais de model.linhagem.copia_sem_ref: []
+pais de model.linhagem.copia_da_view_do_sistema: ['source.linhagem.sistema.vw_faturamento_itens']
+pais de source.linhagem.sistema.vw_faturamento_itens: []
+pais de exposure.linhagem.relatorio_faturamento_diretoria: ['model.linhagem.mart_faturamento_por_loja']
+filhos de model.linhagem.mart_faturamento_por_loja: ['exposure.linhagem.relatorio_faturamento_diretoria']
+description do modelo: 'Faturamento por loja e dia. Grão: uma linha por loja e dia.\n\nConta só itens de pedidos com status pago, depois de limpar espaços e caixa do texto.\nFica de fora: cancelado, pendente e status nulo.'
+meta do modelo: {'dono_do_numero': 'Diretoria comercial', 'reconferido_em': '2026-11-03'}
+description da coluna faturamento: 'Soma de quantidade vezes preço unitário dos itens de pedidos pagos.'
+exposure, tipo e dono: dashboard, Diretoria comercial
+exposure, depends_on: ['model.linhagem.mart_faturamento_por_loja']
+[exit 0, 2026-11-03]
+
+$ # The exposure selects what feeds it, up to the sources.
+docker compose --profile dbt run --rm -T --no-deps dbt dbt ls --select +exposure:relatorio_faturamento_diretoria --output name 2>&1 | grep -vE 'Running with|Registered adapter|Found ' || true
+relatorio_faturamento_diretoria
+mart_faturamento_por_loja
+stg_itens
+stg_lojas
+stg_pedidos
+erp.itens_pedido
+erp.lojas
+erp.pedidos
+[exit 0, 2026-11-03]
+
+$ # The number itself, against the report of the system.
+bin/pg postgres admin_lab lab -c "SELECT loja, sum(faturamento) AS faturamento FROM dw.mart_faturamento_por_loja GROUP BY loja ORDER BY loja;"
+bin/pg postgres admin_lab lab -c "SELECT loja, faturamento FROM relatorios.faturamento_por_loja('2026-10-20', '2026-10-22');"
+     loja      | faturamento 
+---------------+-------------
+ LOJA NORTE    |      344.20
+ Loja Centro   |      419.90
+ loja são joão |       72.00
+(3 rows)
+
+     loja      | faturamento 
+---------------+-------------
+ LOJA NORTE    |      344.20
+ Loja Centro   |      419.90
+ loja são joão |       72.00
+(3 rows)
+
+[exit 0, 2026-11-03]
+
+$ # The docs site is served by the same local tool, with no account.
+docker compose --profile dbt run --rm -T --no-deps dbt sh -c '
+  dbt docs serve --no-browser --port 8080 >/tmp/serve.log 2>&1 &
+  python - <<PY
+import time, urllib.request
+for caminho in ("/", "/manifest.json", "/catalog.json"):
+    for tentativa in range(40):
+        try:
+            with urllib.request.urlopen("http://localhost:8080" + caminho, timeout=2) as r:
+                print(caminho, r.status, r.headers.get("Content-Type"))
+            break
+        except OSError:
+            time.sleep(0.5)
+PY
+'
+/ 200 text/html
+/manifest.json 200 application/json
+/catalog.json 200 application/json
+[exit 0, 2026-11-03]

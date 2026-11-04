@@ -1,0 +1,422 @@
+
+$ docker compose --profile dbt run --rm dbt dbt build --select tag:experimento --vars '{experimentos: true}'
+ Container modelagem-lab-postgres-1  Running
+20:38:28  Running with dbt=1.12.6
+20:38:28  Registered adapter: postgres=1.11.0
+20:38:29  Unable to do partial parsing because config vars, config profile, or config target have changed
+20:38:32  Found 15 models, 35 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:38:32  
+20:38:32  Concurrency: 2 threads (target='dev')
+20:38:32  
+20:38:33  1 of 6 START sql view model dbt_experimentos.exp_fct_fan_out ................... [RUN]
+20:38:33  2 of 6 START sql incremental model dbt_experimentos.exp_inc_com_chave .......... [RUN]
+20:38:33  2 of 6 OK created sql incremental model dbt_experimentos.exp_inc_com_chave ..... [SELECT 4 in 0.24s]
+20:38:33  1 of 6 OK created sql view model dbt_experimentos.exp_fct_fan_out .............. [CREATE VIEW in 0.25s]
+20:38:33  3 of 6 START sql incremental model dbt_experimentos.exp_inc_sem_chave .......... [RUN]
+20:38:33  4 of 6 START test unique_exp_inc_com_chave_atendimento_id ...................... [RUN]
+20:38:33  4 of 6 PASS unique_exp_inc_com_chave_atendimento_id ............................ [PASS in 0.10s]
+20:38:33  5 of 6 START test unique_exp_fct_fan_out_venda_sk .............................. [RUN]
+20:38:33  3 of 6 OK created sql incremental model dbt_experimentos.exp_inc_sem_chave ..... [SELECT 4 in 0.11s]
+20:38:33  6 of 6 START test unique_exp_inc_sem_chave_atendimento_id ...................... [RUN]
+20:38:33  5 of 6 FAIL 5 unique_exp_fct_fan_out_venda_sk .................................. [FAIL 5 in 0.05s]
+20:38:33  6 of 6 PASS unique_exp_inc_sem_chave_atendimento_id ............................ [PASS in 0.04s]
+20:38:33  
+20:38:33  Finished running 2 incremental models, 3 data tests, 1 view model in 0 hours 0 minutes and 0.74 seconds (0.74s).
+20:38:33  
+20:38:33  Completed with 1 error, 0 partial successes, and 0 warnings:
+20:38:33  
+20:38:33  [ERROR]: in test unique_exp_fct_fan_out_venda_sk (models/experimentos/_experimentos.yml)
+20:38:33    Got 5 results, configured to fail if != 0
+20:38:33  
+20:38:33    compiled code at target/compiled/rede_de_lojas/models/experimentos/_experimentos.yml/unique_exp_fct_fan_out_venda_sk.sql
+20:38:33  
+20:38:33  Done. PASS=5 WARN=0 ERROR=1 SKIP=0 NO-OP=0 REUSED=0 TOTAL=6
+
+[exit 1, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt build --select exp_inc_sem_chave exp_inc_com_chave --vars '{experimentos: true}'
+ Container modelagem-lab-postgres-1  Running
+20:38:38  Running with dbt=1.12.6
+20:38:38  Registered adapter: postgres=1.11.0
+20:38:39  Found 15 models, 35 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:38:39  
+20:38:39  Concurrency: 2 threads (target='dev')
+20:38:39  
+20:38:40  1 of 4 START sql incremental model dbt_experimentos.exp_inc_com_chave .......... [RUN]
+20:38:40  2 of 4 START sql incremental model dbt_experimentos.exp_inc_sem_chave .......... [RUN]
+20:38:40  1 of 4 OK created sql incremental model dbt_experimentos.exp_inc_com_chave ..... [INSERT 0 1 in 0.37s]
+20:38:40  2 of 4 OK created sql incremental model dbt_experimentos.exp_inc_sem_chave ..... [INSERT 0 1 in 0.37s]
+20:38:40  3 of 4 START test unique_exp_inc_com_chave_atendimento_id ...................... [RUN]
+20:38:40  4 of 4 START test unique_exp_inc_sem_chave_atendimento_id ...................... [RUN]
+20:38:40  3 of 4 PASS unique_exp_inc_com_chave_atendimento_id ............................ [PASS in 0.12s]
+20:38:40  4 of 4 FAIL 1 unique_exp_inc_sem_chave_atendimento_id .......................... [FAIL 1 in 0.12s]
+20:38:40  
+20:38:40  Finished running 2 incremental models, 2 data tests in 0 hours 0 minutes and 0.78 seconds (0.78s).
+20:38:40  
+20:38:40  Completed with 1 error, 0 partial successes, and 0 warnings:
+20:38:40  
+20:38:40  [ERROR]: in test unique_exp_inc_sem_chave_atendimento_id (models/experimentos/_experimentos.yml)
+20:38:40    Got 1 result, configured to fail if != 0
+20:38:40  
+20:38:40    compiled code at target/compiled/rede_de_lojas/models/experimentos/_experimentos.yml/unique_exp_inc_sem_chave_atendimento_id.sql
+20:38:40  
+20:38:40  Done. PASS=3 WARN=0 ERROR=1 SKIP=0 NO-OP=0 REUSED=0 TOTAL=4
+
+[exit 1, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "select 'sem_chave' as modelo, count(*) as linhas, count(distinct atendimento_id) as atendimentos from dbt_experimentos.exp_inc_sem_chave union all select 'com_chave', count(*), count(distinct atendimento_id) from dbt_experimentos.exp_inc_com_chave"
+  modelo   | linhas | atendimentos 
+-----------+--------+--------------
+ sem_chave |      5 |            4
+ com_chave |      4 |            4
+(2 rows)
+
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt build --select exp_inc_sem_chave --full-refresh --vars '{experimentos: true}'
+ Container modelagem-lab-postgres-1  Running
+20:38:45  Running with dbt=1.12.6
+20:38:46  Registered adapter: postgres=1.11.0
+20:38:47  Found 15 models, 35 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:38:47  
+20:38:47  Concurrency: 2 threads (target='dev')
+20:38:47  
+20:38:47  1 of 2 START sql incremental model dbt_experimentos.exp_inc_sem_chave .......... [RUN]
+20:38:47  1 of 2 OK created sql incremental model dbt_experimentos.exp_inc_sem_chave ..... [SELECT 4 in 0.20s]
+20:38:47  2 of 2 START test unique_exp_inc_sem_chave_atendimento_id ...................... [RUN]
+20:38:47  2 of 2 PASS unique_exp_inc_sem_chave_atendimento_id ............................ [PASS in 0.07s]
+20:38:47  
+20:38:47  Finished running 1 incremental model, 1 test in 0 hours 0 minutes and 0.57 seconds (0.57s).
+20:38:47  
+20:38:47  Completed successfully
+20:38:47  
+20:38:47  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=2
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/12_bronze_itens_carga_dupla.sql
+INSERT 0 2
+ pedido_id | item_seq | cargas 
+-----------+----------+--------
+       104 |        1 |      2
+       104 |        2 |      2
+(2 rows)
+
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -q -f /sql/20_silver.sql -f /sql/30_gold.sql
+          tabela          | linhas 
+--------------------------+--------
+ silver.pedidos           |     10
+ silver.itens             |     15
+ silver.lojas             |      3
+ silver.produtos          |      5
+ silver.produtos_vigencia |      7
+ silver.atendimentos      |      4
+(6 rows)
+
+psql:/sql/30_gold.sql:5: NOTICE:  drop cascades to view gold.obt_vendas
+    dia     | pedidos | pedidos_pagos | receita_paga 
+------------+---------+---------------+--------------
+ 2026-10-20 |       4 |             2 |       741.80
+ 2026-10-21 |       3 |             2 |       111.90
+ 2026-10-22 |       3 |             3 |       293.30
+(3 rows)
+
+ linhas_fct | chaves_fct | itens_silver | linhas_obt | receita_obt 
+------------+------------+--------------+------------+-------------
+         15 |         13 |           15 |         15 |     1147.00
+(1 row)
+
+ executor | linhas_bronze | linhas_silver | receita_paga 
+----------+---------------+---------------+--------------
+ a_mao    |            11 |            10 |       836.10
+ a_mao    |            11 |            10 |       836.10
+ a_mao    |            11 |            10 |      1147.00
+(3 rows)
+
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt build
+ Container modelagem-lab-postgres-1  Running
+20:38:53  Running with dbt=1.12.6
+20:38:53  Registered adapter: postgres=1.11.0
+20:38:54  Unable to do partial parsing because config vars, config profile, or config target have changed
+20:39:01  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:39:01  
+20:39:01  Concurrency: 2 threads (target='dev')
+20:39:01  
+20:39:01  1 of 46 START sql table model dbt_gold.dim_data ................................ [RUN]
+20:39:01  2 of 46 START sql view model dbt_silver.stg_atendimentos ....................... [RUN]
+20:39:01  2 of 46 OK created sql view model dbt_silver.stg_atendimentos .................. [CREATE VIEW in 0.30s]
+20:39:01  1 of 46 OK created sql table model dbt_gold.dim_data ........................... [SELECT 92 in 0.35s]
+20:39:01  3 of 46 START sql view model dbt_silver.stg_itens .............................. [RUN]
+20:39:01  4 of 46 START sql view model dbt_silver.stg_lojas .............................. [RUN]
+20:39:02  4 of 46 OK created sql view model dbt_silver.stg_lojas ......................... [CREATE VIEW in 0.09s]
+20:39:02  3 of 46 OK created sql view model dbt_silver.stg_itens ......................... [CREATE VIEW in 0.09s]
+20:39:02  5 of 46 START sql view model dbt_silver.stg_pedidos ............................ [RUN]
+20:39:02  6 of 46 START seed file dbt_silver.de_para_categoria ........................... [RUN]
+20:39:02  5 of 46 OK created sql view model dbt_silver.stg_pedidos ....................... [CREATE VIEW in 0.26s]
+20:39:02  7 of 46 START snapshot dbt_snapshots.snap_produtos_por_timestamp ............... [RUN]
+20:39:02  6 of 46 OK loaded seed file dbt_silver.de_para_categoria ....................... [INSERT 1 in 0.26s]
+20:39:02  8 of 46 START snapshot dbt_snapshots.snap_produtos_preco ....................... [RUN]
+20:39:02  8 of 46 OK snapshotted dbt_snapshots.snap_produtos_preco ....................... [INSERT 0 0 in 0.66s]
+20:39:02  7 of 46 OK snapshotted dbt_snapshots.snap_produtos_por_timestamp ............... [INSERT 0 0 in 0.67s]
+20:39:02  9 of 46 START test not_null_stg_atendimentos_atendimento_id .................... [RUN]
+20:39:02  10 of 46 START test unique_stg_atendimentos_atendimento_id ..................... [RUN]
+20:39:03  9 of 46 PASS not_null_stg_atendimentos_atendimento_id .......................... [PASS in 0.10s]
+20:39:03  10 of 46 PASS unique_stg_atendimentos_atendimento_id ........................... [PASS in 0.10s]
+20:39:03  11 of 46 START test not_null_dim_data_data_id .................................. [RUN]
+20:39:03  12 of 46 START test unique_dim_data_data_id .................................... [RUN]
+20:39:03  12 of 46 PASS unique_dim_data_data_id .......................................... [PASS in 0.03s]
+20:39:03  11 of 46 PASS not_null_dim_data_data_id ........................................ [PASS in 0.05s]
+20:39:03  13 of 46 START test not_null_stg_lojas_loja_id ................................. [RUN]
+20:39:03  14 of 46 START test unique_stg_lojas_loja_id ................................... [RUN]
+20:39:03  14 of 46 PASS unique_stg_lojas_loja_id ......................................... [PASS in 0.04s]
+20:39:03  13 of 46 PASS not_null_stg_lojas_loja_id ....................................... [PASS in 0.05s]
+20:39:03  15 of 46 START test unique_stg_itens__pedido_id_item_seq_ ...................... [RUN]
+20:39:03  16 of 46 START test accepted_values_stg_pedidos_status__pago__cancelado__pendente__desconhecido  [RUN]
+20:39:03  16 of 46 PASS accepted_values_stg_pedidos_status__pago__cancelado__pendente__desconhecido  [PASS in 0.18s]
+20:39:03  15 of 46 FAIL 2 unique_stg_itens__pedido_id_item_seq_ .......................... [FAIL 2 in 0.19s]
+20:39:03  17 of 46 START test assert_itens_batem_com_pedido .............................. [RUN]
+20:39:03  18 of 46 START test assert_status_desconhecido ................................. [RUN]
+20:39:03  18 of 46 WARN 1 assert_status_desconhecido ..................................... [WARN 1 in 0.02s]
+20:39:03  17 of 46 FAIL 1 assert_itens_batem_com_pedido .................................. [FAIL 1 in 0.03s]
+20:39:03  19 of 46 START test not_null_stg_pedidos_pedido_id ............................. [RUN]
+20:39:03  20 of 46 START test relationships_stg_itens_pedido_id__pedido_id__ref_stg_pedidos_  [RUN]
+20:39:03  19 of 46 PASS not_null_stg_pedidos_pedido_id ................................... [PASS in 0.07s]
+20:39:03  21 of 46 START test unique_stg_pedidos_pedido_id ............................... [RUN]
+20:39:03  20 of 46 PASS relationships_stg_itens_pedido_id__pedido_id__ref_stg_pedidos_ ... [PASS in 0.07s]
+20:39:03  22 of 46 START sql view model dbt_silver.stg_produtos .......................... [RUN]
+20:39:03  21 of 46 PASS unique_stg_pedidos_pedido_id ..................................... [PASS in 0.09s]
+20:39:03  23 of 46 START sql table model dbt_gold.dim_loja ............................... [RUN]
+20:39:03  22 of 46 OK created sql view model dbt_silver.stg_produtos ..................... [CREATE VIEW in 0.13s]
+20:39:03  24 of 46 START test not_null_stg_produtos_custo ................................ [RUN]
+20:39:03  23 of 46 OK created sql table model dbt_gold.dim_loja .......................... [SELECT 3 in 0.09s]
+20:39:03  25 of 46 START test not_null_stg_produtos_produto_id ........................... [RUN]
+20:39:03  24 of 46 WARN 1 not_null_stg_produtos_custo .................................... [WARN 1 in 0.06s]
+20:39:03  26 of 46 START test unique_stg_produtos_produto_id ............................. [RUN]
+20:39:03  25 of 46 PASS not_null_stg_produtos_produto_id ................................. [PASS in 0.05s]
+20:39:03  27 of 46 START test not_null_dim_loja_loja_sk .................................. [RUN]
+20:39:03  26 of 46 PASS unique_stg_produtos_produto_id ................................... [PASS in 0.05s]
+20:39:03  28 of 46 START test unique_dim_loja_loja_sk .................................... [RUN]
+20:39:03  27 of 46 PASS not_null_dim_loja_loja_sk ........................................ [PASS in 0.06s]
+20:39:03  29 of 46 START sql table model dbt_gold.dim_produto ............................ [RUN]
+20:39:03  28 of 46 PASS unique_dim_loja_loja_sk .......................................... [PASS in 0.06s]
+20:39:03  29 of 46 OK created sql table model dbt_gold.dim_produto ....................... [SELECT 8 in 0.14s]
+20:39:03  31 of 46 START test unique_dim_produto_produto_sk .............................. [RUN]
+20:39:03  30 of 46 START test not_null_dim_produto_produto_sk ............................ [RUN]
+20:39:04  31 of 46 PASS unique_dim_produto_produto_sk .................................... [PASS in 0.06s]
+20:39:04  30 of 46 PASS not_null_dim_produto_produto_sk .................................. [PASS in 0.06s]
+20:39:04  32 of 46 SKIP relation dbt_gold.fct_vendas ..................................... [SKIP]
+20:39:04  34 of 46 SKIP test not_null_fct_vendas_data_id ................................. [SKIP]
+20:39:04  33 of 46 SKIP test assert_vendas_sem_versao .................................... [SKIP]
+20:39:04  35 of 46 SKIP test not_null_fct_vendas_loja_sk ................................. [SKIP]
+20:39:04  36 of 46 SKIP test not_null_fct_vendas_produto_sk .............................. [SKIP]
+20:39:04  37 of 46 SKIP test not_null_fct_vendas_venda_sk ................................ [SKIP]
+20:39:04  38 of 46 SKIP test relationships_fct_vendas_data_id__data_id__ref_dim_data_ .... [SKIP]
+20:39:04  39 of 46 SKIP test relationships_fct_vendas_loja_sk__loja_sk__ref_dim_loja_ .... [SKIP]
+20:39:04  40 of 46 SKIP test relationships_fct_vendas_produto_sk__produto_sk__ref_dim_produto_  [SKIP]
+20:39:04  41 of 46 SKIP test unique_fct_vendas_venda_sk .................................. [SKIP]
+20:39:04  43 of 46 SKIP relation dbt_gold.vendas_por_dia ................................. [SKIP]
+20:39:04  42 of 46 SKIP relation dbt_gold.obt_vendas ..................................... [SKIP]
+20:39:04  44 of 46 SKIP test assert_receita_igual_a_do_piloto ............................ [SKIP]
+20:39:04  45 of 46 SKIP test not_null_vendas_por_dia_dia ................................. [SKIP]
+20:39:04  46 of 46 SKIP test unique_vendas_por_dia_dia ................................... [SKIP]
+20:39:04  
+20:39:04  Finished running 1 seed, 2 snapshots, 5 table models, 32 data tests, 6 view models in 0 hours 0 minutes and 3.00 seconds (3.00s).
+20:39:04  
+20:39:04  Completed with 2 errors, 0 partial successes, and 2 warnings:
+20:39:04  
+20:39:04  [ERROR]: in test unique_stg_itens__pedido_id_item_seq_ (models/silver/_silver.yml)
+20:39:04    Got 2 results, configured to fail if != 0
+20:39:04  
+20:39:04    compiled code at target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_itens__pedido_id_item_seq_.sql
+20:39:04  
+20:39:04  [ERROR]: in test assert_itens_batem_com_pedido (tests/assert_itens_batem_com_pedido.sql)
+20:39:04    Got 1 result, configured to fail if != 0
+20:39:04  
+20:39:04    compiled code at target/compiled/rede_de_lojas/tests/assert_itens_batem_com_pedido.sql
+20:39:04  
+20:39:04  [WARNING]: in test assert_status_desconhecido (tests/assert_status_desconhecido.sql)
+20:39:04  [WARNING]: Got 1 result, configured to warn if != 0
+20:39:04  
+20:39:04    compiled code at target/compiled/rede_de_lojas/tests/assert_status_desconhecido.sql
+20:39:04  
+20:39:04  [WARNING]: in test not_null_stg_produtos_custo (models/silver/_silver.yml)
+20:39:04  [WARNING]: Got 1 result, configured to warn if != 0
+20:39:04  
+20:39:04    compiled code at target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_produtos_custo.sql
+20:39:04  
+20:39:04  Done. PASS=27 WARN=2 ERROR=2 SKIP=15 NO-OP=0 REUSED=0 TOTAL=46
+
+[exit 1, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "select g.dia, g.receita_paga as gold_a_mao, d.receita_paga as gold_dbt from gold.vendas_por_dia g join dbt_gold.vendas_por_dia d using (dia) order by dia"
+    dia     | gold_a_mao | gold_dbt 
+------------+------------+----------
+ 2026-10-20 |     741.80 |   430.90
+ 2026-10-21 |     111.90 |   111.90
+ 2026-10-22 |     293.30 |   293.30
+(3 rows)
+
+[exit 0, 2026-11-03]
+
+[conserto: refazer a bronze, depois as duas execuções]
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -q -f /sql/10_bronze_carga.sql -f /sql/20_silver.sql -f /sql/30_gold.sql
+     tabela      | linhas 
+-----------------+--------
+ bronze.pedidos  |     11
+ replica.pedidos |     10
+(2 rows)
+
+          tabela          | linhas 
+--------------------------+--------
+ silver.pedidos           |     10
+ silver.itens             |     13
+ silver.lojas             |      3
+ silver.produtos          |      5
+ silver.produtos_vigencia |      7
+ silver.atendimentos      |      4
+(6 rows)
+
+psql:/sql/30_gold.sql:5: NOTICE:  drop cascades to view gold.obt_vendas
+    dia     | pedidos | pedidos_pagos | receita_paga 
+------------+---------+---------------+--------------
+ 2026-10-20 |       4 |             2 |       430.90
+ 2026-10-21 |       3 |             2 |       111.90
+ 2026-10-22 |       3 |             3 |       293.30
+(3 rows)
+
+ linhas_fct | chaves_fct | itens_silver | linhas_obt | receita_obt 
+------------+------------+--------------+------------+-------------
+         13 |         13 |           13 |         13 |      836.10
+(1 row)
+
+ executor | linhas_bronze | linhas_silver | receita_paga 
+----------+---------------+---------------+--------------
+ a_mao    |            11 |            10 |       836.10
+ a_mao    |            11 |            10 |       836.10
+ a_mao    |            11 |            10 |      1147.00
+ a_mao    |            11 |            10 |       836.10
+(4 rows)
+
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt build
+ Container modelagem-lab-postgres-1  Running
+20:39:12  Running with dbt=1.12.6
+20:39:12  Registered adapter: postgres=1.11.0
+20:39:14  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:39:14  
+20:39:14  Concurrency: 2 threads (target='dev')
+20:39:14  
+20:39:14  1 of 46 START sql table model dbt_gold.dim_data ................................ [RUN]
+20:39:14  2 of 46 START sql view model dbt_silver.stg_atendimentos ....................... [RUN]
+20:39:14  2 of 46 OK created sql view model dbt_silver.stg_atendimentos .................. [CREATE VIEW in 0.28s]
+20:39:14  1 of 46 OK created sql table model dbt_gold.dim_data ........................... [SELECT 92 in 0.41s]
+20:39:14  3 of 46 START sql view model dbt_silver.stg_itens .............................. [RUN]
+20:39:14  4 of 46 START sql view model dbt_silver.stg_lojas .............................. [RUN]
+20:39:15  4 of 46 OK created sql view model dbt_silver.stg_lojas ......................... [CREATE VIEW in 0.07s]
+20:39:15  5 of 46 START sql view model dbt_silver.stg_pedidos ............................ [RUN]
+20:39:15  3 of 46 OK created sql view model dbt_silver.stg_itens ......................... [CREATE VIEW in 0.09s]
+20:39:15  6 of 46 START seed file dbt_silver.de_para_categoria ........................... [RUN]
+20:39:15  6 of 46 OK loaded seed file dbt_silver.de_para_categoria ....................... [INSERT 1 in 0.14s]
+20:39:15  7 of 46 START snapshot dbt_snapshots.snap_produtos_por_timestamp ............... [RUN]
+20:39:15  5 of 46 OK created sql view model dbt_silver.stg_pedidos ....................... [CREATE VIEW in 0.23s]
+20:39:15  8 of 46 START snapshot dbt_snapshots.snap_produtos_preco ....................... [RUN]
+20:39:15  8 of 46 OK snapshotted dbt_snapshots.snap_produtos_preco ....................... [INSERT 0 0 in 0.51s]
+20:39:15  7 of 46 OK snapshotted dbt_snapshots.snap_produtos_por_timestamp ............... [INSERT 0 0 in 0.58s]
+20:39:15  9 of 46 START test not_null_stg_atendimentos_atendimento_id .................... [RUN]
+20:39:15  10 of 46 START test unique_stg_atendimentos_atendimento_id ..................... [RUN]
+20:39:15  10 of 46 PASS unique_stg_atendimentos_atendimento_id ........................... [PASS in 0.12s]
+20:39:15  9 of 46 PASS not_null_stg_atendimentos_atendimento_id .......................... [PASS in 0.14s]
+20:39:15  12 of 46 START test unique_dim_data_data_id .................................... [RUN]
+20:39:16  11 of 46 START test not_null_dim_data_data_id .................................. [RUN]
+20:39:16  12 of 46 PASS unique_dim_data_data_id .......................................... [PASS in 0.13s]
+20:39:16  13 of 46 START test not_null_stg_lojas_loja_id ................................. [RUN]
+20:39:16  11 of 46 PASS not_null_dim_data_data_id ........................................ [PASS in 0.13s]
+20:39:16  14 of 46 START test unique_stg_lojas_loja_id ................................... [RUN]
+20:39:16  13 of 46 PASS not_null_stg_lojas_loja_id ....................................... [PASS in 0.04s]
+20:39:16  14 of 46 PASS unique_stg_lojas_loja_id ......................................... [PASS in 0.03s]
+20:39:16  15 of 46 START test unique_stg_itens__pedido_id_item_seq_ ...................... [RUN]
+20:39:16  16 of 46 START sql view model dbt_silver.stg_produtos .......................... [RUN]
+20:39:16  15 of 46 PASS unique_stg_itens__pedido_id_item_seq_ ............................ [PASS in 0.17s]
+20:39:16  17 of 46 START test accepted_values_stg_pedidos_status__pago__cancelado__pendente__desconhecido  [RUN]
+20:39:16  16 of 46 OK created sql view model dbt_silver.stg_produtos ..................... [CREATE VIEW in 0.22s]
+20:39:16  18 of 46 START test assert_itens_batem_com_pedido .............................. [RUN]
+20:39:16  17 of 46 PASS accepted_values_stg_pedidos_status__pago__cancelado__pendente__desconhecido  [PASS in 0.13s]
+20:39:16  19 of 46 START test assert_status_desconhecido ................................. [RUN]
+20:39:16  19 of 46 WARN 1 assert_status_desconhecido ..................................... [WARN 1 in 0.03s]
+20:39:16  20 of 46 START test not_null_stg_pedidos_pedido_id ............................. [RUN]
+20:39:16  18 of 46 PASS assert_itens_batem_com_pedido .................................... [PASS in 0.10s]
+20:39:16  21 of 46 START test relationships_stg_itens_pedido_id__pedido_id__ref_stg_pedidos_  [RUN]
+20:39:16  20 of 46 PASS not_null_stg_pedidos_pedido_id ................................... [PASS in 0.05s]
+20:39:16  22 of 46 START test unique_stg_pedidos_pedido_id ............................... [RUN]
+20:39:16  21 of 46 PASS relationships_stg_itens_pedido_id__pedido_id__ref_stg_pedidos_ ... [PASS in 0.04s]
+20:39:16  23 of 46 START sql table model dbt_gold.dim_loja ............................... [RUN]
+20:39:16  22 of 46 PASS unique_stg_pedidos_pedido_id ..................................... [PASS in 0.05s]
+20:39:16  24 of 46 START test not_null_stg_produtos_custo ................................ [RUN]
+20:39:16  23 of 46 OK created sql table model dbt_gold.dim_loja .......................... [SELECT 3 in 0.07s]
+20:39:16  25 of 46 START test not_null_stg_produtos_produto_id ........................... [RUN]
+20:39:16  24 of 46 WARN 1 not_null_stg_produtos_custo .................................... [WARN 1 in 0.15s]
+20:39:16  26 of 46 START test unique_stg_produtos_produto_id ............................. [RUN]
+20:39:16  26 of 46 PASS unique_stg_produtos_produto_id ................................... [PASS in 0.05s]
+20:39:16  27 of 46 START test not_null_dim_loja_loja_sk .................................. [RUN]
+20:39:16  25 of 46 PASS not_null_stg_produtos_produto_id ................................. [PASS in 0.18s]
+20:39:16  28 of 46 START test unique_dim_loja_loja_sk .................................... [RUN]
+20:39:16  27 of 46 PASS not_null_dim_loja_loja_sk ........................................ [PASS in 0.04s]
+20:39:16  29 of 46 START sql table model dbt_gold.dim_produto ............................ [RUN]
+20:39:16  28 of 46 PASS unique_dim_loja_loja_sk .......................................... [PASS in 0.04s]
+20:39:16  29 of 46 OK created sql table model dbt_gold.dim_produto ....................... [SELECT 8 in 0.07s]
+20:39:16  31 of 46 START test unique_dim_produto_produto_sk .............................. [RUN]
+20:39:16  30 of 46 START test not_null_dim_produto_produto_sk ............................ [RUN]
+20:39:16  31 of 46 PASS unique_dim_produto_produto_sk .................................... [PASS in 0.05s]
+20:39:17  30 of 46 PASS not_null_dim_produto_produto_sk .................................. [PASS in 0.05s]
+20:39:17  32 of 46 START sql table model dbt_gold.fct_vendas ............................. [RUN]
+20:39:17  32 of 46 OK created sql table model dbt_gold.fct_vendas ........................ [SELECT 13 in 0.17s]
+20:39:17  33 of 46 START test assert_vendas_sem_versao ................................... [RUN]
+20:39:17  34 of 46 START test not_null_fct_vendas_data_id ................................ [RUN]
+20:39:17  34 of 46 PASS not_null_fct_vendas_data_id ...................................... [PASS in 0.09s]
+20:39:17  33 of 46 PASS assert_vendas_sem_versao ......................................... [PASS in 0.09s]
+20:39:17  35 of 46 START test not_null_fct_vendas_loja_sk ................................ [RUN]
+20:39:17  36 of 46 START test not_null_fct_vendas_produto_sk ............................. [RUN]
+20:39:17  36 of 46 PASS not_null_fct_vendas_produto_sk ................................... [PASS in 0.09s]
+20:39:17  37 of 46 START test not_null_fct_vendas_venda_sk ............................... [RUN]
+20:39:17  35 of 46 PASS not_null_fct_vendas_loja_sk ...................................... [PASS in 0.12s]
+20:39:17  38 of 46 START test relationships_fct_vendas_data_id__data_id__ref_dim_data_ ... [RUN]
+20:39:17  37 of 46 PASS not_null_fct_vendas_venda_sk ..................................... [PASS in 0.06s]
+20:39:17  38 of 46 PASS relationships_fct_vendas_data_id__data_id__ref_dim_data_ ......... [PASS in 0.05s]
+20:39:17  39 of 46 START test relationships_fct_vendas_loja_sk__loja_sk__ref_dim_loja_ ... [RUN]
+20:39:17  40 of 46 START test relationships_fct_vendas_produto_sk__produto_sk__ref_dim_produto_  [RUN]
+20:39:17  39 of 46 PASS relationships_fct_vendas_loja_sk__loja_sk__ref_dim_loja_ ......... [PASS in 0.15s]
+20:39:17  40 of 46 PASS relationships_fct_vendas_produto_sk__produto_sk__ref_dim_produto_  [PASS in 0.16s]
+20:39:17  41 of 46 START test unique_fct_vendas_venda_sk ................................. [RUN]
+20:39:17  41 of 46 PASS unique_fct_vendas_venda_sk ....................................... [PASS in 0.03s]
+20:39:17  43 of 46 START sql table model dbt_gold.vendas_por_dia ......................... [RUN]
+20:39:17  42 of 46 START sql view model dbt_gold.obt_vendas .............................. [RUN]
+20:39:17  42 of 46 OK created sql view model dbt_gold.obt_vendas ......................... [CREATE VIEW in 0.08s]
+20:39:17  43 of 46 OK created sql table model dbt_gold.vendas_por_dia .................... [SELECT 3 in 0.09s]
+20:39:17  44 of 46 START test assert_receita_igual_a_do_piloto ........................... [RUN]
+20:39:17  45 of 46 START test not_null_vendas_por_dia_dia ................................ [RUN]
+20:39:17  45 of 46 PASS not_null_vendas_por_dia_dia ...................................... [PASS in 0.04s]
+20:39:17  46 of 46 START test unique_vendas_por_dia_dia .................................. [RUN]
+20:39:17  44 of 46 PASS assert_receita_igual_a_do_piloto ................................. [PASS in 0.06s]
+20:39:17  46 of 46 PASS unique_vendas_por_dia_dia ........................................ [PASS in 0.11s]
+20:39:17  
+20:39:17  Finished running 1 seed, 2 snapshots, 5 table models, 32 data tests, 6 view models in 0 hours 0 minutes and 3.83 seconds (3.83s).
+20:39:18  
+20:39:18  Completed with 2 warnings:
+20:39:18  
+20:39:18  [WARNING]: in test assert_status_desconhecido (tests/assert_status_desconhecido.sql)
+20:39:18  [WARNING]: Got 1 result, configured to warn if != 0
+20:39:18  
+20:39:18    compiled code at target/compiled/rede_de_lojas/tests/assert_status_desconhecido.sql
+20:39:18  
+20:39:18  [WARNING]: in test not_null_stg_produtos_custo (models/silver/_silver.yml)
+20:39:18  [WARNING]: Got 1 result, configured to warn if != 0
+20:39:18  
+20:39:18    compiled code at target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_produtos_custo.sql
+20:39:18  
+20:39:18  Done. PASS=44 WARN=2 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=46
+[exit 0, 2026-11-03]

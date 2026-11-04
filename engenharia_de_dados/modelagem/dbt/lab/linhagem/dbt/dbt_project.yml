@@ -1,0 +1,10 @@
+name: linhagem
+version: "1.0.0"
+profile: linhagem
+model-paths: ["models"]
+
+models:
+  linhagem:
+    +materialized: view
+    gold:
+      +materialized: table

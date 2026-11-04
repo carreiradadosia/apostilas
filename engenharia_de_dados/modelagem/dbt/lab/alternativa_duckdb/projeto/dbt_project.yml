@@ -1,0 +1,8 @@
+name: rede_de_lojas_duckdb
+version: "1.0.0"
+config-version: 2
+profile: rede_de_lojas_duckdb
+
+models:
+  rede_de_lojas_duckdb:
+    +materialized: table

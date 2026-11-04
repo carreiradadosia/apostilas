@@ -1,0 +1,12 @@
+version: 2
+
+exposures:
+  - name: relatorio_faturamento_diretoria
+    label: Faturamento por loja na reunião da diretoria
+    type: dashboard
+    maturity: medium
+    description: Painel fictício. A linha é declarada à mão; o dbt não lê o Power Query do painel.
+    owner:
+      name: Diretoria comercial
+    depends_on:
+      - ref('mart_faturamento_por_loja')

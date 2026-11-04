@@ -1,0 +1,64 @@
+
+$ # Default capture mode on this database. The whole report ran above; what did it keep?
+bin/ms sa -i /scripts/30_qs_ler.sql
+Changed database context to 'rede'.
+query_id|objeto|parametrizacao|cifrado|execucoes|texto
+--------|------|--------------|-------|---------|-----
+12|faturamento_cifrado|None|1|1|** Encrypted Text **
+17|faturamento_lento|None|0|1|(@inicio date,@fim date)SELECT COUNT_BIG(*) AS itens FROM relatorios.vw_faturamento_itens AS v WHERE v.dia BETWEEN @inicio AND @fim
+9|faturamento_por_loja|None|0|2|(@inicio date,@fim date)SELECT TRIM(v.loja) AS loja, CAST(SUM(v.valor_item) AS numeric(14, 2)) AS faturamento     FROM relatorios.vw_faturamento_itens AS v     WHERE
+15|faturamento_recompila|None|0|1|(@inicio date,@fim date)SELECT TRIM(v.loja) AS loja, COUNT_BIG(*) AS itens     FROM relatorios.vw_faturamento_itens AS v     WHERE v.dia BETWEEN @inicio AND @fim    
+[exit 0, 2026-11-03]
+
+$ # Capture everything for the investigation, run the report once, read again.
+bin/ms sa -Q "ALTER DATABASE rede SET QUERY_STORE (QUERY_CAPTURE_MODE = ALL);"
+docker compose --profile app run --rm -T --no-deps app padrao >/dev/null
+docker compose --profile app run --rm -T --no-deps app faturamento_cifrado >/dev/null
+docker compose --profile app run --rm -T --no-deps app faturamento_dinamico >/dev/null
+docker compose --profile app run --rm -T --no-deps app faturamento_recompila >/dev/null
+bin/ms sa -i /scripts/30_qs_ler.sql
+INFO linha ('Loja Centro', '419.9')
+INFO linha ('LOJA NORTE', '344.2')
+INFO linha ('loja são joão', '72')
+INFO linha ('2026-10-21', '111.9')
+INFO linha ('2026-10-22', '293.3')
+INFO linha ('101', '120')
+INFO linha ('Loja Centro', '419.9')
+INFO linha ('LOJA NORTE', '344.2')
+INFO linha ('loja são joão', '72')
+INFO linha ('Loja Centro', '419.9')
+INFO linha ('LOJA NORTE', '344.2')
+INFO linha ('loja são joão', '72')
+INFO linha ('Loja Centro', '4')
+INFO linha ('LOJA NORTE', '3')
+INFO linha ('loja são joão', '2')
+Changed database context to 'rede'.
+query_id|objeto|parametrizacao|cifrado|execucoes|texto
+--------|------|--------------|-------|---------|-----
+19|(ad hoc)|User|0|1|(@P1 date)SELECT dia, SUM(valor_item) AS total FROM relatorios.vw_faturamento_itens WHERE dia >= @P1 GROUP BY dia ORDER BY dia
+20|(ad hoc)|None|0|1|SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE TRIM(cliente) = N'Cliente A'
+21|(ad hoc)|User|0|1|(@inicio date,@fim date)SELECT TRIM(l.nome) AS loja, SUM(i.quantidade * i.preco_unitario) AS faturamento FROM erp.pedidos AS p JOIN erp.itens_pedido AS i ON i.pedido
+12|faturamento_cifrado|None|1|2|** Encrypted Text **
+17|faturamento_lento|None|0|1|(@inicio date,@fim date)SELECT COUNT_BIG(*) AS itens FROM relatorios.vw_faturamento_itens AS v WHERE v.dia BETWEEN @inicio AND @fim
+9|faturamento_por_loja|None|0|3|(@inicio date,@fim date)SELECT TRIM(v.loja) AS loja, CAST(SUM(v.valor_item) AS numeric(14, 2)) AS faturamento     FROM relatorios.vw_faturamento_itens AS v     WHERE
+15|faturamento_recompila|None|0|2|(@inicio date,@fim date)SELECT TRIM(v.loja) AS loja, COUNT_BIG(*) AS itens     FROM relatorios.vw_faturamento_itens AS v     WHERE v.dia BETWEEN @inicio AND @fim    
+[exit 0, 2026-11-03]
+
+$ bin/ms sa -i /scripts/31_qs_planos.sql
+Changed database context to 'rede'.
+procedimento|esquema|tabela
+------------|-------|------
+faturamento_cifrado|[erp]|[itens_pedido]
+faturamento_cifrado|[erp]|[lojas]
+faturamento_cifrado|[erp]|[pedidos]
+faturamento_por_loja|[erp]|[itens_pedido]
+faturamento_por_loja|[erp]|[lojas]
+faturamento_por_loja|[erp]|[pedidos]
+visao|colunas|colunas_de_identidade
+-----|-------|---------------------
+dm_exec_query_stats|88|0
+query_store_plan|27|0
+query_store_query|30|0
+query_store_query_text|5|0
+query_store_runtime_stats|74|0
+[exit 0, 2026-11-03]

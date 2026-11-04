@@ -1,0 +1,48 @@
+
+$ bin/ms sa -i /scripts/40_catalogo.sql
+Changed database context to 'rede'.
+esquema|objeto|sql_modules|object_definition
+-------|------|-----------|-----------------
+relatorios|faturamento_cifrado|NULL|NULL
+relatorios|faturamento_dinamico|legivel|legivel
+relatorios|faturamento_lento|legivel|legivel
+relatorios|faturamento_por_loja|legivel|legivel
+relatorios|faturamento_recompila|legivel|legivel
+relatorios|vw_faturamento_itens|legivel|legivel
+definicao_da_view
+-----------------
+-- The rule: revenue counts only paid orders, after normalizing the status text. CREATE VIEW relatorios.vw_faturamento_itens AS SELECT p.id AS pedido_id,        p.loja_id,        l.nome AS loja,        p.cliente,        CAST(p.criado_em AS date) AS dia,        i.quantidade * i.preco_unitario AS valor_item FROM erp.pedidos AS p JOIN erp.itens_pedido AS i ON i.pedido_id = p.id JOIN erp.lojas AS l ON
+objeto|esquema|referencia|depende_de_quem_chama
+------|-------|----------|---------------------
+faturamento_cifrado|relatorios|vw_faturamento_itens|0
+faturamento_lento|relatorios|vw_faturamento_itens|0
+faturamento_por_loja|relatorios|vw_faturamento_itens|0
+faturamento_recompila|relatorios|vw_faturamento_itens|0
+vw_faturamento_itens|erp|itens_pedido|0
+vw_faturamento_itens|erp|lojas|0
+vw_faturamento_itens|erp|pedidos|0
+esquema|referencia|coluna
+-------|----------|------
+erp|itens_pedido|NULL
+erp|itens_pedido|pedido_id
+erp|itens_pedido|preco_unitario
+erp|itens_pedido|quantidade
+erp|lojas|NULL
+erp|lojas|id
+erp|lojas|nome
+erp|pedidos|NULL
+erp|pedidos|cliente
+erp|pedidos|criado_em
+erp|pedidos|id
+erp|pedidos|loja_id
+erp|pedidos|status
+objeto|esquema|referencia|coluna
+------|-------|----------|------
+faturamento_cifrado|relatorios|vw_faturamento_itens|NULL
+faturamento_cifrado|relatorios|vw_faturamento_itens|loja
+faturamento_cifrado|relatorios|vw_faturamento_itens|dia
+faturamento_cifrado|relatorios|vw_faturamento_itens|valor_item
+objeto|esquema|referencia|coluna
+------|-------|----------|------
+The text for object 'relatorios.faturamento_cifrado' is encrypted.
+[exit 0, 2026-11-03]

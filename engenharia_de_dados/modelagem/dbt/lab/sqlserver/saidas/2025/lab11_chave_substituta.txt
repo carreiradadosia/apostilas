@@ -1,0 +1,117 @@
+
+$ ./sq.sh dw 65_chave_substituta.sql
+== IDENTITY: o valor é consumido mesmo quando a transação volta. Buraco é normal.
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+produto_sk|produto_id
+----------|----------
+1|10
+3|30
+
+(2 rows affected)
+== IDENTITY sem restrição não garante unicidade: reseed e o mesmo número sai de novo.
+
+(1 rows affected)
+
+(1 rows affected)
+produto_sk|produto_id
+----------|----------
+1|10
+1|20
+
+(2 rows affected)
+== SEQUENCE: objeto próprio, compartilhável entre tabelas, também fora da transação.
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+tabela|sk|nome
+------|--|----
+dim_seq_a|1|a1
+dim_seq_b|2|b1
+dim_seq_a|4|a2
+
+(3 rows affected)
+== Truncar e recarregar com IDENTITY troca a chave se a ordem muda. A fato aponta para outro produto, sem erro.
+
+(5 rows affected)
+
+(1 rows affected)
+momento|sk_na_fato|produto_que_a_chave_aponta
+-------|----------|--------------------------
+antes|4|40
+
+(1 rows affected)
+
+(5 rows affected)
+momento|sk_na_fato|produto_que_a_chave_aponta
+-------|----------|--------------------------
+depois|4|20
+
+(1 rows affected)
+== IDENTITY estável: sem truncar, só entra o que falta. A chave do produto 40 não muda.
+
+(4 rows affected)
+momento|produto_sk|produto_id
+-------|----------|----------
+primeira carga|2|40
+
+(1 rows affected)
+
+(1 rows affected)
+momento|produto_sk|produto_id
+-------|----------|----------
+segunda carga|5|30
+segunda carga|2|40
+
+(2 rows affected)
+== Hash no mesmo teste: truncar e recarregar em outra ordem não muda a chave. É a escolha do laboratório, ao custo de 64 caracteres por chave.
+
+(5 rows affected)
+
+(1 rows affected)
+
+(5 rows affected)
+momento|produto_que_a_chave_aponta
+-------|--------------------------
+depois|40
+
+(1 rows affected)
+== HASHBYTES: varchar e nvarchar dão hashes diferentes, porque os bytes são diferentes.
+md5_varchar|md5_nvarchar|sha2_256_varchar
+-----------|------------|----------------
+C4CA4238A0B923820DCC509A6F75849B|06D49632C9DC9BCB62AEAEF99612BA6B|6B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B
+
+(1 rows affected)
+== MD5 roda sem erro e sem aviso. A doc fala em evento de recurso preterido; este é o contador de mesmo nome, lido antes e depois.
+
+(1 rows affected)
+md5_em_lote_proprio
+-------------------
+4A914EA2E6EF90E3B9F64D8BA4DF8635
+
+(1 rows affected)
+contador|aumento
+--------|-------
+Deprecated hash algorithm|0
+
+(1 rows affected)
+== CONCAT troca NULL por vazio: sem separador, chaves diferentes colidem; com separador, não.
+sem_sep_a|sem_sep_b|com_sep_a|com_sep_b|operador_mais_com_nulo|hash_de_nulo
+---------|---------|---------|---------|----------------------|------------
+123|123|1--23|12--3|NULL|NULL
+
+(1 rows affected)
+[exit 0, 2026-11-03]
+
+$ python3 -c "import hashlib; print('md5 de 1 em ascii:', hashlib.md5(b'1').hexdigest().upper())"
+md5 de 1 em ascii: C4CA4238A0B923820DCC509A6F75849B
+[exit 0, 2026-11-03]

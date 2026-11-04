@@ -1,0 +1,220 @@
+# 2026-11-04. postgres:16.15-alpine (PostgreSQL 16.15, psql 16.15). Projeto Compose modelagem-provas.
+# Dados sintéticos no schema ensaio_reprocesso, refeito a cada execução. Sem ON_ERROR_STOP: os erros são parte da prova.
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -f /sql/76_reprocesso_sintetico.sql
+Border style is 1.
+psql:/sql/76_reprocesso_sintetico.sql:6: NOTICE:  schema "ensaio_reprocesso" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+SET
+Null display is "(nulo)".
+== 1. INSERT duas vezes
+CREATE TABLE
+INSERT 0 2
+CREATE TABLE
+INSERT 0 2
+INSERT 0 2
+ loja_id | linhas | receita 
+---------+--------+---------
+       1 |      2 |  260.00
+       2 |      2 |  180.00
+(2 rows)
+
+== 2. DELETE e INSERT numa transação, duas vezes
+TRUNCATE TABLE
+BEGIN
+DELETE 0
+INSERT 0 2
+COMMIT
+BEGIN
+DELETE 2
+INSERT 0 2
+COMMIT
+ loja_id | linhas | receita 
+---------+--------+---------
+       1 |      1 |  130.00
+       2 |      1 |   90.00
+(2 rows)
+
+== 2b. falha no meio da transação preserva a janela
+BEGIN
+DELETE 2
+psql:/sql/76_reprocesso_sintetico.sql:39: ERROR:  invalid input syntax for type numeric: "nao_e_numero"
+LINE 1: INSERT INTO fct_dia VALUES ('2026-10-20', 1, 'nao_e_numero')...
+                                                     ^
+ROLLBACK
+ loja_id | linhas | receita 
+---------+--------+---------
+       1 |      1 |  130.00
+       2 |      1 |   90.00
+(2 rows)
+
+== 3. UNIQUE e ON CONFLICT, duas vezes
+TRUNCATE TABLE
+ALTER TABLE
+INSERT 0 2
+INSERT 0 2
+ loja_id | linhas | receita 
+---------+--------+---------
+       1 |      1 |  130.00
+       2 |      1 |   90.00
+(2 rows)
+
+== 4. Chave com nulo, UNIQUE padrão
+INSERT 0 1
+INSERT 0 1
+ linhas 
+--------
+      2
+(1 row)
+
+== 4b. Chave com nulo, UNIQUE NULLS NOT DISTINCT
+DELETE 2
+ALTER TABLE
+ALTER TABLE
+INSERT 0 1
+INSERT 0 1
+ linhas 
+--------
+      1
+(1 row)
+
+== 5. Chave repetida no lote
+CREATE TABLE
+INSERT 0 2
+== 5a. ON CONFLICT, chave nova
+TRUNCATE TABLE
+ALTER TABLE
+ALTER TABLE
+psql:/sql/76_reprocesso_sintetico.sql:81: ERROR:  ON CONFLICT DO UPDATE command cannot affect row a second time
+HINT:  Ensure that no rows proposed for insertion within the same command have duplicate constrained values.
+ linhas | receita 
+--------+---------
+      0 |  (nulo)
+(1 row)
+
+== 5b. ON CONFLICT, chave existente
+INSERT 0 1
+psql:/sql/76_reprocesso_sintetico.sql:87: ERROR:  ON CONFLICT DO UPDATE command cannot affect row a second time
+HINT:  Ensure that no rows proposed for insertion within the same command have duplicate constrained values.
+ linhas | receita 
+--------+---------
+      1 |    5.00
+(1 row)
+
+== 5c. MERGE com UNIQUE, chave nova
+TRUNCATE TABLE
+psql:/sql/76_reprocesso_sintetico.sql:94: ERROR:  duplicate key value violates unique constraint "fct_dia_grao"
+DETAIL:  Key (dia, loja_id)=(2026-10-22, 1) already exists.
+ linhas | receita 
+--------+---------
+      0 |  (nulo)
+(1 row)
+
+== 5d. MERGE com UNIQUE, chave existente
+INSERT 0 1
+psql:/sql/76_reprocesso_sintetico.sql:101: ERROR:  MERGE command cannot affect row a second time
+HINT:  Ensure that not more than one source row matches any one target row.
+ linhas | receita 
+--------+---------
+      1 |    5.00
+(1 row)
+
+== 5e. Sem UNIQUE: MERGE, chave nova
+TRUNCATE TABLE
+ALTER TABLE
+MERGE 2
+ linhas | receita 
+--------+---------
+      2 |   30.00
+(1 row)
+
+== 5f. Sem UNIQUE: MERGE, chave existente
+TRUNCATE TABLE
+INSERT 0 1
+psql:/sql/76_reprocesso_sintetico.sql:117: ERROR:  MERGE command cannot affect row a second time
+HINT:  Ensure that not more than one source row matches any one target row.
+ linhas | receita 
+--------+---------
+      1 |    5.00
+(1 row)
+
+== 5g. Sem UNIQUE: DELETE USING e INSERT, chave nova
+TRUNCATE TABLE
+BEGIN
+DELETE 0
+INSERT 0 2
+COMMIT
+ linhas | receita 
+--------+---------
+      2 |   30.00
+(1 row)
+
+== 5h. Sem UNIQUE: DELETE USING e INSERT, chave existente
+TRUNCATE TABLE
+INSERT 0 1
+BEGIN
+DELETE 1
+INSERT 0 2
+COMMIT
+ linhas | receita 
+--------+---------
+      2 |   30.00
+(1 row)
+
+== 5i. Lote deduplicado antes de gravar, com ON CONFLICT
+TRUNCATE TABLE
+ALTER TABLE
+INSERT 0 1
+ linhas | receita 
+--------+---------
+      1 |   20.00
+(1 row)
+
+== 6. Fato atrasado
+CREATE TABLE
+CREATE TABLE
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+== 6a. Filtro no máximo do alvo
+INSERT 0 1
+ na_origem | no_alvo 
+-----------+---------
+         3 |       2
+(1 row)
+
+== 6b. Janela de volta de um dia
+INSERT 0 3
+ na_origem | no_alvo 
+-----------+---------
+         3 |       3
+(1 row)
+
+== 6c. Atraso maior que a janela
+INSERT 0 1
+INSERT 0 3
+ na_origem | no_alvo 
+-----------+---------
+         4 |       3
+(1 row)
+
+== 7. Sem ferramenta: view e materialized view
+CREATE TABLE
+INSERT 0 1
+CREATE VIEW
+SELECT 1
+INSERT 0 1
+ na_view | na_materializada 
+---------+------------------
+       2 |                1
+(1 row)
+
+REFRESH MATERIALIZED VIEW
+ na_view | na_materializada 
+---------+------------------
+       2 |                2
+(1 row)
+
+RESET
+[exit 0, 2026-11-04]

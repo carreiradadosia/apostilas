@@ -1,0 +1,12 @@
+linhagem:
+  target: lab
+  outputs:
+    lab:
+      type: postgres
+      host: postgres
+      port: 5432
+      user: transformador
+      password: "{{ env_var('DBT_DB_PASSWORD') }}"
+      dbname: rede
+      schema: dw
+      threads: 2

@@ -1,0 +1,99 @@
+
+$ ./sq.sh dw 22_fuso.sql
+== O atendimento da meia-noite. Loja fecha às 22h; a origem grava UTC em coluna sem fuso.
+id|loja|fecha_as|lido_como_esta|certo
+--|----|--------|--------------|-----
+1|Loja Centro|22:00:00|2026-10-20 13:15:00|2026-10-20 10:15:00
+2|Loja Centro|22:00:00|2026-10-21 00:25:00|2026-10-20 21:25:00
+3|Loja Norte|22:00:00|2026-10-21 00:50:00|2026-10-20 21:50:00
+4|Loja São João|20:00:00|2026-10-21 12:00:00|2026-10-21 09:00:00
+
+(4 rows affected)
+== Por dia: o relatório muda de dia.
+dia_lido_como_esta|atendimentos
+------------------|------------
+2026-10-20|1
+2026-10-21|3
+
+(2 rows affected)
+dia_local|atendimentos
+---------|------------
+2026-10-20|3
+2026-10-21|1
+
+(2 rows affected)
+== Nome do fuso: o da IANA não existe aqui, o do Windows sim, mesmo no contêiner Linux.
+name|current_utc_offset|is_currently_dst
+----|------------------|----------------
+E. South America Standard Time|-03:00|0
+UTC|+00:00|0
+
+(2 rows affected)
+zonas_listadas|nomes_iana_listados
+--------------|-------------------
+144|0
+
+(1 rows affected)
+Msg 9820, Level 16, State 1, Server 64219b88e525, Line 1
+The time zone parameter 'America/Sao_Paulo' provided to AT TIME ZONE clause is invalid.
+Msg 9820, Level 16, State 1, Server 64219b88e525, Line 1
+The time zone parameter '-03:00' provided to AT TIME ZONE clause is invalid.
+== datetime2 contra datetimeoffset: no primeiro, AT TIME ZONE só carimba; no segundo, converte.
+origem_utc|datetime2_so_carimba|declarado_utc|datetimeoffset_converte
+----------|--------------------|-------------|-----------------------
+2026-10-21 00:30:00|2026-10-21 00:30:00 -03:00|2026-10-21 00:30:00 +00:00|2026-10-20 21:30:00 -03:00
+
+(1 rows affected)
+== Direção errada e conversão dupla, com o mesmo valor de origem.
+origem_utc|certo|direcao_errada_em_utc|convertido_duas_vezes|repetido_sem_perder_o_deslocamento
+----------|-----|---------------------|---------------------|----------------------------------
+2026-10-21 00:30:00|2026-10-20 21:30:00|2026-10-21 03:30:00 +00:00|2026-10-20 18:30:00|2026-10-20 21:30:00
+
+(1 rows affected)
+== datetimeoffset: não há fuso de sessão. O dia sai do deslocamento que o valor carrega.
+instante|dia_em_utc|dia_em_brasilia
+--------|----------|---------------
+2026-10-21 00:30:00 +00:00|2026-10-21|2026-10-20
+
+(1 rows affected)
+== Nome de fuso contra deslocamento fixo: em 2018 havia horário de verão, em 2026 não.
+utc|por_nome|menos_3_fixo|deslocamento_em_minutos
+---|--------|------------|-----------------------
+2018-12-01 12:00:00|2018-12-01 10:00:00|2018-12-01 09:00:00|-120
+2019-12-01 12:00:00|2019-12-01 09:00:00|2019-12-01 09:00:00|-180
+2026-11-03 12:00:00|2026-11-03 09:00:00|2026-11-03 09:00:00|-180
+2026-12-01 12:00:00|2026-12-01 09:00:00|2026-12-01 09:00:00|-180
+
+(4 rows affected)
+== Deslocamento em SWITCHOFFSET usa o sinal da norma: -03:00 é a oeste de Greenwich.
+menos_3|mais_3
+-------|------
+2026-10-20 21:30:00 -03:00|2026-10-21 03:30:00 +03:00
+
+(1 rows affected)
+== Hora local que não existe (início do horário de verão de 2018) e hora que existe duas vezes (fim, em 2019).
+hora_local_sem_fuso|carimbada|em_utc
+-------------------|---------|------
+2018-11-03 23:30:00|2018-11-03 23:30:00 -03:00|2018-11-04 02:30:00 +00:00
+2018-11-04 00:30:00|2018-11-04 01:30:00 -02:00|2018-11-04 03:30:00 +00:00
+2018-11-04 01:30:00|2018-11-04 01:30:00 -02:00|2018-11-04 03:30:00 +00:00
+2019-02-16 22:30:00|2019-02-16 22:30:00 -02:00|2019-02-17 00:30:00 +00:00
+2019-02-16 23:30:00|2019-02-16 23:30:00 -02:00|2019-02-17 01:30:00 +00:00
+2019-02-17 00:30:00|2019-02-17 00:30:00 -03:00|2019-02-17 03:30:00 +00:00
+
+(6 rows affected)
+== Data em texto: a data impossível não para a carga com TRY_CONVERT; com CONVERT, para.
+boa|impossivel_vira_nulo
+---|--------------------
+2026-10-20|NULL
+
+(1 rows affected)
+Msg 241, Level 16, State 1, Server 64219b88e525, Line 1
+Conversion failed when converting date and/or time from character string.
+== Data como número: precisa virar texto antes.
+de_numero
+---------
+2026-10-20
+
+(1 rows affected)
+[exit 0, 2026-11-03]

@@ -1,0 +1,46 @@
+
+$ docker image ls --format "{{.Repository}}:{{.Tag}} {{.Size}}" | grep -E "^(postgres:16.15-alpine|modelagem-lab-dbt:local|modelagem-lab-airflow-dbt:local|apache/airflow:3.3.2-python3.13|python:3.13.15-slim-bookworm) "
+modelagem-lab-airflow-dbt:local 2.65GB
+modelagem-lab-dbt:local 531MB
+postgres:16.15-alpine 294MB
+python:3.13.15-slim-bookworm 121MB
+apache/airflow:3.3.2-python3.13 2.33GB
+[exit 0, 2026-11-03]
+
+$ docker system df -v | grep -E "VOLUME NAME|modelagem-lab_postgres-db-volume"
+VOLUME NAME                                                        LINKS     SIZE
+modelagem-lab_postgres-db-volume                                   1         74.15MB
+[exit 0, 2026-11-03]
+
+$ docker stats --no-stream --format "{{.Name}} mem={{.MemUsage}}" modelagem-lab-postgres-1
+modelagem-lab-postgres-1 mem=31.2MiB / 30.82GiB
+[exit 0, 2026-11-03]
+
+$ grep 'Resource report' projeto_dbt/logs/dbt.log | grep -o '{.*}' | python3 -c 'import sys, json
+for l in sys.stdin:
+    d = json.loads(l)
+    print(d["command_name"], "ok" if d["command_success"] else "falhou", round(d["command_wall_clock_time"], 1), "s", round(int(d["process_mem_max_rss"]) / 1024), "MiB pico do processo dbt")'
+debug falhou 0.3 s 112 MiB pico do processo dbt
+debug ok 0.8 s 122 MiB pico do processo dbt
+parse ok 3.4 s 134 MiB pico do processo dbt
+seed ok 1.4 s 132 MiB pico do processo dbt
+snapshot ok 3.4 s 146 MiB pico do processo dbt
+snapshot ok 3.5 s 147 MiB pico do processo dbt
+snapshot ok 3.8 s 147 MiB pico do processo dbt
+snapshot ok 3.6 s 146 MiB pico do processo dbt
+snapshot ok 3.8 s 147 MiB pico do processo dbt
+snapshot ok 4.2 s 147 MiB pico do processo dbt
+build ok 7.3 s 151 MiB pico do processo dbt
+build falhou 5.6 s 147 MiB pico do processo dbt
+build falhou 1.6 s 135 MiB pico do processo dbt
+build ok 1.9 s 134 MiB pico do processo dbt
+build falhou 5.2 s 149 MiB pico do processo dbt
+build ok 3.0 s 136 MiB pico do processo dbt
+[exit 0, 2026-11-03]
+
+$ du -sh projeto_dbt/target projeto_dbt/logs
+1.9M	projeto_dbt/target
+792K	projeto_dbt/logs
+[exit 0, 2026-11-03]
+
+[medição fora do capturar.sh: docker stats amostrado a cada ~1 s durante a terceira rodada do airflow dags test, 2026-11-03 07:59 a 08:01; pico do container do Airflow com dbt 382.8MiB, pico do Postgres 35MiB no mesmo intervalo]

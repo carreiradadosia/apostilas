@@ -1,0 +1,467 @@
+
+$ docker compose --profile dbt run --rm dbt dbt --version
+ Container modelagem-lab-postgres-1  Running
+Core:
+  - installed: 1.12.6
+  - latest:    1.12.6 - Up to date!
+
+Plugins:
+  - postgres: 1.11.0 - Up to date!
+
+
+20:36:19  dbt v2 is available, and is the default for new installations. This is dbt Core v1.
+          New project - install v2: https://docs.getdbt.com/docs/local/install-dbt?utm_source=dbt-cli
+          Existing v1 project - upgrade guide: https://docs.getdbt.com/docs/dbt-versions/dbt-upgrade/upgrading-to-v2?utm_source=dbt-cli
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt debug
+ Container modelagem-lab-postgres-1  Running
+20:36:25  Running with dbt=1.12.6
+20:36:25  dbt version: 1.12.6
+20:36:25  python version: 3.13.15
+20:36:25  python path: /usr/local/bin/python3.13
+20:36:25  os info: Linux-7.0.0-34-generic-x86_64-with-glibc2.36
+20:36:25  Using profiles dir at /lab/projeto_dbt
+20:36:25  Using profiles.yml file at /lab/projeto_dbt/profiles.yml
+20:36:25  Using dbt_project.yml file at /lab/projeto_dbt/dbt_project.yml
+20:36:25  adapter type: postgres
+20:36:25  adapter version: 1.11.0
+20:36:25  Configuration:
+20:36:25    profiles.yml file [OK found and valid]
+20:36:25    dbt_project.yml file [OK found and valid]
+20:36:25  Required dependencies:
+20:36:25   - git [OK found]
+
+20:36:25  Connection:
+20:36:25    host: postgres
+20:36:25    port: 5432
+20:36:25    user: dw
+20:36:25    database: dw
+20:36:25    schema: dbt
+20:36:25    connect_timeout: 10
+20:36:25    role: None
+20:36:25    search_path: None
+20:36:25    keepalives_idle: 0
+20:36:25    sslmode: None
+20:36:25    sslcert: None
+20:36:25    sslkey: None
+20:36:25    sslrootcert: None
+20:36:25    application_name: dbt
+20:36:25    autocommit: False
+20:36:25    retries: 1
+20:36:25  Registered adapter: postgres=1.11.0
+20:36:25    Connection test: [OK connection ok]
+
+20:36:25  All checks passed!
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt parse
+ Container modelagem-lab-postgres-1  Running
+20:36:31  Running with dbt=1.12.6
+20:36:32  Registered adapter: postgres=1.11.0
+20:36:32  Unable to do partial parsing because saved manifest not found. Starting full parse.
+20:36:36  Performance info: /lab/projeto_dbt/target/perf_info.json
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt seed
+ Container modelagem-lab-postgres-1  Running
+20:36:42  Running with dbt=1.12.6
+20:36:43  Registered adapter: postgres=1.11.0
+20:36:44  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:36:44  
+20:36:44  Concurrency: 2 threads (target='dev')
+20:36:44  
+20:36:44  1 of 1 START seed file dbt_silver.de_para_categoria ............................ [RUN]
+20:36:44  1 of 1 OK loaded seed file dbt_silver.de_para_categoria ........................ [INSERT 1 in 0.14s]
+20:36:44  
+20:36:44  Finished running 1 seed in 0 hours 0 minutes and 0.52 seconds (0.52s).
+20:36:44  
+20:36:44  Completed successfully
+20:36:44  
+20:36:44  Done. PASS=1 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=1
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt snapshot --vars '{dia_foto: "2026-10-20"}'
+ Container modelagem-lab-postgres-1  Running
+20:36:50  Running with dbt=1.12.6
+20:36:50  Registered adapter: postgres=1.11.0
+20:36:51  Unable to do partial parsing because config vars, config profile, or config target have changed
+20:36:57  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:36:57  
+20:36:57  Concurrency: 2 threads (target='dev')
+20:36:57  
+20:36:57  2 of 2 START snapshot dbt_snapshots.snap_produtos_preco ........................ [RUN]
+20:36:57  1 of 2 START snapshot dbt_snapshots.snap_produtos_por_timestamp ................ [RUN]
+20:36:58  1 of 2 OK snapshotted dbt_snapshots.snap_produtos_por_timestamp ................ [SELECT 5 in 0.48s]
+20:36:58  2 of 2 OK snapshotted dbt_snapshots.snap_produtos_preco ........................ [SELECT 5 in 0.50s]
+20:36:58  
+20:36:58  Finished running 2 snapshots in 0 hours 0 minutes and 1.01 seconds (1.01s).
+20:36:58  
+20:36:58  Completed successfully
+20:36:58  
+20:36:58  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=2
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt snapshot --vars '{dia_foto: "2026-10-21"}'
+ Container modelagem-lab-postgres-1  Running
+20:37:07  Running with dbt=1.12.6
+20:37:07  Registered adapter: postgres=1.11.0
+20:37:08  Unable to do partial parsing because config vars, config profile, or config target have changed
+20:37:13  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:37:13  
+20:37:13  Concurrency: 2 threads (target='dev')
+20:37:13  
+20:37:13  1 of 2 START snapshot dbt_snapshots.snap_produtos_por_timestamp ................ [RUN]
+20:37:13  2 of 2 START snapshot dbt_snapshots.snap_produtos_preco ........................ [RUN]
+20:37:14  2 of 2 OK snapshotted dbt_snapshots.snap_produtos_preco ........................ [INSERT 0 0 in 0.73s]
+20:37:14  1 of 2 OK snapshotted dbt_snapshots.snap_produtos_por_timestamp ................ [INSERT 0 5 in 0.75s]
+20:37:14  
+20:37:14  Finished running 2 snapshots in 0 hours 0 minutes and 1.07 seconds (1.07s).
+20:37:14  
+20:37:14  Completed successfully
+20:37:14  
+20:37:14  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=2
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt snapshot --vars '{dia_foto: "2026-10-22"}'
+ Container modelagem-lab-postgres-1  Running
+20:37:19  Running with dbt=1.12.6
+20:37:19  Registered adapter: postgres=1.11.0
+20:37:20  Unable to do partial parsing because config vars, config profile, or config target have changed
+20:37:24  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:37:24  
+20:37:24  Concurrency: 2 threads (target='dev')
+20:37:24  
+20:37:24  1 of 2 START snapshot dbt_snapshots.snap_produtos_por_timestamp ................ [RUN]
+20:37:24  2 of 2 START snapshot dbt_snapshots.snap_produtos_preco ........................ [RUN]
+20:37:25  1 of 2 OK snapshotted dbt_snapshots.snap_produtos_por_timestamp ................ [INSERT 0 5 in 0.75s]
+20:37:25  2 of 2 OK snapshotted dbt_snapshots.snap_produtos_preco ........................ [INSERT 0 2 in 0.75s]
+20:37:25  
+20:37:25  Finished running 2 snapshots in 0 hours 0 minutes and 1.14 seconds (1.14s).
+20:37:25  
+20:37:25  Completed successfully
+20:37:25  
+20:37:25  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=2
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "select id, preco, dbt_valid_from, dbt_valid_to from dbt_snapshots.snap_produtos_preco order by id, dbt_valid_from" -c "select count(*) as linhas_check from dbt_snapshots.snap_produtos_preco" -c "select count(*) as linhas_timestamp, count(distinct id) as produtos from dbt_snapshots.snap_produtos_por_timestamp" -c "select id, preco, dbt_valid_from, dbt_valid_to from dbt_snapshots.snap_produtos_por_timestamp where id = 10 order by dbt_valid_from" -c "select column_name, data_type from information_schema.columns where table_schema = 'dbt_snapshots' and table_name = 'snap_produtos_preco' and column_name like 'dbt_%' order by ordinal_position"
+ id | preco |   dbt_valid_from    |    dbt_valid_to     
+----+-------+---------------------+---------------------
+ 10 | 60.00 | 2026-10-20 00:00:00 | 
+ 20 | 33.30 | 2026-10-20 00:00:00 | 
+ 30 | 15.00 | 2026-10-20 00:00:00 | 2026-10-22 00:00:00
+ 30 | 17.00 | 2026-10-22 00:00:00 | 
+ 40 | 20.50 | 2026-10-20 00:00:00 | 2026-10-22 00:00:00
+ 40 | 20.00 | 2026-10-22 00:00:00 | 
+ 50 | 12.00 | 2026-10-20 00:00:00 | 
+(7 rows)
+
+ linhas_check 
+--------------
+            7
+(1 row)
+
+ linhas_timestamp | produtos 
+------------------+----------
+               15 |        5
+(1 row)
+
+ id | preco |   dbt_valid_from    |    dbt_valid_to     
+----+-------+---------------------+---------------------
+ 10 | 60.00 | 2026-10-20 03:00:00 | 2026-10-21 03:00:00
+ 10 | 60.00 | 2026-10-21 03:00:00 | 2026-10-22 03:00:00
+ 10 | 60.00 | 2026-10-22 03:00:00 | 
+(3 rows)
+
+  column_name   |          data_type          
+----------------+-----------------------------
+ dbt_scd_id     | text
+ dbt_updated_at | timestamp without time zone
+ dbt_valid_from | timestamp without time zone
+ dbt_valid_to   | timestamp without time zone
+(4 rows)
+
+[exit 0, 2026-11-03]
+
+[2026-11-03: numa execução anterior, com updated_at do tipo date, a primeira rodada acima avisava "[WARNING]: Data type of snapshot table timestamp columns (DATETIME) doesn't match derived column 'updated_at' (DATE). Please update snapshot config 'updated_at'.", e o resumo dizia WARN=0 mesmo assim. Correção: foto_do_dia expõe foto_em, timestamp, e o snapshot check usa updated_at: foto_em. A rodada acima já roda com a correção, por isso não traz o aviso. Como as fotos ficam na bronze, o histórico pode ser refeito: apaga o snapshot e repete os três dias.]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "drop table dbt_snapshots.snap_produtos_preco, dbt_snapshots.snap_produtos_por_timestamp"
+DROP TABLE
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt snapshot --vars '{dia_foto: "2026-10-20"}'
+ Container modelagem-lab-postgres-1  Running
+20:37:31  Running with dbt=1.12.6
+20:37:32  Registered adapter: postgres=1.11.0
+20:37:32  Unable to do partial parsing because config vars, config profile, or config target have changed
+20:37:36  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:37:36  
+20:37:36  Concurrency: 2 threads (target='dev')
+20:37:36  
+20:37:36  1 of 2 START snapshot dbt_snapshots.snap_produtos_por_timestamp ................ [RUN]
+20:37:36  2 of 2 START snapshot dbt_snapshots.snap_produtos_preco ........................ [RUN]
+20:37:36  2 of 2 OK snapshotted dbt_snapshots.snap_produtos_preco ........................ [SELECT 5 in 0.27s]
+20:37:36  1 of 2 OK snapshotted dbt_snapshots.snap_produtos_por_timestamp ................ [SELECT 5 in 0.27s]
+20:37:36  
+20:37:36  Finished running 2 snapshots in 0 hours 0 minutes and 0.56 seconds (0.56s).
+20:37:37  
+20:37:37  Completed successfully
+20:37:37  
+20:37:37  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=2
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt snapshot --vars '{dia_foto: "2026-10-21"}'
+ Container modelagem-lab-postgres-1  Running
+20:37:42  Running with dbt=1.12.6
+20:37:43  Registered adapter: postgres=1.11.0
+20:37:43  Unable to do partial parsing because config vars, config profile, or config target have changed
+20:37:47  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:37:47  
+20:37:47  Concurrency: 2 threads (target='dev')
+20:37:47  
+20:37:48  1 of 2 START snapshot dbt_snapshots.snap_produtos_por_timestamp ................ [RUN]
+20:37:48  2 of 2 START snapshot dbt_snapshots.snap_produtos_preco ........................ [RUN]
+20:37:48  1 of 2 OK snapshotted dbt_snapshots.snap_produtos_por_timestamp ................ [INSERT 0 5 in 0.54s]
+20:37:48  2 of 2 OK snapshotted dbt_snapshots.snap_produtos_preco ........................ [INSERT 0 0 in 0.55s]
+20:37:48  
+20:37:48  Finished running 2 snapshots in 0 hours 0 minutes and 0.82 seconds (0.82s).
+20:37:48  
+20:37:48  Completed successfully
+20:37:48  
+20:37:48  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=2
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt snapshot --vars '{dia_foto: "2026-10-22"}'
+ Container modelagem-lab-postgres-1  Running
+20:37:53  Running with dbt=1.12.6
+20:37:54  Registered adapter: postgres=1.11.0
+20:37:54  Unable to do partial parsing because config vars, config profile, or config target have changed
+20:37:58  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:37:58  
+20:37:58  Concurrency: 2 threads (target='dev')
+20:37:58  
+20:37:59  1 of 2 START snapshot dbt_snapshots.snap_produtos_por_timestamp ................ [RUN]
+20:37:59  2 of 2 START snapshot dbt_snapshots.snap_produtos_preco ........................ [RUN]
+20:38:00  1 of 2 OK snapshotted dbt_snapshots.snap_produtos_por_timestamp ................ [INSERT 0 5 in 0.91s]
+20:38:00  2 of 2 OK snapshotted dbt_snapshots.snap_produtos_preco ........................ [INSERT 0 2 in 0.92s]
+20:38:00  
+20:38:00  Finished running 2 snapshots in 0 hours 0 minutes and 1.39 seconds (1.39s).
+20:38:00  
+20:38:00  Completed successfully
+20:38:00  
+20:38:00  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=2
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "select id, preco, dbt_valid_from, dbt_valid_to from dbt_snapshots.snap_produtos_preco order by id, dbt_valid_from" -c "select (select count(*) from dbt_snapshots.snap_produtos_preco) as linhas_check, (select count(*) from dbt_snapshots.snap_produtos_por_timestamp) as linhas_timestamp"
+ id | preco |   dbt_valid_from    |    dbt_valid_to     
+----+-------+---------------------+---------------------
+ 10 | 60.00 | 2026-10-20 00:00:00 | 
+ 20 | 33.30 | 2026-10-20 00:00:00 | 
+ 30 | 15.00 | 2026-10-20 00:00:00 | 2026-10-22 00:00:00
+ 30 | 17.00 | 2026-10-22 00:00:00 | 
+ 40 | 20.50 | 2026-10-20 00:00:00 | 2026-10-22 00:00:00
+ 40 | 20.00 | 2026-10-22 00:00:00 | 
+ 50 | 12.00 | 2026-10-20 00:00:00 | 
+(7 rows)
+
+ linhas_check | linhas_timestamp 
+--------------+------------------
+            7 |               15
+(1 row)
+
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt build
+ Container modelagem-lab-postgres-1  Running
+20:38:05  Running with dbt=1.12.6
+20:38:06  Registered adapter: postgres=1.11.0
+20:38:06  Unable to do partial parsing because config vars, config profile, or config target have changed
+20:38:10  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:38:10  
+20:38:10  Concurrency: 2 threads (target='dev')
+20:38:10  
+20:38:11  1 of 46 START sql table model dbt_gold.dim_data ................................ [RUN]
+20:38:11  2 of 46 START sql view model dbt_silver.stg_atendimentos ....................... [RUN]
+20:38:11  2 of 46 OK created sql view model dbt_silver.stg_atendimentos .................. [CREATE VIEW in 0.30s]
+20:38:11  1 of 46 OK created sql table model dbt_gold.dim_data ........................... [SELECT 92 in 0.32s]
+20:38:11  3 of 46 START sql view model dbt_silver.stg_itens .............................. [RUN]
+20:38:11  4 of 46 START sql view model dbt_silver.stg_lojas .............................. [RUN]
+20:38:11  3 of 46 OK created sql view model dbt_silver.stg_itens ......................... [CREATE VIEW in 0.09s]
+20:38:11  4 of 46 OK created sql view model dbt_silver.stg_lojas ......................... [CREATE VIEW in 0.09s]
+20:38:11  5 of 46 START sql view model dbt_silver.stg_pedidos ............................ [RUN]
+20:38:11  6 of 46 START seed file dbt_silver.de_para_categoria ........................... [RUN]
+20:38:11  5 of 46 OK created sql view model dbt_silver.stg_pedidos ....................... [CREATE VIEW in 0.14s]
+20:38:11  7 of 46 START snapshot dbt_snapshots.snap_produtos_por_timestamp ............... [RUN]
+20:38:11  6 of 46 OK loaded seed file dbt_silver.de_para_categoria ....................... [INSERT 1 in 0.16s]
+20:38:11  8 of 46 START snapshot dbt_snapshots.snap_produtos_preco ....................... [RUN]
+20:38:12  8 of 46 OK snapshotted dbt_snapshots.snap_produtos_preco ....................... [INSERT 0 0 in 0.43s]
+20:38:12  7 of 46 OK snapshotted dbt_snapshots.snap_produtos_por_timestamp ............... [INSERT 0 0 in 0.45s]
+20:38:12  9 of 46 START test not_null_stg_atendimentos_atendimento_id .................... [RUN]
+20:38:12  10 of 46 START test unique_stg_atendimentos_atendimento_id ..................... [RUN]
+20:38:12  9 of 46 PASS not_null_stg_atendimentos_atendimento_id .......................... [PASS in 0.09s]
+20:38:12  11 of 46 START test not_null_dim_data_data_id .................................. [RUN]
+20:38:12  10 of 46 PASS unique_stg_atendimentos_atendimento_id ........................... [PASS in 0.11s]
+20:38:12  12 of 46 START test unique_dim_data_data_id .................................... [RUN]
+20:38:12  11 of 46 PASS not_null_dim_data_data_id ........................................ [PASS in 0.05s]
+20:38:12  13 of 46 START test unique_stg_itens__pedido_id_item_seq_ ...................... [RUN]
+20:38:12  12 of 46 PASS unique_dim_data_data_id .......................................... [PASS in 0.06s]
+20:38:12  14 of 46 START test not_null_stg_lojas_loja_id ................................. [RUN]
+20:38:12  13 of 46 PASS unique_stg_itens__pedido_id_item_seq_ ............................ [PASS in 0.06s]
+20:38:12  15 of 46 START test unique_stg_lojas_loja_id ................................... [RUN]
+20:38:12  14 of 46 PASS not_null_stg_lojas_loja_id ....................................... [PASS in 0.05s]
+20:38:12  16 of 46 START test accepted_values_stg_pedidos_status__pago__cancelado__pendente__desconhecido  [RUN]
+20:38:12  15 of 46 PASS unique_stg_lojas_loja_id ......................................... [PASS in 0.06s]
+20:38:12  17 of 46 START test assert_itens_batem_com_pedido .............................. [RUN]
+20:38:12  16 of 46 PASS accepted_values_stg_pedidos_status__pago__cancelado__pendente__desconhecido  [PASS in 0.05s]
+20:38:12  18 of 46 START test assert_status_desconhecido ................................. [RUN]
+20:38:12  17 of 46 PASS assert_itens_batem_com_pedido .................................... [PASS in 0.04s]
+20:38:12  19 of 46 START test not_null_stg_pedidos_pedido_id ............................. [RUN]
+20:38:12  18 of 46 WARN 1 assert_status_desconhecido ..................................... [WARN 1 in 0.04s]
+20:38:12  20 of 46 START test relationships_stg_itens_pedido_id__pedido_id__ref_stg_pedidos_  [RUN]
+20:38:12  19 of 46 PASS not_null_stg_pedidos_pedido_id ................................... [PASS in 0.06s]
+20:38:12  21 of 46 START test unique_stg_pedidos_pedido_id ............................... [RUN]
+20:38:12  20 of 46 PASS relationships_stg_itens_pedido_id__pedido_id__ref_stg_pedidos_ ... [PASS in 0.06s]
+20:38:12  22 of 46 START sql view model dbt_silver.stg_produtos .......................... [RUN]
+20:38:12  21 of 46 PASS unique_stg_pedidos_pedido_id ..................................... [PASS in 0.04s]
+20:38:12  23 of 46 START sql table model dbt_gold.dim_loja ............................... [RUN]
+20:38:12  22 of 46 OK created sql view model dbt_silver.stg_produtos ..................... [CREATE VIEW in 0.08s]
+20:38:12  24 of 46 START test not_null_stg_produtos_custo ................................ [RUN]
+20:38:12  23 of 46 OK created sql table model dbt_gold.dim_loja .......................... [SELECT 3 in 0.08s]
+20:38:12  25 of 46 START test not_null_stg_produtos_produto_id ........................... [RUN]
+20:38:12  24 of 46 WARN 1 not_null_stg_produtos_custo .................................... [WARN 1 in 0.07s]
+20:38:12  26 of 46 START test unique_stg_produtos_produto_id ............................. [RUN]
+20:38:12  25 of 46 PASS not_null_stg_produtos_produto_id ................................. [PASS in 0.06s]
+20:38:12  27 of 46 START test not_null_dim_loja_loja_sk .................................. [RUN]
+20:38:12  26 of 46 PASS unique_stg_produtos_produto_id ................................... [PASS in 0.05s]
+20:38:12  28 of 46 START test unique_dim_loja_loja_sk .................................... [RUN]
+20:38:12  27 of 46 PASS not_null_dim_loja_loja_sk ........................................ [PASS in 0.05s]
+20:38:12  29 of 46 START sql table model dbt_gold.dim_produto ............................ [RUN]
+20:38:12  28 of 46 PASS unique_dim_loja_loja_sk .......................................... [PASS in 0.07s]
+20:38:12  29 of 46 OK created sql table model dbt_gold.dim_produto ....................... [SELECT 8 in 0.06s]
+20:38:12  30 of 46 START test not_null_dim_produto_produto_sk ............................ [RUN]
+20:38:12  31 of 46 START test unique_dim_produto_produto_sk .............................. [RUN]
+20:38:13  30 of 46 PASS not_null_dim_produto_produto_sk .................................. [PASS in 0.06s]
+20:38:13  31 of 46 PASS unique_dim_produto_produto_sk .................................... [PASS in 0.07s]
+20:38:13  32 of 46 START sql table model dbt_gold.fct_vendas ............................. [RUN]
+20:38:13  32 of 46 OK created sql table model dbt_gold.fct_vendas ........................ [SELECT 13 in 0.05s]
+20:38:13  34 of 46 START test not_null_fct_vendas_data_id ................................ [RUN]
+20:38:13  33 of 46 START test assert_vendas_sem_versao ................................... [RUN]
+20:38:13  34 of 46 PASS not_null_fct_vendas_data_id ...................................... [PASS in 0.06s]
+20:38:13  33 of 46 PASS assert_vendas_sem_versao ......................................... [PASS in 0.06s]
+20:38:13  35 of 46 START test not_null_fct_vendas_loja_sk ................................ [RUN]
+20:38:13  36 of 46 START test not_null_fct_vendas_produto_sk ............................. [RUN]
+20:38:13  36 of 46 PASS not_null_fct_vendas_produto_sk ................................... [PASS in 0.06s]
+20:38:13  37 of 46 START test not_null_fct_vendas_venda_sk ............................... [RUN]
+20:38:13  35 of 46 PASS not_null_fct_vendas_loja_sk ...................................... [PASS in 0.08s]
+20:38:13  38 of 46 START test relationships_fct_vendas_data_id__data_id__ref_dim_data_ ... [RUN]
+20:38:13  37 of 46 PASS not_null_fct_vendas_venda_sk ..................................... [PASS in 0.06s]
+20:38:13  39 of 46 START test relationships_fct_vendas_loja_sk__loja_sk__ref_dim_loja_ ... [RUN]
+20:38:13  38 of 46 PASS relationships_fct_vendas_data_id__data_id__ref_dim_data_ ......... [PASS in 0.06s]
+20:38:13  40 of 46 START test relationships_fct_vendas_produto_sk__produto_sk__ref_dim_produto_  [RUN]
+20:38:13  39 of 46 PASS relationships_fct_vendas_loja_sk__loja_sk__ref_dim_loja_ ......... [PASS in 0.07s]
+20:38:13  41 of 46 START test unique_fct_vendas_venda_sk ................................. [RUN]
+20:38:13  40 of 46 PASS relationships_fct_vendas_produto_sk__produto_sk__ref_dim_produto_  [PASS in 0.06s]
+20:38:13  41 of 46 PASS unique_fct_vendas_venda_sk ....................................... [PASS in 0.06s]
+20:38:13  43 of 46 START sql table model dbt_gold.vendas_por_dia ......................... [RUN]
+20:38:13  42 of 46 START sql view model dbt_gold.obt_vendas .............................. [RUN]
+20:38:13  42 of 46 OK created sql view model dbt_gold.obt_vendas ......................... [CREATE VIEW in 0.09s]
+20:38:13  43 of 46 OK created sql table model dbt_gold.vendas_por_dia .................... [SELECT 3 in 0.10s]
+20:38:13  45 of 46 START test not_null_vendas_por_dia_dia ................................ [RUN]
+20:38:13  44 of 46 START test assert_receita_igual_a_do_piloto ........................... [RUN]
+20:38:13  45 of 46 PASS not_null_vendas_por_dia_dia ...................................... [PASS in 0.05s]
+20:38:13  46 of 46 START test unique_vendas_por_dia_dia .................................. [RUN]
+20:38:13  44 of 46 PASS assert_receita_igual_a_do_piloto ................................. [PASS in 0.05s]
+20:38:13  46 of 46 PASS unique_vendas_por_dia_dia ........................................ [PASS in 0.04s]
+20:38:13  
+20:38:13  Finished running 1 seed, 2 snapshots, 5 table models, 32 data tests, 6 view models in 0 hours 0 minutes and 2.79 seconds (2.79s).
+20:38:13  
+20:38:13  Completed with 2 warnings:
+20:38:13  
+20:38:13  [WARNING]: in test assert_status_desconhecido (tests/assert_status_desconhecido.sql)
+20:38:13  [WARNING]: Got 1 result, configured to warn if != 0
+20:38:13  
+20:38:13    compiled code at target/compiled/rede_de_lojas/tests/assert_status_desconhecido.sql
+20:38:13  
+20:38:13  [WARNING]: in test not_null_stg_produtos_custo (models/silver/_silver.yml)
+20:38:13  [WARNING]: Got 1 result, configured to warn if != 0
+20:38:13  
+20:38:13    compiled code at target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_produtos_custo.sql
+20:38:13  
+20:38:13  Done. PASS=44 WARN=2 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=46
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/50_comparar_a_mao_e_dbt.sql
+Border style is 1.
+== Same flow, two executors: hand SQL in silver and gold, dbt in dbt_silver and dbt_gold.
+== Each line counts the rows that exist on one side and not on the other. Zero means equal.
+         tabela         | so_a_mao | so_dbt 
+------------------------+----------+--------
+ vendas_por_dia         |        0 |      0
+ fct_vendas             |        0 |      0
+ dim_produto            |        0 |      0
+ pedidos da silver      |        0 |      0
+ atendimentos da silver |        0 |      0
+(5 rows)
+
+== The surrogate key is part of the comparison above: both sides compute it from the same columns.
+ lado  | linhas | chaves 
+-------+--------+--------
+ a_mao |      8 |      8
+ dbt   |      8 |      8
+(2 rows)
+
+== Where each one lives: hand tables and dbt relations side by side.
+ table_schema  | table_type | objetos 
+---------------+------------+---------
+ dbt_gold      | BASE TABLE |       5
+ dbt_gold      | VIEW       |       1
+ dbt_silver    | BASE TABLE |       1
+ dbt_silver    | VIEW       |       5
+ dbt_snapshots | BASE TABLE |       2
+ gold          | BASE TABLE |       5
+ gold          | VIEW       |       1
+ silver        | BASE TABLE |       7
+(8 rows)
+
+[exit 0, 2026-11-03]
+
+$ cat projeto_dbt/target/compiled/rede_de_lojas/models/gold/fct_vendas.sql
+-- Grain: one row per order item. The day goes in the half-open interval of the price period.
+select
+    md5(i.pedido_id::text || '|' || i.item_seq::text) as venda_sk,
+    i.pedido_id,
+    i.item_seq,
+    l.loja_sk,
+    coalesce(dp.produto_sk, '-1') as produto_sk,
+    o.dia_local as data_id,
+    o.status,
+    i.quantidade,
+    i.preco_unitario,
+    i.valor_item,
+    dp.preco_tabela
+from "dw"."dbt_silver"."stg_itens" i
+join "dw"."dbt_silver"."stg_pedidos" o using (pedido_id)
+join "dw"."dbt_gold"."dim_loja" l using (loja_id)
+left join "dw"."dbt_gold"."dim_produto" dp
+    on dp.produto_id = i.produto_id
+    and o.dia_local >= dp.valido_de
+    and (dp.valido_ate is null or o.dia_local < dp.valido_ate)[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt run --rm dbt dbt docs generate
+ Container modelagem-lab-postgres-1  Running
+20:38:20  Running with dbt=1.12.6
+20:38:20  Registered adapter: postgres=1.11.0
+20:38:21  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+20:38:21  
+20:38:21  Concurrency: 2 threads (target='dev')
+20:38:21  
+20:38:22  Building catalog
+20:38:23  Catalog written to /lab/projeto_dbt/target/catalog.json
+[exit 0, 2026-11-03]
+
+$ ls -la projeto_dbt/target/index.html projeto_dbt/target/catalog.json projeto_dbt/target/manifest.json | awk "{print \$5, \$9}" && python3 -c "import json; m = json.load(open(\"projeto_dbt/target/manifest.json\")); print(\"pais de fct_vendas:\", sorted(m[\"parent_map\"][\"model.rede_de_lojas.fct_vendas\"]))"
+20586 projeto_dbt/target/catalog.json
+1818461 projeto_dbt/target/index.html
+689235 projeto_dbt/target/manifest.json
+pais de fct_vendas: ['model.rede_de_lojas.dim_loja', 'model.rede_de_lojas.dim_produto', 'model.rede_de_lojas.stg_itens', 'model.rede_de_lojas.stg_pedidos']
+[exit 0, 2026-11-03]

@@ -1,0 +1,67 @@
+
+$ ./sq.sh dw 63_dedup.sql
+== DISTINCT ON, do Postgres, é erro de sintaxe.
+Msg 156, Level 15, State 1, Server c8b2b822d226, Line 1
+Incorrect syntax near the keyword 'ON'.
+== QUALIFY: a doc restringe ao Fabric Data Warehouse. Aqui é erro.
+Msg 102, Level 15, State 1, Server c8b2b822d226, Line 3
+Incorrect syntax near 'ordem'.
+== ROW_NUMBER não pode ir direto no WHERE: erro 4108.
+Msg 4108, Level 15, State 1, Server c8b2b822d226, Line 2
+Windowed functions can only appear in the SELECT or ORDER BY clauses.
+== A forma que funciona: CTE numera, consulta de fora filtra.
+id|status
+--|------
+103|cancelado
+
+(1 rows affected)
+== Carga dupla nos itens: 2 linhas a mais na bronze.
+
+(2 rows affected)
+pedido_id|item_seq|cargas
+---------|--------|------
+104|1|2
+104|2|2
+
+(2 rows affected)
+== A silver.itens não deduplica sozinha: a receita do pedido 104 dobra ao reconstruir sem cuidado.
+pedido_id|linhas|soma
+---------|------|----
+104|4|621.80
+
+(1 rows affected)
+== Com ROW_NUMBER por chave de negócio e carga mais recente, o número volta.
+pedido_id|linhas|soma
+---------|------|----
+104|2|310.90
+
+(1 rows affected)
+== Desempate: _carregado_em repetido deixa ROW_NUMBER não determinístico. Sem coluna de desempate, a escolha não é garantida.
+pedido_id|item_seq|cargas|instantes_distintos
+---------|--------|------|-------------------
+104|1|2|2
+104|2|2|2
+
+(2 rows affected)
+== Recoloca a bronze no estado certo para os próximos passos.
+
+(1 rows affected)
+
+(3 rows affected)
+
+(10 rows affected)
+
+(13 rows affected)
+
+(9 rows affected)
+
+(6 rows affected)
+
+(4 rows affected)
+tabela|linhas
+------|------
+bronze.pedidos|11
+replica.pedidos|10
+
+(2 rows affected)
+[exit 0, 2026-11-03]

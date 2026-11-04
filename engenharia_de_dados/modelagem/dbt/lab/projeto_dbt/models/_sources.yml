@@ -1,0 +1,11 @@
+sources:
+  - name: bronze
+    description: Raw copies of the replica. Loaded by the ingestion step, never by dbt.
+    schema: bronze
+    tables:
+      - name: lojas
+      - name: pedidos
+      - name: itens_pedido
+      - name: produtos_foto
+      - name: atendimentos
+      - name: produto_fornecedor

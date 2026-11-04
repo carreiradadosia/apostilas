@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: mart_faturamento_por_loja
+    description: '{{ doc("faturamento_por_loja") }}'
+    config:
+      meta:
+        dono_do_numero: Diretoria comercial
+        reconferido_em: "2026-11-03"
+    columns:
+      - name: loja
+        description: Nome da loja, sem espaços nas pontas.
+      - name: dia
+        description: Dia do pedido, como o sistema de origem registra.
+      - name: faturamento
+        description: Soma de quantidade vezes preço unitário dos itens de pedidos pagos.

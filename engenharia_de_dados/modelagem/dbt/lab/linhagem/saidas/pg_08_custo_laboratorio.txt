@@ -1,0 +1,20 @@
+
+$ bin/custo-pg
+base 1 32267
+top 1 34376
+log_tudo 1 22497
+log_amostra 1 36764
+base 2 25737
+top 2 20397
+log_tudo 2 17007
+log_amostra 2 32332
+base 3 24702
+top 3 37213
+log_tudo 3 22726
+log_amostra 3 40382
+mediana de transações por segundo, somente leitura, só neste laboratório:
+base 25737
+top 34376
+log_tudo 22497
+log_amostra 36764
+[exit 0, 2026-11-03]

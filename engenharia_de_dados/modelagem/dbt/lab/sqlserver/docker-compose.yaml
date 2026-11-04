@@ -1,0 +1,24 @@
+name: mssql-tsql
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:${MSSQL_TAG:-2022-CU27-GDR1-ubuntu-22.04}
+    environment:
+      ACCEPT_EULA: ${ACCEPT_EULA:?read the SQL Server license terms linked in README.md, then rerun with ACCEPT_EULA=Y to accept them}
+      MSSQL_PID: ${MSSQL_PID:-Developer}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?run ./preparar.sh first}
+      SQLCMDPASSWORD: ${MSSQL_SA_PASSWORD:?run ./preparar.sh first}
+      MSSQL_MEMORY_LIMIT_MB: "2048"
+    mem_limit: 2560m
+    volumes:
+      - mssql-data:/var/opt/mssql
+      - ./sql:/sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -b -Q 'SELECT 1' -o /dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 15s
+
+volumes:
+  mssql-data:

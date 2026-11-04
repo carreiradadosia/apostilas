@@ -1,0 +1,37 @@
+
+$ ./sq.sh dw 67_sintaxe_do_postgres.sql
+== Sintaxe do laboratório em Postgres que não passa aqui. Cada erro vem com a troca usada no laboratório.
+-- JOIN USING: troca por ON.
+Msg 102, Level 15, State 1, Server 64219b88e525, Line 1
+Incorrect syntax near 'USING'.
+-- FILTER (WHERE): troca por SUM(CASE WHEN ...).
+Msg 156, Level 15, State 1, Server 64219b88e525, Line 1
+Incorrect syntax near the keyword 'WHERE'.
+-- GROUP BY 1: troca pela coluna ou expressão.
+Msg 164, Level 15, State 1, Server 64219b88e525, Line 1
+Each GROUP BY expression must contain at least one column that is not an outer reference.
+-- x::date: troca por CAST ou CONVERT.
+Msg 243, Level 16, State 4, Server 64219b88e525, Line 1
+Type criado_em_utc is not a defined system type.
+-- LIMIT: troca por TOP ou OFFSET FETCH.
+Msg 102, Level 15, State 1, Server 64219b88e525, Line 1
+Incorrect syntax near 'LIMIT'.
+-- CREATE TABLE AS: troca por SELECT INTO.
+Msg 156, Level 15, State 10, Server 64219b88e525, Line 1
+Incorrect syntax near the keyword 'SELECT'.
+-- DROP TABLE ... CASCADE: não existe. A ordem de remoção é de quem escreve.
+Msg 156, Level 15, State 1, Server 64219b88e525, Line 1
+Incorrect syntax near the keyword 'CASCADE'.
+-- boolean: troca por bit, com CASE.
+Msg 156, Level 15, State 1, Server 64219b88e525, Line 1
+Incorrect syntax near the keyword 'AS'.
+-- timestamp não é data e hora aqui: é sinônimo de rowversion.
+
+(1 rows affected)
+name|tipo|max_length
+----|----|----------
+id|int|4
+momento|timestamp|8
+
+(2 rows affected)
+[exit 0, 2026-11-03]

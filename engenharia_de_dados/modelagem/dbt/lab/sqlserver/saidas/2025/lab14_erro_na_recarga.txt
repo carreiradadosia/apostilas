@@ -1,0 +1,107 @@
+
+$ ./sq.sh dw 64b_recarga_preparar.sql -b
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 68a_recarga_raiserror.sql -b
+== RAISERROR de severidade 16, com XACT_ABORT ON.
+
+(3 rows affected)
+
+(1 rows affected)
+Msg 50000, Level 16, State 1, Server 176938241f58, Line 7
+validação falhou
+
+(1 rows affected)
+[exit 1, 2026-11-03]
+
+$ ./sq.sh dw 64e_recarga_estado.sql
+pedido_id|valor
+---------|-----
+1|11.00
+2|22.00
+
+(2 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64b_recarga_preparar.sql -b
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 68b_recarga_throw.sql -b
+== THROW, com XACT_ABORT ON.
+
+(3 rows affected)
+
+(1 rows affected)
+Msg 50000, Level 16, State 1, Server 176938241f58, Line 7
+validação falhou
+[exit 1, 2026-11-03]
+
+$ ./sq.sh dw 64e_recarga_estado.sql
+pedido_id|valor
+---------|-----
+1|10.00
+2|20.00
+3|30.00
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64b_recarga_preparar.sql -b
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 68c_recarga_try_catch.sql -b
+== TRY/CATCH que engole o erro, com XACT_ABORT ON.
+
+(3 rows affected)
+
+(1 rows affected)
+
+(0 rows affected)
+erro capturado, nada sobe para quem chamou
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64e_recarga_estado.sql
+pedido_id|valor
+---------|-----
+1|10.00
+2|20.00
+3|30.00
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64b_recarga_preparar.sql -b
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 68d_recarga_varios_lotes.sql
+== Vários lotes, com XACT_ABORT ON e sem -b.
+
+(3 rows affected)
+
+(1 rows affected)
+Msg 2627, Level 14, State 1, Server 176938241f58, Line 1
+Violation of PRIMARY KEY constraint 'PK__recarga___CBE76076BA8D7022'. Cannot insert duplicate key in object 'silver.recarga_demo'. The duplicate key value is (1).
+
+(1 rows affected)
+Msg 3902, Level 16, State 1, Server 176938241f58, Line 2
+The COMMIT TRANSACTION request has no corresponding BEGIN TRANSACTION.
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 64e_recarga_estado.sql
+pedido_id|valor
+---------|-----
+1|10.00
+2|20.00
+3|30.00
+4|44.00
+
+(4 rows affected)
+[exit 0, 2026-11-03]

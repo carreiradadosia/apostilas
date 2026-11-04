@@ -1,0 +1,140 @@
+
+$ # Stop the session: the file stays, the ring buffer goes.
+bin/ms sa -i /scripts/12_xe_ler_ring.sql
+bin/ms sa -Q "ALTER EVENT SESSION relatorio_lab ON SERVER STATE = STOP;"
+bin/ms sa -i /scripts/12_xe_ler_ring.sql
+bin/ms sa -h -1 -Q "SET NOCOUNT ON; SELECT COUNT(*) AS eventos_no_arquivo FROM sys.fn_xe_file_target_read_file(N'/var/opt/mssql/log/relatorio_lab*.xel', NULL, NULL, NULL);"
+sessoes_ativas
+--------------
+1
+alvo|eventos_em_memoria
+----|------------------
+event_file|(arquivo)
+ring_buffer|49
+sessoes_ativas
+--------------
+0
+alvo|eventos_em_memoria
+----|------------------
+49
+[exit 0, 2026-11-03]
+
+$ # Clean stop through T-SQL: the cache is gone, Query Store keeps text, plan and counters, the session does not come back.
+docker compose --profile app run --rm -T --no-deps app padrao >/dev/null
+bin/ms sa -Q "ALTER EVENT SESSION relatorio_lab ON SERVER STATE = START;"
+bin/ms sa -i /scripts/32_qs_contagem.sql
+bin/ms-parar
+bin/ms-online
+echo "--- cache de plano"; bin/ms sa -i /scripts/20_dmv_stats.sql
+echo "--- query store"; bin/ms sa -i /scripts/32_qs_contagem.sql
+echo "--- sessao"; bin/ms sa -i /scripts/12_xe_ler_ring.sql
+INFO linha ('Loja Centro', '419.9')
+INFO linha ('LOJA NORTE', '344.2')
+INFO linha ('loja são joão', '72')
+INFO linha ('2026-10-21', '111.9')
+INFO linha ('2026-10-22', '293.3')
+INFO linha ('101', '120')
+Changed database context to 'rede'.
+textos|planos|texto_do_marcador|execucoes_contadas
+------|------|-----------------|------------------
+27|27|0|51
+Server shut down by request from login sa.
+ Container linhagem-lab-mssql-1  Healthy
+--- cache de plano
+Changed database context to 'rede'.
+execucoes|objeto|cifrado|texto
+---------|------|-------|-----
+--- query store
+Changed database context to 'rede'.
+textos|planos|texto_do_marcador|execucoes_contadas
+------|------|-----------------|------------------
+27|27|0|52
+--- sessao
+sessoes_ativas
+--------------
+0
+alvo|eventos_em_memoria
+----|------------------
+[exit 0, 2026-11-03]
+
+$ # Hard stop before the flush interval: the text survives, the counters of the interval do not.
+bin/ms sa -d rede -Q "SELECT 'marcador_antes_da_queda' AS marcador, COUNT(*) AS itens FROM relatorios.vw_faturamento_itens;"
+docker compose --profile app run --rm -T --no-deps app padrao >/dev/null
+bin/ms sa -i /scripts/32_qs_contagem.sql
+docker compose kill -s SIGKILL mssql 2>&1 | grep -E 'Killed|rror' || true
+bin/ms-online
+bin/ms sa -i /scripts/32_qs_contagem.sql
+marcador|itens
+--------|-----
+marcador_antes_da_queda|9
+
+(1 rows affected)
+INFO linha ('Loja Centro', '419.9')
+INFO linha ('LOJA NORTE', '344.2')
+INFO linha ('loja são joão', '72')
+INFO linha ('2026-10-21', '111.9')
+INFO linha ('2026-10-22', '293.3')
+INFO linha ('101', '120')
+Changed database context to 'rede'.
+textos|planos|texto_do_marcador|execucoes_contadas
+------|------|-----------------|------------------
+28|28|1|57
+ Container linhagem-lab-mssql-1  Killed
+ Container linhagem-lab-mssql-1  Healthy
+Changed database context to 'rede'.
+textos|planos|texto_do_marcador|execucoes_contadas
+------|------|-----------------|------------------
+28|28|1|52
+[exit 0, 2026-11-03]
+
+$ # Same hard stop, after asking for a flush.
+docker compose --profile app run --rm -T --no-deps app padrao >/dev/null
+bin/ms sa -i /scripts/32_qs_contagem.sql
+bin/ms sa -d rede -Q "EXEC sp_query_store_flush_db;"
+docker compose kill -s SIGKILL mssql 2>&1 | grep -E 'Killed|rror' || true
+bin/ms-online
+bin/ms sa -i /scripts/32_qs_contagem.sql
+INFO linha ('Loja Centro', '419.9')
+INFO linha ('LOJA NORTE', '344.2')
+INFO linha ('loja são joão', '72')
+INFO linha ('2026-10-21', '111.9')
+INFO linha ('2026-10-22', '293.3')
+INFO linha ('101', '120')
+Changed database context to 'rede'.
+textos|planos|texto_do_marcador|execucoes_contadas
+------|------|-----------------|------------------
+28|28|1|56
+ Container linhagem-lab-mssql-1  Killed
+ Container linhagem-lab-mssql-1  Healthy
+Changed database context to 'rede'.
+textos|planos|texto_do_marcador|execucoes_contadas
+------|------|-----------------|------------------
+28|28|1|57
+[exit 0, 2026-11-03]
+
+$ # docker compose stop in this image: same effect as the hard stop, not as SHUTDOWN.
+# Process 1 is a bash script, and the signal does not reach the engine before the deadline.
+docker compose exec -T mssql cat /proc/1/cmdline | tr '\0' ' '; echo
+docker compose --profile app run --rm -T --no-deps app padrao >/dev/null
+bin/ms sa -i /scripts/32_qs_contagem.sql
+docker compose stop -t 15 mssql 2>&1 | grep -E 'Stopped|rror' || true
+bin/ms-online
+bin/ms sa -i /scripts/32_qs_contagem.sql
+/bin/bash /opt/mssql/bin/launch_sqlservr.sh /opt/mssql/bin/sqlservr 
+INFO linha ('Loja Centro', '419.9')
+INFO linha ('LOJA NORTE', '344.2')
+INFO linha ('loja são joão', '72')
+INFO linha ('2026-10-21', '111.9')
+INFO linha ('2026-10-22', '293.3')
+INFO linha ('101', '120')
+Changed database context to 'rede'.
+textos|planos|texto_do_marcador|execucoes_contadas
+------|------|-----------------|------------------
+28|28|1|61
+ Container linhagem-lab-mssql-1  Stopped
+ Container linhagem-lab-mssql-1  Healthy
+Changed database context to 'rede'.
+textos|planos|texto_do_marcador|execucoes_contadas
+------|------|-----------------|------------------
+29|29|1|57
+[exit 0, 2026-11-03]

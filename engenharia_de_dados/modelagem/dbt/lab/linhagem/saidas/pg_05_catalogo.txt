@@ -1,0 +1,100 @@
+
+$ bin/pg postgres admin_lab lab -f /cenario/catalogo.sql
+                         definicao                          
+------------------------------------------------------------
+  SELECT p.id AS pedido_id,                                +
+     p.loja_id,                                            +
+     l.nome AS loja,                                       +
+     p.cliente,                                            +
+     p.criado_em::date AS dia,                             +
+     i.quantidade::numeric * i.preco_unitario AS valor_item+
+    FROM erp.pedidos p                                     +
+      JOIN erp.itens_pedido i ON i.pedido_id = p.id        +
+      JOIN erp.lojas l ON l.id = p.loja_id                 +
+   WHERE lower(TRIM(BOTH FROM p.status)) = 'pago'::text;
+(1 row)
+
+ view_schema |      view_name       | table_schema |  table_name  
+-------------+----------------------+--------------+--------------
+ relatorios  | vw_faturamento_itens | erp          | itens_pedido
+ relatorios  | vw_faturamento_itens | erp          | lojas
+ relatorios  | vw_faturamento_itens | erp          | pedidos
+(3 rows)
+
+ esquema |    tabela    |     coluna     
+---------+--------------+----------------
+ erp     | itens_pedido | pedido_id
+ erp     | itens_pedido | preco_unitario
+ erp     | itens_pedido | quantidade
+ erp     | lojas        | id
+ erp     | lojas        | nome
+ erp     | pedidos      | cliente
+ erp     | pedidos      | criado_em
+ erp     | pedidos      | id
+ erp     | pedidos      | loja_id
+ erp     | pedidos      | status
+(10 rows)
+
+           funcao            | linguagem |        depende_de        
+-----------------------------+-----------+--------------------------
+ faturamento_por_loja        | plpgsql   | (nenhuma tabela ou view)
+ faturamento_por_loja_padrao | sql       | vw_faturamento_itens
+(2 rows)
+
+        funcao        |                                                                                              corpo                                                                                              
+----------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ faturamento_por_loja |  BEGIN RETURN QUERY SELECT trim(v.loja), sum(v.valor_item)::numeric(14, 2) FROM relatorios.vw_faturamento_itens v WHERE v.dia BETWEEN p_inicio AND p_fim GROUP BY trim(v.loja) ORDER BY 1; END 
+(1 row)
+
+[exit 0, 2026-11-03]
+
+$ # Same queries for a role that owns nothing and has no grant on the schemas.
+bin/pg postgres monitor_lab lab -f /cenario/catalogo.sql
+bin/pg postgres monitor_lab lab -c "SELECT count(*) FROM relatorios.vw_faturamento_itens;"
+                         definicao                          
+------------------------------------------------------------
+  SELECT p.id AS pedido_id,                                +
+     p.loja_id,                                            +
+     l.nome AS loja,                                       +
+     p.cliente,                                            +
+     p.criado_em::date AS dia,                             +
+     i.quantidade::numeric * i.preco_unitario AS valor_item+
+    FROM erp.pedidos p                                     +
+      JOIN erp.itens_pedido i ON i.pedido_id = p.id        +
+      JOIN erp.lojas l ON l.id = p.loja_id                 +
+   WHERE lower(TRIM(BOTH FROM p.status)) = 'pago'::text;
+(1 row)
+
+ view_schema | view_name | table_schema | table_name 
+-------------+-----------+--------------+------------
+(0 rows)
+
+ esquema |    tabela    |     coluna     
+---------+--------------+----------------
+ erp     | itens_pedido | pedido_id
+ erp     | itens_pedido | preco_unitario
+ erp     | itens_pedido | quantidade
+ erp     | lojas        | id
+ erp     | lojas        | nome
+ erp     | pedidos      | cliente
+ erp     | pedidos      | criado_em
+ erp     | pedidos      | id
+ erp     | pedidos      | loja_id
+ erp     | pedidos      | status
+(10 rows)
+
+           funcao            | linguagem |        depende_de        
+-----------------------------+-----------+--------------------------
+ faturamento_por_loja        | plpgsql   | (nenhuma tabela ou view)
+ faturamento_por_loja_padrao | sql       | vw_faturamento_itens
+(2 rows)
+
+        funcao        |                                                                                              corpo                                                                                              
+----------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ faturamento_por_loja |  BEGIN RETURN QUERY SELECT trim(v.loja), sum(v.valor_item)::numeric(14, 2) FROM relatorios.vw_faturamento_itens v WHERE v.dia BETWEEN p_inicio AND p_fim GROUP BY trim(v.loja) ORDER BY 1; END 
+(1 row)
+
+ERROR:  permission denied for schema relatorios
+LINE 1: SELECT count(*) FROM relatorios.vw_faturamento_itens;
+                             ^
+[exit 1, 2026-11-03]

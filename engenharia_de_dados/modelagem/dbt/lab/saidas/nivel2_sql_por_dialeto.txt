@@ -1,0 +1,157 @@
+# 2026-11-04. Cada .sql do laboratório no dialeto do motor que o roda, com sqlglot. Os modelos dbt, pelo SQL compilado em target/compiled de uma rodada do laboratório.
+# Os arquivos com FALHA rodaram no motor real: a captura de cada um está no artefato de lab.json.
+
+$ python3 checagens/sql_por_dialeto.py
+sqlglot 30.2.1
+postgres sql/10_bronze_carga.sql ok
+postgres sql/11_bronze_foto_precos.sql ok
+postgres sql/12_bronze_itens_carga_dupla.sql ok
+postgres sql/20_silver.sql FALHA Invalid expression / Unexpected token. Line 2, Col: 34. one clean row per business key. Rebuilt from bronze on every run. DROP TABLE IF EXIS
+postgres sql/21_silver_antes_depois.sql ok
+postgres sql/22_fuso.sql ok
+postgres sql/30_gold.sql FALHA Invalid expression / Unexpected token. Line 5, Col: 37. im_loja: one row per store. dim_data: one row per calendar day. DROP TABLE IF EXISTS
+postgres sql/31_fan_out.sql ok
+postgres sql/40_preco_update_apaga.sql ok
+postgres sql/41_produto_fora_da_ultima_foto.sql FALHA Invalid expression / Unexpected token. Line 3, Col: 22. tten: the photo of day 23 exists only inside the CTE, in a read-only transaction. ST
+postgres sql/50_comparar_a_mao_e_dbt.sql ok
+postgres sql/60_exercicio_devolucoes_bronze.sql ok
+postgres sql/61_exercicio_recarga_preparar.sql ok
+postgres sql/62_exercicio_recarga_que_falha.sql ok
+postgres sql/63_exercicio_recarga_estado.sql ok
+postgres sql/70_fuso_por_sessao.sql ok
+postgres sql/71_texto_antes_do_cast.sql ok
+postgres sql/72_ligacao_com_a_versao.sql ok
+postgres sql/73_chave_identidade_reconstrucao.sql ok
+postgres sql/74_receita_tres_precos.sql ok
+postgres sql/75_venda_sem_versao.sql ok
+postgres sql/75b_vendas_sinteticas_na_bronze.sql ok
+postgres sql/76_reprocesso_sintetico.sql ok
+postgres sql/77_provas_curtas_do_join.sql ok
+postgres sql/78_fatos_da_carga.sql ok
+postgres sql/79a_psql_erro_preparar.sql ok
+postgres sql/79b_psql_erro_recarga.sql ok
+postgres sql/79c_psql_erro_estado.sql ok
+postgres sql/erp_noite_21.sql ok
+postgres sql/erp_noite_22.sql ok
+postgres linhagem/postgres/00_cenario.sql ok
+postgres linhagem/postgres/app_relatorio.sql ok
+postgres linhagem/postgres/app_relatorio_2.sql ok
+postgres linhagem/postgres/catalogo.sql ok
+postgres linhagem/postgres/ver_activity.sql ok
+postgres linhagem/postgres/ver_statements.sql ok
+tsql sqlserver/sql/00_erp_e_dw.sql ok
+tsql sqlserver/sql/01_utf8.sql ok
+tsql sqlserver/sql/10_bronze_carga.sql ok
+tsql sqlserver/sql/11_bronze_foto_precos.sql ok
+tsql sqlserver/sql/12_bronze_itens_carga_dupla.sql ok
+tsql sqlserver/sql/20_silver.sql FALHA Required keyword: 'this' missing for <class 'sqlglot.expressions.core.EQ'>. Line 15, Col: 19. ' SET @saida = STUFF(@saida, @i, 1, UPPER(SUBS
+tsql sqlserver/sql/21_silver_antes_depois.sql ok
+tsql sqlserver/sql/22_fuso.sql ok
+tsql sqlserver/sql/30_gold.sql FALHA Invalid expression / Unexpected token. Line 12, Col: 41. ; BEGIN TRANSACTION; DROP VIEW IF EXISTS gold.obt_vendas; DROP TABLE IF EXISTS gold
+tsql sqlserver/sql/31_fan_out.sql ok
+tsql sqlserver/sql/40_preco_update_apaga.sql ok
+tsql sqlserver/sql/60_texto_e_collation.sql ok
+tsql sqlserver/sql/61_datas_em_texto.sql ok
+tsql sqlserver/sql/62_nulos.sql ok
+tsql sqlserver/sql/63_dedup.sql ok
+tsql sqlserver/sql/64a_merge_chave_repetida.sql FALHA Invalid expression / Unexpected token. Line 1, Col: 39. DROP TABLE IF EXISTS silver.merge_demo[4m,[0m silver.merge_sem_chave; CREATE TABLE
+tsql sqlserver/sql/64b_recarga_preparar.sql ok
+tsql sqlserver/sql/64c_recarga_sem_xact_abort.sql ok
+tsql sqlserver/sql/64d_recarga_com_xact_abort.sql ok
+tsql sqlserver/sql/64e_recarga_estado.sql ok
+tsql sqlserver/sql/64f_ddl_em_transacao.sql ok
+tsql sqlserver/sql/64g_ddl_estado.sql ok
+tsql sqlserver/sql/65_chave_substituta.sql FALHA Invalid expression / Unexpected token. Line 15, Col: 17. 1), produto_id int NOT NULL); INSERT INTO gold.dim_sem_pk (produto_id) VALUES (10);
+tsql sqlserver/sql/66_versoes.sql ok
+tsql sqlserver/sql/67_sintaxe_do_postgres.sql ok
+tsql sqlserver/sql/68a_recarga_raiserror.sql ok
+tsql sqlserver/sql/68b_recarga_throw.sql FALHA Invalid expression / Unexpected token. Line 7, Col: 12. SACTION; DELETE FROM silver.recarga_demo; INSERT INTO silver.recarga_demo VALUES (1,
+tsql sqlserver/sql/68c_recarga_try_catch.sql ok
+tsql sqlserver/sql/68d_recarga_varios_lotes.sql ok
+tsql sqlserver/sql/69_datas_com_tab.sql ok
+tsql sqlserver/sql/70_conferencia_postgres.sql ok
+tsql sqlserver/sql/erp_noite_21.sql ok
+tsql sqlserver/sql/erp_noite_22.sql ok
+tsql sqlserver/sql/postgres_contraprova.sql ok
+tsql linhagem/mssql/00_cenario.sql FALHA Invalid expression / Unexpected token. Line 123, Col: 28. relatorios.faturamento_lento @inicio date, @fim date AS BEGIN SET NOCOUNT ON; WAIT
+tsql linhagem/mssql/01_ambiente.sql ok
+tsql linhagem/mssql/10_xe_criar.sql ok
+tsql linhagem/mssql/11_xe_ler_arquivo.sql FALHA Invalid expression / Unexpected token. Line 3, Col: 24. ead the file target. Duration and CPU fields are left out on purpose. SET NOCOUNT ON
+tsql linhagem/mssql/12_xe_ler_ring.sql ok
+tsql linhagem/mssql/13_xe_descricoes.sql ok
+tsql linhagem/mssql/20_dmv_stats.sql ok
+tsql linhagem/mssql/21_dmv_requests.sql ok
+tsql linhagem/mssql/30_qs_ler.sql ok
+tsql linhagem/mssql/31_qs_planos.sql FALHA Expecting ). Line 4, Col: 86. though the procedure only mentions the view. SET NOCOUNT ON; USE rede; ;WITH XMLNAMESPACES (DEFAULT [4m'http:
+tsql linhagem/mssql/32_qs_contagem.sql ok
+tsql linhagem/mssql/40_catalogo.sql ok
+tsql linhagem/mssql/50_perm_matriz.sql ok
+tsql linhagem/mssql/51_perm_xe.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/_experimentos.yml/unique_exp_fct_fan_out_venda_sk.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/_experimentos.yml/unique_exp_inc_com_chave_atendimento_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/_experimentos.yml/unique_exp_inc_sem_chave_atendimento_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/exp_fct_fan_out.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/exp_inc_com_chave.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/exp_inc_sem_chave.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_dim_data_data_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_dim_loja_loja_sk.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_dim_produto_produto_sk.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_fct_vendas_data_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_fct_vendas_loja_sk.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_fct_vendas_produto_sk.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_fct_vendas_venda_sk.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_vendas_por_dia_dia.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/relationships_fct_vendas_1ef7f839f9e82fee209b5f417ea0a793.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/relationships_fct_vendas_data_id__data_id__ref_dim_data_.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/relationships_fct_vendas_loja_sk__loja_sk__ref_dim_loja_.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_dim_data_data_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_dim_loja_loja_sk.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_dim_produto_produto_sk.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_fct_vendas_venda_sk.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_vendas_por_dia_dia.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/dim_data.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/dim_loja.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/dim_produto.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/fct_vendas.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/obt_vendas.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/gold/vendas_por_dia.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/accepted_values_stg_pedidos_9ee8797de7712cc3ec6d01fa77ff344e.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_atendimentos_atendimento_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_lojas_loja_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_pedidos_pedido_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_produtos_custo.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_produtos_produto_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/relationships_stg_itens_pedido_id__pedido_id__ref_stg_pedidos_.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_atendimentos_atendimento_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_itens__pedido_id_item_seq_.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_lojas_loja_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_pedidos_pedido_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_produtos_produto_id.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/foto_do_dia.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_atendimentos.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_itens.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_lojas.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_pedidos.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_produtos.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/snapshots/_snapshots.yml/snap_produtos_por_timestamp.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/snapshots/_snapshots.yml/snap_produtos_preco.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/tests/assert_itens_batem_com_pedido.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/tests/assert_receita_igual_a_do_piloto.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/tests/assert_status_desconhecido.sql ok
+postgres projeto_dbt/target/compiled/rede_de_lojas/tests/assert_vendas_sem_versao.sql ok
+postgres linhagem/dbt/target/compiled/linhagem/models/experimentos/copia_da_view_do_sistema.sql ok
+postgres linhagem/dbt/target/compiled/linhagem/models/experimentos/copia_sem_ref.sql ok
+postgres linhagem/dbt/target/compiled/linhagem/models/gold/mart_faturamento_por_loja.sql ok
+postgres linhagem/dbt/target/compiled/linhagem/models/silver/stg_itens.sql ok
+postgres linhagem/dbt/target/compiled/linhagem/models/silver/stg_lojas.sql ok
+postgres linhagem/dbt/target/compiled/linhagem/models/silver/stg_pedidos.sql ok
+duckdb alternativa_duckdb/projeto/target/compiled/rede_de_lojas_duckdb/models/_models.yml/accepted_values_stg_pedidos_9ee8797de7712cc3ec6d01fa77ff344e.sql ok
+duckdb alternativa_duckdb/projeto/target/compiled/rede_de_lojas_duckdb/models/_models.yml/not_null_stg_pedidos_pedido_id.sql ok
+duckdb alternativa_duckdb/projeto/target/compiled/rede_de_lojas_duckdb/models/_models.yml/not_null_vendas_por_dia_dia.sql ok
+duckdb alternativa_duckdb/projeto/target/compiled/rede_de_lojas_duckdb/models/_models.yml/unique_stg_pedidos_pedido_id.sql ok
+duckdb alternativa_duckdb/projeto/target/compiled/rede_de_lojas_duckdb/models/_models.yml/unique_vendas_por_dia_dia.sql ok
+duckdb alternativa_duckdb/projeto/target/compiled/rede_de_lojas_duckdb/models/stg_pedidos.sql ok
+duckdb alternativa_duckdb/projeto/target/compiled/rede_de_lojas_duckdb/models/vendas_por_dia.sql ok
+duckdb alternativa_duckdb/projeto/target/compiled/rede_de_lojas_duckdb/tests/assert_receita_igual_a_do_piloto.sql ok
+falhas: 11
+[exit 0, 2026-11-04]

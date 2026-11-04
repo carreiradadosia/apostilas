@@ -1,0 +1,206 @@
+# 2026-11-04. modelagem-lab-dbt:local (dbt-core 1.12.6, dbt-postgres 1.11.0) e postgres:16.15-alpine. Projeto Compose modelagem-provas.
+# Parte 1: var() sem valor padrão no dbt_project.yml, numa cópia em checagens/var_sem_padrao/ montada só para leitura.
+# Parte 2: snapshots do Lab 5 refeitos dia a dia e o --full-refresh, com o banco no estado do Lab 4 (lab9_preparo.txt).
+
+$ diff projeto_dbt/dbt_project.yml checagens/var_sem_padrao/dbt_project.yml
+0a1,2
+> # Copy of the lab dbt_project.yml with one change: var('experimentos') without a default value.
+> # Used only to show that var() inside this file does not see its own vars block.
+29c31
+<       +enabled: "{{ var('experimentos', false) }}"
+---
+>       +enabled: "{{ var('experimentos') }}"
+[exit 1, 2026-11-04]
+
+$ docker compose --profile dbt run --rm -v ./checagens/var_sem_padrao:/lab/var_sem_padrao:ro -w /lab/var_sem_padrao dbt dbt debug --log-path /tmp/dbt-logs
+ Container modelagem-provas-postgres-1  Running
+15:58:09  Running with dbt=1.12.6
+15:58:09  dbt version: 1.12.6
+15:58:09  python version: 3.13.15
+15:58:09  python path: /usr/local/bin/python3.13
+15:58:09  os info: Linux-7.0.0-34-generic-x86_64-with-glibc2.36
+15:58:09  Using profiles dir at /lab/projeto_dbt
+15:58:09  Using profiles.yml file at /lab/projeto_dbt/profiles.yml
+15:58:09  Using dbt_project.yml file at /lab/var_sem_padrao/dbt_project.yml
+15:58:09  adapter type: postgres
+15:58:09  adapter version: 1.11.0
+15:58:09  [ERROR]: Encountered an error:
+Compilation Error
+  Could not render {{ var('experimentos') }}: Required var 'experimentos' not found in config:
+  Vars supplied to <Configuration> = {}
+
+[exit 2, 2026-11-04]
+
+$ docker compose --profile dbt run --rm dbt dbt debug
+ Container modelagem-provas-postgres-1  Running
+15:58:12  Running with dbt=1.12.6
+15:58:12  dbt version: 1.12.6
+15:58:12  python version: 3.13.15
+15:58:12  python path: /usr/local/bin/python3.13
+15:58:12  os info: Linux-7.0.0-34-generic-x86_64-with-glibc2.36
+15:58:12  Using profiles dir at /lab/projeto_dbt
+15:58:12  Using profiles.yml file at /lab/projeto_dbt/profiles.yml
+15:58:12  Using dbt_project.yml file at /lab/projeto_dbt/dbt_project.yml
+15:58:12  adapter type: postgres
+15:58:12  adapter version: 1.11.0
+15:58:12  Configuration:
+15:58:12    profiles.yml file [OK found and valid]
+15:58:12    dbt_project.yml file [OK found and valid]
+15:58:12  Required dependencies:
+15:58:12   - git [OK found]
+
+15:58:12  Connection:
+15:58:12    host: postgres
+15:58:12    port: 5432
+15:58:12    user: dw
+15:58:12    database: dw
+15:58:12    schema: dbt
+15:58:12    connect_timeout: 10
+15:58:12    role: None
+15:58:12    search_path: None
+15:58:12    keepalives_idle: 0
+15:58:12    sslmode: None
+15:58:12    sslcert: None
+15:58:12    sslkey: None
+15:58:12    sslrootcert: None
+15:58:12    application_name: dbt
+15:58:12    autocommit: False
+15:58:12    retries: 1
+15:58:12  Registered adapter: postgres=1.11.0
+15:58:12    Connection test: [OK connection ok]
+
+15:58:12  All checks passed!
+[exit 0, 2026-11-04]
+
+$ docker compose --profile dbt run --rm dbt dbt seed
+ Container modelagem-provas-postgres-1  Running
+15:58:26  Running with dbt=1.12.6
+15:58:27  Registered adapter: postgres=1.11.0
+15:58:28  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+15:58:28  
+15:58:28  Concurrency: 2 threads (target='dev')
+15:58:28  
+15:58:28  1 of 1 START seed file dbt_silver.de_para_categoria ............................ [RUN]
+15:58:28  1 of 1 OK loaded seed file dbt_silver.de_para_categoria ........................ [INSERT 1 in 0.08s]
+15:58:28  
+15:58:28  Finished running 1 seed in 0 hours 0 minutes and 0.26 seconds (0.26s).
+15:58:28  
+15:58:28  Completed successfully
+15:58:28  
+15:58:28  Done. PASS=1 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=1
+[exit 0, 2026-11-04]
+
+$ docker compose --profile dbt run --rm dbt dbt snapshot --vars '{dia_foto: "2026-10-20"}'
+ Container modelagem-provas-postgres-1  Running
+15:58:31  Running with dbt=1.12.6
+15:58:31  Registered adapter: postgres=1.11.0
+15:58:31  Unable to do partial parsing because config vars, config profile, or config target have changed
+15:58:33  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+15:58:33  
+15:58:33  Concurrency: 2 threads (target='dev')
+15:58:33  
+15:58:34  1 of 2 START snapshot dbt_snapshots.snap_produtos_por_timestamp ................ [RUN]
+15:58:34  2 of 2 START snapshot dbt_snapshots.snap_produtos_preco ........................ [RUN]
+15:58:34  1 of 2 OK snapshotted dbt_snapshots.snap_produtos_por_timestamp ................ [SELECT 5 in 0.17s]
+15:58:34  2 of 2 OK snapshotted dbt_snapshots.snap_produtos_preco ........................ [SELECT 5 in 0.17s]
+15:58:34  
+15:58:34  Finished running 2 snapshots in 0 hours 0 minutes and 0.34 seconds (0.34s).
+15:58:34  
+15:58:34  Completed successfully
+15:58:34  
+15:58:34  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=2
+[exit 0, 2026-11-04]
+
+$ docker compose --profile dbt run --rm dbt dbt snapshot --vars '{dia_foto: "2026-10-21"}'
+ Container modelagem-provas-postgres-1  Running
+15:58:37  Running with dbt=1.12.6
+15:58:37  Registered adapter: postgres=1.11.0
+15:58:37  Unable to do partial parsing because config vars, config profile, or config target have changed
+15:58:39  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+15:58:39  
+15:58:39  Concurrency: 2 threads (target='dev')
+15:58:39  
+15:58:40  1 of 2 START snapshot dbt_snapshots.snap_produtos_por_timestamp ................ [RUN]
+15:58:40  2 of 2 START snapshot dbt_snapshots.snap_produtos_preco ........................ [RUN]
+15:58:40  2 of 2 OK snapshotted dbt_snapshots.snap_produtos_preco ........................ [INSERT 0 0 in 0.33s]
+15:58:40  1 of 2 OK snapshotted dbt_snapshots.snap_produtos_por_timestamp ................ [INSERT 0 5 in 0.33s]
+15:58:40  
+15:58:40  Finished running 2 snapshots in 0 hours 0 minutes and 0.50 seconds (0.50s).
+15:58:40  
+15:58:40  Completed successfully
+15:58:40  
+15:58:40  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=2
+[exit 0, 2026-11-04]
+
+$ docker compose --profile dbt run --rm dbt dbt snapshot --vars '{dia_foto: "2026-10-22"}'
+ Container modelagem-provas-postgres-1  Running
+15:58:43  Running with dbt=1.12.6
+15:58:43  Registered adapter: postgres=1.11.0
+15:58:43  Unable to do partial parsing because config vars, config profile, or config target have changed
+15:58:46  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+15:58:46  
+15:58:46  Concurrency: 2 threads (target='dev')
+15:58:46  
+15:58:46  1 of 2 START snapshot dbt_snapshots.snap_produtos_por_timestamp ................ [RUN]
+15:58:46  2 of 2 START snapshot dbt_snapshots.snap_produtos_preco ........................ [RUN]
+15:58:46  1 of 2 OK snapshotted dbt_snapshots.snap_produtos_por_timestamp ................ [INSERT 0 5 in 0.34s]
+15:58:46  2 of 2 OK snapshotted dbt_snapshots.snap_produtos_preco ........................ [INSERT 0 2 in 0.34s]
+15:58:46  
+15:58:46  Finished running 2 snapshots in 0 hours 0 minutes and 0.51 seconds (0.51s).
+15:58:46  
+15:58:46  Completed successfully
+15:58:46  
+15:58:46  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=2
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "select count(*) as linhas_check from dbt_snapshots.snap_produtos_preco"
+ linhas_check 
+--------------
+            7
+(1 row)
+
+[exit 0, 2026-11-04]
+
+$ docker compose --profile dbt run --rm dbt dbt build --full-refresh --select snap_produtos_preco
+ Container modelagem-provas-postgres-1  Running
+15:58:50  Running with dbt=1.12.6
+15:58:50  Registered adapter: postgres=1.11.0
+15:58:50  Unable to do partial parsing because config vars, config profile, or config target have changed
+15:58:53  Found 12 models, 32 data tests, 1 seed, 2 snapshots, 6 sources, 477 macros
+15:58:53  
+15:58:53  Concurrency: 2 threads (target='dev')
+15:58:53  
+15:58:53  1 of 1 START snapshot dbt_snapshots.snap_produtos_preco ........................ [RUN]
+15:58:53  1 of 1 OK snapshotted dbt_snapshots.snap_produtos_preco ........................ [INSERT 0 0 in 0.28s]
+15:58:53  
+15:58:53  Finished running 1 snapshot in 0 hours 0 minutes and 0.43 seconds (0.43s).
+15:58:53  
+15:58:53  Completed successfully
+15:58:53  
+15:58:53  Done. PASS=1 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=1
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "select count(*) as linhas_check from dbt_snapshots.snap_produtos_preco"
+ linhas_check 
+--------------
+            7
+(1 row)
+
+[exit 0, 2026-11-04]
+
+$ docker compose --profile dbt run --rm dbt dbt snapshot --full-refresh
+ Container modelagem-provas-postgres-1  Running
+Usage: dbt snapshot [OPTIONS]
+Try 'dbt snapshot --help' for help.
+
+Error: No such option '--full-refresh'.
+
+[exit 2, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "select count(*) as linhas_check from dbt_snapshots.snap_produtos_preco"
+ linhas_check 
+--------------
+            7
+(1 row)
+
+[exit 0, 2026-11-04]

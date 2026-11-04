@@ -1,0 +1,61 @@
+# 2026-11-04. postgres:16.15-alpine, psql 16.15, rodado dentro do contêiner. Projeto Compose modelagem-provas.
+# Cada caso parte da carga de ontem (79a, id 0), roda a recarga que quebra no meio (79b) e lê o estado (79c).
+# O [exit N] logo depois do 79b é o código de saída do psql naquele modo.
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q --version
+psql (PostgreSQL) 16.15
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q -v ON_ERROR_STOP=1 -f /sql/79a_psql_erro_preparar.sql
+psql:/sql/79a_psql_erro_preparar.sql:2: NOTICE:  table "psql_erro_vendas" does not exist, skipping
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q -f /sql/79b_psql_erro_recarga.sql
+psql:/sql/79b_psql_erro_recarga.sql:5: ERROR:  invalid input syntax for type numeric: "dez"
+LINE 1: INSERT INTO silver.psql_erro_vendas VALUES (2, 'dez');
+                                                       ^
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q -At -f /sql/79c_psql_erro_estado.sql
+1,3
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q -v ON_ERROR_STOP=1 -f /sql/79a_psql_erro_preparar.sql
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q -v ON_ERROR_STOP=1 -f /sql/79b_psql_erro_recarga.sql
+psql:/sql/79b_psql_erro_recarga.sql:5: ERROR:  invalid input syntax for type numeric: "dez"
+LINE 1: INSERT INTO silver.psql_erro_vendas VALUES (2, 'dez');
+                                                       ^
+[exit 3, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q -At -f /sql/79c_psql_erro_estado.sql
+1
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q -v ON_ERROR_STOP=1 -f /sql/79a_psql_erro_preparar.sql
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q --single-transaction -f /sql/79b_psql_erro_recarga.sql
+psql:/sql/79b_psql_erro_recarga.sql:5: ERROR:  invalid input syntax for type numeric: "dez"
+LINE 1: INSERT INTO silver.psql_erro_vendas VALUES (2, 'dez');
+                                                       ^
+psql:/sql/79b_psql_erro_recarga.sql:6: ERROR:  current transaction is aborted, commands ignored until end of transaction block
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q -At -f /sql/79c_psql_erro_estado.sql
+0
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q -v ON_ERROR_STOP=1 -f /sql/79a_psql_erro_preparar.sql
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q -v ON_ERROR_STOP=1 --single-transaction -f /sql/79b_psql_erro_recarga.sql
+psql:/sql/79b_psql_erro_recarga.sql:5: ERROR:  invalid input syntax for type numeric: "dez"
+LINE 1: INSERT INTO silver.psql_erro_vendas VALUES (2, 'dez');
+                                                       ^
+[exit 3, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q -At -f /sql/79c_psql_erro_estado.sql
+0
+[exit 0, 2026-11-04]

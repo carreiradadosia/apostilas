@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: erp
+    schema: erp
+    tables:
+      - name: lojas
+      - name: pedidos
+      - name: itens_pedido
+  - name: sistema
+    schema: relatorios
+    description: Objetos do sistema de origem. O dbt enxerga o nome, não o que há dentro deles.
+    tables:
+      - name: vw_faturamento_itens

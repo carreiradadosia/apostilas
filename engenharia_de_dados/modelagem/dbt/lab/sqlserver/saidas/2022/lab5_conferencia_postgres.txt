@@ -1,0 +1,39 @@
+
+$ ./sq.sh dw 70_conferencia_postgres.sql
+item|postgres|sql_server|resultado
+----|--------|----------|---------
+bronze.pedidos, linhas|11.00|11.00|bate
+silver.pedidos, linhas|10.00|10.00|bate
+silver.itens, linhas|13.00|13.00|bate
+silver.lojas, linhas|3.00|3.00|bate
+silver.produtos, linhas|5.00|5.00|bate
+silver.produtos_vigencia, linhas|7.00|7.00|bate
+silver.atendimentos, linhas|4.00|4.00|bate
+status pago, pedidos|7.00|7.00|bate
+status pago, valor|836.10|836.10|bate
+status desconhecido, valor|80.50|80.50|bate
+status cancelado, valor|45.00|45.00|bate
+status pendente, valor|15.00|15.00|bate
+gold.dim_data, linhas|92.00|92.00|bate
+gold.dim_loja, linhas|3.00|3.00|bate
+gold.dim_produto, linhas|8.00|8.00|bate
+gold.dim_produto, membro -1|1.00|1.00|bate
+gold.fct_vendas, vendas no membro -1|.00|.00|bate
+gold.fct_vendas, linhas|13.00|13.00|bate
+gold.fct_vendas, chaves|13.00|13.00|bate
+receita paga, dia 20|430.90|430.90|bate
+receita paga, dia 21|111.90|111.90|bate
+receita paga, dia 22|293.30|293.30|bate
+receita paga, total|836.10|836.10|bate
+fotos, linhas|15.00|15.00|bate
+fan-out 1, linhas|9.00|9.00|bate
+fan-out 1, receita dobrada|850.90|850.90|bate
+fan-out 2, receita com join|1347.00|1347.00|bate
+fan-out 2, sum distinct|716.10|716.10|bate
+margem ignorando nulo|397.10|397.10|bate
+margem com zero|409.10|409.10|bate
+atendimentos no dia local 20|3.00|3.00|bate
+atendimentos no dia local 21|1.00|1.00|bate
+
+(32 rows affected)
+[exit 0, 2026-11-03]

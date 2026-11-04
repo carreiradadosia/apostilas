@@ -1,0 +1,57 @@
+# 2026-11-04. postgres:16.15-alpine (PostgreSQL 16.15, psql 16.15). Projeto Compose modelagem-provas.
+# Banco no estado do Lab 4 (três fotos, silver e gold refeitas), montado por lab9_preparo.txt.
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -v ON_ERROR_STOP=1 -q -f /sql/72_ligacao_com_a_versao.sql
+== Referência: a estrela do laboratório, feita por /sql/30_gold.sql.
+ linhas | chaves | receita_paga 
+--------+--------+--------------
+     13 |     13 |       836.10
+(1 row)
+
+== Cada forma de ligar a venda à versão, sobre os mesmos 13 itens.
+                    forma                     | linhas | itens_distintos | receita_paga 
+----------------------------------------------+--------+-----------------+--------------
+ >= e <, com fim nulo                         |     13 |              13 |       836.10
+ BETWEEN com fim em 9999-12-31                |     14 |              13 |       916.10
+ BETWEEN com fim menos 1 dia, sobre date      |     13 |              13 |       836.10
+ BETWEEN com fim menos 1 dia, sobre timestamp |     12 |              12 |       836.10
+ daterange com [)                             |     13 |              13 |       836.10
+(5 rows)
+
+== A venda que o BETWEEN dobra: dia 22, o dia da troca de preço do caderno.
+ pedido_id | item_seq | dia_local  | preco_tabela | valido_de  | valido_ate | valor_item 
+-----------+----------+------------+--------------+------------+------------+------------
+       108 |        2 | 2026-10-22 |        20.50 | 2026-10-20 | 2026-10-22 |      80.00
+       108 |        2 | 2026-10-22 |        20.00 | 2026-10-22 | <nulo>     |      80.00
+(2 rows)
+
+== A venda que o BETWEEN sobre timestamp perde: 11h30 do dia 21, e o fim usado vira meia-noite do dia 21.
+ pedido_id | item_seq |  status  |   criado_em_local   | valido_de  | valido_ate |      fim_usado      
+-----------+----------+----------+---------------------+------------+------------+---------------------
+       107 |        1 | pendente | 2026-10-21 11:30:00 | 2026-10-20 | 2026-10-22 | 2026-10-21 00:00:00
+(1 row)
+
+== Só a versão aberta: itens antigos lidos com o preço de tabela de hoje.
+ pedido_id | item_seq |  data_id   | tabela_na_data | tabela_aberta 
+-----------+----------+------------+----------------+---------------
+       102 |        2 | 2026-10-20 |          20.50 |         20.00
+       103 |        1 | 2026-10-20 |          15.00 |         17.00
+       104 |        2 | 2026-10-20 |          15.00 |         17.00
+       107 |        1 | 2026-10-21 |          15.00 |         17.00
+(4 rows)
+
+== A vigência sai da foto diária, no calendário local. Pedidos que mudam de dia em UTC.
+ pedido_id |     hora_local      | dia_local  | dia_em_utc 
+-----------+---------------------+------------+------------
+       104 | 2026-10-20 21:30:00 | 2026-10-20 | 2026-10-21
+       110 | 2026-10-22 23:30:00 | 2026-10-22 | 2026-10-23
+(2 rows)
+
+== Três eventos sintéticos e a meia-noite: BETWEEN conta a meia-noite em dois dias; >= e < conta uma vez.
+    dia     | com_between | com_meio_aberto 
+------------+-------------+-----------------
+ 2026-10-20 |           2 |               1
+ 2026-10-21 |           2 |               2
+(2 rows)
+
+[exit 0, 2026-11-04]

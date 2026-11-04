@@ -1,0 +1,19 @@
+
+$ # Clean restart: pg_stat_statements.save = on keeps the entries.
+bin/pg postgres admin_lab lab -Atc "SELECT 'entradas antes: ' || count(*) FROM pg_stat_statements;"
+docker compose restart postgres 2>&1 | grep -E 'Started|rror' || true
+timeout 60 bash -c 'until docker compose exec -T postgres pg_isready -q -U admin_lab -d rede; do sleep 1; done'
+bin/pg postgres admin_lab lab -Atc "SELECT 'entradas depois do reinicio limpo: ' || count(*) FROM pg_stat_statements;"
+entradas antes: 7
+ Container linhagem-lab-postgres-1  Started
+entradas depois do reinicio limpo: 7
+[exit 0, 2026-11-03]
+
+$ # Crash: the statistics are not saved.
+docker compose kill -s SIGKILL postgres 2>&1 | grep -E 'Killed|rror' || true
+timeout 120 docker compose up -d --wait postgres 2>&1 | grep -E 'Healthy|rror' || true
+bin/pg postgres admin_lab lab -Atc "SELECT 'entradas depois de queda: ' || count(*) FROM pg_stat_statements;"
+ Container linhagem-lab-postgres-1  Killed
+ Container linhagem-lab-postgres-1  Healthy
+entradas depois de queda: 0
+[exit 0, 2026-11-03]

@@ -1,0 +1,24 @@
+
+$ docker compose --profile app run --rm -T --no-deps app faturamento_recompila >/dev/null
+bin/ms sa -i /scripts/20_dmv_stats.sql
+INFO linha ('Loja Centro', '4')
+INFO linha ('LOJA NORTE', '3')
+INFO linha ('loja são joão', '2')
+Changed database context to 'rede'.
+execucoes|objeto|cifrado|texto
+---------|------|-------|-----
+1|NULL|0|SELECT COUNT(*) AS ruido_do_administrador FROM relatorios.vw_faturamento_itens
+2|NULL|0|SELECT dia, SUM(valor_item) AS total FROM relatorios.vw_faturamento_itens WHERE dia >= @P1 GROUP BY dia ORDER BY dia
+2|NULL|0|SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE TRIM(cliente) = N'Cliente A'
+1|NULL|0|SELECT TRIM(l.nome) AS loja, SUM(i.quantidade * i.preco_unitario) AS faturamento FROM erp.pedidos AS p JOIN erp.itens_pedido AS i ON i.pedido_id = p.id JOIN erp.lojas AS 
+1|faturamento_cifrado|1|NULL
+2|faturamento_por_loja|0|SELECT TRIM(v.loja) AS loja, CAST(SUM(v.valor_item) AS numeric(14, 2)) AS faturamento     FROM relatorios.vw_faturamento_itens AS v     WHERE v.dia BETWEEN @inicio AND @f
+[exit 0, 2026-11-03]
+
+$ # The plan cache can be emptied by a person or by memory pressure: the rows go with it.
+bin/ms sa -Q "DBCC FREEPROCCACHE WITH NO_INFOMSGS;"
+bin/ms sa -i /scripts/20_dmv_stats.sql
+Changed database context to 'rede'.
+execucoes|objeto|cifrado|texto
+---------|------|-------|-----
+[exit 0, 2026-11-03]
