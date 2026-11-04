@@ -1,0 +1,41 @@
+
+$ ./sq.sh dw 66_versoes.sql
+== Versão, edição e nível de compatibilidade padrão de um banco novo.
+versao|atualizacao|edicao|motor|compatibilidade
+------|-----------|------|-----|---------------
+16.0.4305.5|CU27|Developer Edition (64-bit)|3|160
+
+(1 rows affected)
+== GENERATE_SERIES, 2022 ou mais novo: mesmo número de dias da dimensão.
+dias
+----
+92
+
+(1 rows affected)
+== IS DISTINCT FROM, 2022 ou mais novo: mesmo número de mudanças de preço.
+versoes
+-------
+7
+
+(1 rows affected)
+== TRIM com LEADING, 2022 com compatibilidade 160 ou mais.
+trim_leading
+------------
+[x ]
+
+(1 rows affected)
+== Só na 2025: REGEXP_REPLACE.
+Msg 195, Level 15, State 10, Server c8b2b822d226, Line 1
+'REGEXP_REPLACE' is not a recognized built-in function name.
+== Só na 2025: operador de concatenação ||.
+Msg 102, Level 15, State 1, Server c8b2b822d226, Line 1
+Incorrect syntax near '|'.
+== Só na 2025: CURRENT_DATE. A data real fica fora da captura.
+Msg 156, Level 15, State 1, Server c8b2b822d226, Line 1
+Incorrect syntax near the keyword 'CURRENT_DATE'.
+== Em nenhuma das duas: INITCAP, QUALIFY.
+Msg 195, Level 15, State 10, Server c8b2b822d226, Line 1
+'INITCAP' is not a recognized built-in function name.
+Msg 102, Level 15, State 1, Server c8b2b822d226, Line 1
+Incorrect syntax near 'o'.
+[exit 0, 2026-11-03]

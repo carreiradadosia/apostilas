@@ -1,0 +1,26 @@
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/41_produto_fora_da_ultima_foto.sql
+START TRANSACTION
+== Fotos da bronze: os 5 produtos estão nas 3 fotos, e não existe foto do dia 23.
+ _dia_referencia | produtos 
+-----------------+----------
+ 2026-10-20      |        5
+ 2026-10-21      |        5
+ 2026-10-22      |        5
+(3 rows)
+
+== Versões da dimensão, sem contar o membro desconhecido. Só a simulação separa os dois filtros.
+              cenario              | versoes_na_vigencia | dimensao_filtro_global | dimensao_filtro_por_produto 
+-----------------------------------+---------------------+------------------------+-----------------------------
+ dados reais                       |                   7 |                      7 |                           7
+ produto 50 fora da foto do dia 23 |                   7 |                      6 |                           7
+(2 rows)
+
+== A versão que o filtro global perde: o produto 50 tem uma só, e a foto do dia 23 não muda o preço de ninguém.
+ produto_id | preco | valido_de  | valido_ate 
+------------+-------+------------+------------
+         50 | 12.00 | 2026-10-20 | 
+(1 row)
+
+COMMIT
+[exit 0, 2026-11-03]

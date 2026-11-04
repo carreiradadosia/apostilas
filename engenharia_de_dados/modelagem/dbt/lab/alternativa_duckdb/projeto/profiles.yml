@@ -1,0 +1,7 @@
+rede_de_lojas_duckdb:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: /tmp/lab.duckdb
+      threads: 1

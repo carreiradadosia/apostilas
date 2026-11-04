@@ -1,0 +1,6 @@
+.env
+saidas/
+projeto_dbt/
+sql/
+postgres-init/
+orquestrador/dags/

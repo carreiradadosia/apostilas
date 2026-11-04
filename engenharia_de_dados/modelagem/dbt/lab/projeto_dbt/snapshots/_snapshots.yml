@@ -1,0 +1,19 @@
+snapshots:
+  - name: snap_produtos_preco
+    description: Type 2 history of the price. check compares the column, and the photo day dates the version.
+    relation: ref('foto_do_dia')
+    config:
+      schema: snapshots
+      unique_key: id
+      strategy: check
+      check_cols: [preco]
+      updated_at: foto_em
+
+  - name: snap_produtos_por_timestamp
+    description: The wrong choice on purpose. The nightly job touches atualizado_em on every row, so every night looks like a change.
+    relation: ref('foto_do_dia')
+    config:
+      schema: snapshots
+      unique_key: id
+      strategy: timestamp
+      updated_at: atualizado_em

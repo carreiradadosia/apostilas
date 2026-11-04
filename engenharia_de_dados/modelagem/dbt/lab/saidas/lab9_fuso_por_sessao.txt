@@ -1,0 +1,70 @@
+# 2026-11-04. postgres:16.15-alpine (PostgreSQL 16.15, psql 16.15).
+# Banco no estado do Lab 1 (carga, foto do dia 20, silver e gold), montado pelos primeiros comandos de lab9_preparo.txt, projeto Compose modelagem-provas.
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/70_fuso_por_sessao.sql
+Border style is 1.
+== dia_local do atendimento 2, recalculado da bronze com a expressão da silver, em duas sessões.
+SET
+ sessao | id |    criado_em_utc    | dia_local  
+--------+----+---------------------+------------
+ UTC    |  2 | 2026-10-21 00:25:00 | 2026-10-20
+(1 row)
+
+SET
+      sessao       | id |    criado_em_utc    | dia_local  
+-------------------+----+---------------------+------------
+ America/Sao_Paulo |  2 | 2026-10-21 00:25:00 | 2026-10-20
+(1 row)
+
+== A direção errada nas duas sessões: o mesmo instante aparece de dois jeitos na tela.
+SET
+ sessao |        certo        |     direcao_errada     
+--------+---------------------+------------------------
+ UTC    | 2026-10-20 21:30:00 | 2026-10-21 03:30:00+00
+(1 row)
+
+SET
+      sessao       |        certo        |     direcao_errada     
+-------------------+---------------------+------------------------
+ America/Sao_Paulo | 2026-10-20 21:30:00 | 2026-10-21 00:30:00-03
+(1 row)
+
+== Literal com deslocamento: o tipo sem fuso ignora o -03; o timestamptz converte e não guarda o fuso informado.
+SET
+ timestamp_sem_fuso  | timestamptz_em_sessao_utc 
+---------------------+---------------------------
+ 2026-10-21 00:30:00 | 2026-10-21 03:30:00+00
+(1 row)
+
+RESET
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/71_texto_antes_do_cast.sql
+Border style is 1.
+== DateStyle da sessão antes do teste.
+ DateStyle 
+-----------
+ ISO, MDY
+(1 row)
+
+== Com dia antes do mês, como o texto da origem.
+SET
+ emissao_texto | valida |    dia     
+---------------+--------+------------
+ 20/10/2026    | t      | 2026-10-20
+ 31/02/2026    | f      | 
+ ontem         | f      | 
+(3 rows)
+
+                     message                      | sql_error_code 
+--------------------------------------------------+----------------
+ date/time field value out of range: "31/02/2026" | 22008
+(1 row)
+
+RESET
+ DateStyle 
+-----------
+ ISO, MDY
+(1 row)
+
+[exit 0, 2026-11-04]

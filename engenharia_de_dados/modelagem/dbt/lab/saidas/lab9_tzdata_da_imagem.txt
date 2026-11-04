@@ -1,0 +1,26 @@
+# 2026-11-04. Imagem postgres:16.15-alpine. De onde vem a base de fusos que o Postgres da imagem usa.
+# Banco no estado de lab9_preparo.txt (projeto Compose modelagem-provas).
+
+$ docker compose exec -T postgres cat /etc/alpine-release
+3.24.3
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres apk info -v 2>/dev/null | grep -E "^tzdata-"
+tzdata-2026e-r0
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres pg_config --configure | tr " " "\n" | grep -i -E "tzdata|zoneinfo"
+'--with-system-tzdata=/usr/share/zoneinfo'
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "select name, abbrev, utc_offset, is_dst from pg_timezone_names where name = 'America/Sao_Paulo'"
+       name        | abbrev | utc_offset | is_dst 
+-------------------+--------+------------+--------
+ America/Sao_Paulo | -03    | -03:00:00  | f
+(1 row)
+
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres apk info --who-owns /usr/share/zoneinfo/America/Sao_Paulo 2>/dev/null
+/usr/share/zoneinfo/America/Sao_Paulo is owned by tzdata-2026e-r0
+[exit 0, 2026-11-04]

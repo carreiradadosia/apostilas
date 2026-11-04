@@ -1,0 +1,71 @@
+
+$ env -u ACCEPT_EULA docker compose config --quiet
+error while interpolating services.mssql.environment.ACCEPT_EULA: required variable ACCEPT_EULA is missing a value: read the SQL Server license terms linked in README.md, then rerun with ACCEPT_EULA=Y to accept them
+[exit 1, 2026-11-03]
+
+$ docker image inspect -f '{{index .RepoDigests 0}}' $(docker inspect -f '{{.Config.Image}}' mssql-tsql-mssql-1)
+mcr.microsoft.com/mssql/server@sha256:cf8f0ab2ebe61feec2eed2629061a07d247f791c2a8ddda74a4ac9f06a291718
+[exit 0, 2026-11-03]
+
+$ docker port mssql-tsql-mssql-1 | wc -l
+0
+[exit 0, 2026-11-03]
+
+$ docker inspect -f 'memoria_limite_bytes={{.HostConfig.Memory}}' mssql-tsql-mssql-1
+memoria_limite_bytes=2684354560
+[exit 0, 2026-11-03]
+
+$ docker exec mssql-tsql-mssql-1 ls /opt/mssql-tools18/bin
+bcp
+sqlcmd
+[exit 0, 2026-11-03]
+
+$ docker exec mssql-tsql-mssql-1 /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -Q 'SELECT 1 AS sem_flag_de_certificado'
+Sqlcmd: Error: Microsoft ODBC Driver 18 for SQL Server : SSL Provider: [error:0A000086:SSL routines::certificate verify failed:self-signed certificate].
+Sqlcmd: Error: Microsoft ODBC Driver 18 for SQL Server : Client unable to establish connection. For solutions related to encryption errors, see https://go.microsoft.com/fwlink/?linkid=2226722.
+[exit 1, 2026-11-03]
+
+$ docker exec mssql-tsql-mssql-1 /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -W -h -1 -Q "SET NOCOUNT ON; SELECT @@VERSION; SELECT SERVERPROPERTY('Edition'); SELECT SERVERPROPERTY('Collation')"
+Microsoft SQL Server 2022 (RTM-CU27-GDR) (KB5126934) - 16.0.4305.5 (X64) 
+	Oct  2 2026 17:28:11 
+	Copyright (C) 2022 Microsoft Corporation
+	Developer Edition (64-bit) on Linux (Ubuntu 22.04.5 LTS) <X64>
+Developer Edition (64-bit)
+SQL_Latin1_General_CP1_CI_AS
+[exit 0, 2026-11-03]
+
+$ docker exec mssql-tsql-mssql-1 /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -W -i /sql/01_utf8.sql
+unicode_de_a_til len_de_sao texto
+---------------- ---------- -----
+227 3 São
+[exit 0, 2026-11-03]
+
+$ docker exec mssql-tsql-mssql-1 /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -W -f 65001 -i /sql/01_utf8.sql
+unicode_de_a_til len_de_sao texto
+---------------- ---------- -----
+227 3 São
+[exit 0, 2026-11-03]
+
+$ ./sq.sh master 00_erp_e_dw.sql -b
+Changed database context to 'erp'.
+
+(3 rows affected)
+
+(5 rows affected)
+
+(10 rows affected)
+
+(13 rows affected)
+
+(9 rows affected)
+
+(6 rows affected)
+
+(4 rows affected)
+Changed database context to 'dw'.
+[exit 0, 2026-11-03]
+
+$ docker exec mssql-tsql-mssql-1 /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -W -h -1 -Q "SET NOCOUNT ON; SELECT name, collation_name, compatibility_level FROM sys.databases WHERE name IN ('erp', 'dw') ORDER BY name"
+dw SQL_Latin1_General_CP1_CI_AS 160
+erp SQL_Latin1_General_CP1_CI_AS 160
+[exit 0, 2026-11-03]

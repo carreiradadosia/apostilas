@@ -1,0 +1,33 @@
+# 2026-11-04. Resolução dos dois pinos de runner/requirements.in sem o lock, sem instalar, com uv no Python 3.13.
+# Compara com o lock de 2026-11-01 em runner/requirements.lock. A resolução muda com o PyPI do dia.
+
+$ uv --version
+uv 0.11.13 (x86_64-unknown-linux-gnu)
+[exit 0, 2026-11-04]
+
+$ cat runner/requirements.in
+dbt-core==1.12.6
+dbt-postgres==1.11.0
+[exit 0, 2026-11-04]
+
+$ grep -E "^(dbt-core|dbt-postgres|dbt-adapters|dbt-core-experimental-parser)==" runner/requirements.lock
+dbt-adapters==1.24.5
+dbt-core==1.12.6
+dbt-core-experimental-parser==2.0.8
+dbt-postgres==1.11.0
+[exit 0, 2026-11-04]
+
+$ uv pip compile runner/requirements.in --python-version 3.13 --no-header --no-annotate -q | grep -E "^(dbt-core|dbt-postgres|dbt-adapters|dbt-core-experimental-parser)=="
+dbt-adapters==1.24.5
+dbt-core==1.12.6
+dbt-core-experimental-parser==2.0.11
+dbt-postgres==1.11.0
+[exit 0, 2026-11-04]
+
+$ uv pip compile runner/requirements.in --python-version 3.13 --no-header --no-annotate -q | grep -c "=="
+59
+[exit 0, 2026-11-04]
+
+$ grep -c "==" runner/requirements.lock
+59
+[exit 0, 2026-11-04]

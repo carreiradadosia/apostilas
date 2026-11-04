@@ -1,0 +1,66 @@
+
+$ ./preparar.sh
+.env já existe, nada a fazer.
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt down -v
+ Container modelagem-lab-postgres-1  Stopping
+ Container modelagem-lab-postgres-1  Stopped
+ Container modelagem-lab-postgres-1  Removing
+ Container modelagem-lab-postgres-1  Removed
+ Volume modelagem-lab_postgres-db-volume  Removing
+ Network modelagem-lab_default  Removing
+ Volume modelagem-lab_postgres-db-volume  Removed
+ Network modelagem-lab_default  Removed
+[exit 0, 2026-11-03]
+
+$ docker compose --profile dbt config -q && echo compose ok
+compose ok
+[exit 0, 2026-11-03]
+
+$ docker compose up -d --wait postgres
+ Network modelagem-lab_default  Creating
+ Network modelagem-lab_default  Created
+ Volume "modelagem-lab_postgres-db-volume"  Creating
+ Volume "modelagem-lab_postgres-db-volume"  Created
+ Container modelagem-lab-postgres-1  Creating
+ Container modelagem-lab-postgres-1  Created
+ Container modelagem-lab-postgres-1  Starting
+ Container modelagem-lab-postgres-1  Started
+ Container modelagem-lab-postgres-1  Waiting
+ Container modelagem-lab-postgres-1  Healthy
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "select version()" -c "\dn" -c "select count(*) as tabelas_na_replica from information_schema.foreign_tables"
+                                         version                                          
+------------------------------------------------------------------------------------------
+ PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+(1 row)
+
+       List of schemas
+   Name   |       Owner       
+----------+-------------------
+ bronze   | dw
+ controle | dw
+ gold     | dw
+ public   | pg_database_owner
+ replica  | dw
+ silver   | dw
+(6 rows)
+
+ tabelas_na_replica 
+--------------------
+                  7
+(1 row)
+
+[exit 0, 2026-11-03]
+
+$ docker image ls --format "{{.Repository}}:{{.Tag}} {{.Size}}" | grep -E "^(postgres:16.15-alpine|modelagem-lab-dbt:local|python:3.13.15-slim-bookworm) "
+modelagem-lab-dbt:local 531MB
+postgres:16.15-alpine 294MB
+python:3.13.15-slim-bookworm 121MB
+[exit 0, 2026-11-03]
+
+$ docker stats --no-stream --format "{{.Name}} cpu={{.CPUPerc}} mem={{.MemUsage}}" modelagem-lab-postgres-1
+modelagem-lab-postgres-1 cpu=0.04% mem=40.11MiB / 30.82GiB
+[exit 0, 2026-11-03]

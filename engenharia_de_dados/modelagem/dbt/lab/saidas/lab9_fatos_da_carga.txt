@@ -1,0 +1,119 @@
+# 2026-11-04. postgres:16.15-alpine (PostgreSQL 16.15, psql 16.15).
+# Banco no estado do Lab 1 (carga, foto do dia 20, silver e gold), montado pelos primeiros comandos de lab9_preparo.txt, projeto Compose modelagem-provas.
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/78_fatos_da_carga.sql
+Border style is 1.
+Null display is "<nulo>".
+== A montagem: dois bancos no mesmo servidor, o dw lê o erp pelo postgres_fdw.
+ datname 
+---------
+ dw
+ erp
+(2 rows)
+
+   extname    
+--------------
+ postgres_fdw
+ unaccent
+(2 rows)
+
+   srvname   |              srvoptions              
+-------------+--------------------------------------
+ replica_erp | {host=postgres,port=5432,dbname=erp}
+(1 row)
+
+ foreign_table_schema | tabelas_estrangeiras 
+----------------------+----------------------
+ replica              |                    7
+(1 row)
+
+     rolname     |             rolconfig              
+-----------------+------------------------------------
+ replica_leitura | {default_transaction_read_only=on}
+(1 row)
+
+== Onde mora cada coluna da receita paga por categoria, na réplica.
+  table_name  |  column_name   | data_type 
+--------------+----------------+-----------
+ itens_pedido | preco_unitario | numeric
+ itens_pedido | quantidade     | integer
+ pedidos      | status         | text
+ produtos     | categoria      | text
+(4 rows)
+
+== Pedido 101: o item da camiseta.
+ pedido_id | item_seq |     produto     | quantidade | preco_unitario 
+-----------+----------+-----------------+------------+----------------
+       101 |        1 | Camiseta básica |          2 |          60.00
+(1 row)
+
+== Pedido 104 em três grãos: pedido, item e parcela.
+    tabela    | linhas | valor  
+--------------+--------+--------
+ pedidos      |      1 | 310.90
+ itens_pedido |      2 | 310.90
+ pagamentos   |      2 | 310.90
+(3 rows)
+
+== Um INSERT, um instante: as linhas de cada INSERT da carga saem com o mesmo _carregado_em.
+       tabela        | linhas | instantes 
+---------------------+--------+-----------
+ bronze.itens_pedido |     13 |         1
+ bronze.pedidos      |     11 |         2
+(2 rows)
+
+== Os itens da fato com o produto, nos três dias (consulta do capítulo 10).
+ pedido_id | item_seq |  data_id   |    status    | valor_item | produto_id 
+-----------+----------+------------+--------------+------------+------------
+       101 |        1 | 2026-10-20 | pago         |     120.00 |         10
+       102 |        1 | 2026-10-20 | desconhecido |      60.00 |         10
+       102 |        2 | 2026-10-20 | desconhecido |      20.50 |         40
+       103 |        1 | 2026-10-20 | cancelado    |      45.00 |         30
+       104 |        1 | 2026-10-20 | pago         |     300.00 |         10
+       104 |        2 | 2026-10-20 | pago         |      10.90 |         30
+       105 |        1 | 2026-10-21 | pago         |      12.00 |         50
+       106 |        1 | 2026-10-21 | pago         |      99.90 |         20
+       107 |        1 | 2026-10-21 | pendente     |      15.00 |         30
+       108 |        1 | 2026-10-22 | pago         |     120.00 |         10
+       108 |        2 | 2026-10-22 | pago         |      80.00 |         40
+       109 |        1 | 2026-10-22 | pago         |      60.00 |         10
+       110 |        1 | 2026-10-22 | pago         |      33.30 |         20
+(13 rows)
+
+== Duas regras para receita paga sobre os mesmos itens: status igual a pago e status normalizado.
+ status_igual_pago | status_normalizado 
+-------------------+--------------------
+            656.10 |             836.10
+(1 row)
+
+ pedido_id | status_como_veio | valor_itens 
+-----------+------------------+-------------
+       101 | [PAGO]           |      120.00
+       109 | [ Pago ]         |       60.00
+(2 rows)
+
+[exit 0, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U replica_leitura -d erp -c "show default_transaction_read_only" -c "select count(*) as pedidos from pedidos" -c "update produtos set preco = preco where id = 10"
+ default_transaction_read_only 
+-------------------------------
+ on
+(1 row)
+
+ pedidos 
+---------
+      10
+(1 row)
+
+ERROR:  cannot execute UPDATE in a read-only transaction
+[exit 1, 2026-11-04]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "update replica.produtos set preco = preco where id = 10"
+ERROR:  cannot execute UPDATE in a read-only transaction
+CONTEXT:  remote SQL command: UPDATE public.produtos SET preco = preco WHERE ((id = 10))
+[exit 1, 2026-11-04]
+
+$ python3 -I checagens/comparar_select_pedidos.py
+tokens a mao: 74, tokens dbt: 74
+SELECT igual, trocando source('bronze', 'pedidos') por bronze.pedidos: True
+[exit 0, 2026-11-04]

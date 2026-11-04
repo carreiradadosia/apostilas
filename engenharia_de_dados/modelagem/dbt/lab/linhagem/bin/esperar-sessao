@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Usage: bin/esperar-sessao <postgres|replica> <active|idle>
+# Waits until a session of the fictional application reaches that state, up to 20 seconds.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+servico="$1"; estado="$2"
+sql="SELECT count(*) FROM pg_stat_activity WHERE application_name = 'erp_relatorios' AND state = '$estado';"
+timeout 20 bash -c "until [ \"\$(bin/pg '$servico' admin_lab espera -Atc \"$sql\")\" -ge 1 ]; do sleep 0.3; done"

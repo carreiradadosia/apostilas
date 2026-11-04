@@ -1,0 +1,17 @@
+
+$ uv --version
+uv 0.11.13 (x86_64-unknown-linux-gnu)
+[exit 0, 2026-11-03]
+
+$ printf 'dbt-core==1.12.6\ndbt-sqlserver\n' | uv pip compile - --python-version 3.13 --no-header --no-annotate -q | grep -E '^(dbt-core|dbt-sqlserver|dbt-adapters|pyodbc)=='
+dbt-adapters==1.24.5
+dbt-core==1.12.6
+dbt-sqlserver==1.12.2
+[exit 0, 2026-11-03]
+
+$ printf 'dbt-core==1.12.6\ndbt-sqlserver[pyodbc]\n' | uv pip compile - --python-version 3.13 --no-header --no-annotate -q | grep -E '^(dbt-core|dbt-sqlserver|dbt-adapters|pyodbc)=='
+dbt-adapters==1.24.5
+dbt-core==1.12.6
+dbt-sqlserver==1.12.2
+pyodbc==5.3.0
+[exit 0, 2026-11-03]

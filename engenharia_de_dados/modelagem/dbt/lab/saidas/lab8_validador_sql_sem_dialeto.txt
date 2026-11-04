@@ -1,0 +1,213 @@
+
+$ python3 -c 'import sqlglot; print("sqlglot", sqlglot.__version__)'
+sqlglot 30.2.1
+[exit 0, 2026-11-03]
+
+$ python3 <skill>/zambotto-mentoria-core/scripts/verificar.py sql projeto_dbt/models projeto_dbt/tests projeto_dbt/snapshots
+INFO ok  [sql] nivel 2 sql/10_bronze_carga.sql
+ERROR FALHA [sql] nivel 0 sql/11_bronze_foto_precos.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+INFO ok  [sql] nivel 2 sql/12_bronze_itens_carga_dupla.sql
+ERROR FALHA [sql] nivel 0 sql/20_silver.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 sql/21_silver_antes_depois.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 sql/22_fuso.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 sql/30_gold.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 sql/31_fan_out.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 sql/40_preco_update_apaga.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 sql/50_comparar_a_mao_e_dbt.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+INFO ok  [sql] nivel 2 sql/erp_noite_21.sql
+INFO ok  [sql] nivel 2 sql/erp_noite_22.sql
+INFO ok  [yaml] nivel 2 projeto_dbt/models/_sources.yml
+INFO ok  [yaml] nivel 2 projeto_dbt/models/experimentos/_experimentos.yml
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/experimentos/exp_fct_fan_out.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/experimentos/exp_inc_com_chave.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/experimentos/exp_inc_sem_chave.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+INFO ok  [yaml] nivel 2 projeto_dbt/models/gold/_gold.yml
+INFO ok  [sql] nivel 2 projeto_dbt/models/gold/dim_data.sql
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/gold/dim_loja.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/gold/dim_produto.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/gold/fct_vendas.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/gold/obt_vendas.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/gold/vendas_por_dia.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+INFO ok  [yaml] nivel 2 projeto_dbt/models/silver/_silver.yml
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/silver/foto_do_dia.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/silver/stg_atendimentos.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/silver/stg_itens.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/silver/stg_lojas.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/silver/stg_pedidos.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/models/silver/stg_produtos.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/tests/assert_itens_batem_com_pedido.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/tests/assert_receita_igual_a_do_piloto.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/tests/assert_status_desconhecido.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+ERROR FALHA [sql] nivel 0 projeto_dbt/tests/assert_vendas_sem_versao.sql | nao foi possivel interpretar o arquivo | correcao: corrija a sintaxe do arquivo
+INFO ok  [yaml] nivel 2 projeto_dbt/snapshots/_snapshots.yml
+INFO 36 arquivo(s) verificado(s), 26 fora do nivel 2
+[exit 1, 2026-11-03]
+
+$ python3 -I checagens/sqlglot_por_dialeto.py sql projeto_dbt/models projeto_dbt/target/compiled/rede_de_lojas/models
+sqlglot 30.2.1
+sem_dialeto  sql/10_bronze_carga.sql  ok
+postgres     sql/10_bronze_carga.sql  ok
+sem_dialeto  sql/11_bronze_foto_precos.sql  FALHA Required keyword: 'expression' missing for <class 'sqlglot.expressions.core.EQ'>. Line 2, Col: 58.
+postgres     sql/11_bronze_foto_precos.sql  FALHA Required keyword: 'expression' missing for <class 'sqlglot.expressions.core.EQ'>. Line 2, Col: 58.
+sem_dialeto  sql/12_bronze_itens_carga_dupla.sql  ok
+postgres     sql/12_bronze_itens_carga_dupla.sql  ok
+sem_dialeto  sql/20_silver.sql  FALHA Invalid expression / Unexpected token. Line 2, Col: 34.
+postgres     sql/20_silver.sql  FALHA Invalid expression / Unexpected token. Line 2, Col: 34.
+sem_dialeto  sql/21_silver_antes_depois.sql  ok
+postgres     sql/21_silver_antes_depois.sql  ok
+'SET TIME ZONE 'UTC'' contains unsupported syntax. Falling back to parsing as a 'Command'.
+'SET TIME ZONE 'UTC'' contains unsupported syntax. Falling back to parsing as a 'Command'.
+'SET TIME ZONE 'America/Sao_Paulo'' contains unsupported syntax. Falling back to parsing as a 'Command'.
+'SET TIME ZONE 'UTC'' contains unsupported syntax. Falling back to parsing as a 'Command'.
+'SET TIME ZONE 'UTC'' contains unsupported syntax. Falling back to parsing as a 'Command'.
+'SET TIME ZONE 'UTC'' contains unsupported syntax. Falling back to parsing as a 'Command'.
+'SET TIME ZONE 'America/Sao_Paulo'' contains unsupported syntax. Falling back to parsing as a 'Command'.
+'SET TIME ZONE 'UTC'' contains unsupported syntax. Falling back to parsing as a 'Command'.
+sem_dialeto  sql/22_fuso.sql  ok
+postgres     sql/22_fuso.sql  ok
+sem_dialeto  sql/30_gold.sql  FALHA Invalid expression / Unexpected token. Line 5, Col: 37.
+postgres     sql/30_gold.sql  FALHA Invalid expression / Unexpected token. Line 5, Col: 37.
+sem_dialeto  sql/31_fan_out.sql  ok
+postgres     sql/31_fan_out.sql  ok
+sem_dialeto  sql/40_preco_update_apaga.sql  ok
+postgres     sql/40_preco_update_apaga.sql  ok
+sem_dialeto  sql/50_comparar_a_mao_e_dbt.sql  ok
+postgres     sql/50_comparar_a_mao_e_dbt.sql  ok
+sem_dialeto  sql/erp_noite_21.sql  ok
+postgres     sql/erp_noite_21.sql  ok
+sem_dialeto  sql/erp_noite_22.sql  ok
+postgres     sql/erp_noite_22.sql  ok
+sem_dialeto  projeto_dbt/models/experimentos/exp_fct_fan_out.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 8, col: 6, start: 168, end: 168, comments: []>. Line 8, Col
+postgres     projeto_dbt/models/experimentos/exp_fct_fan_out.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 8, col: 6, start: 168, end: 168, comments: []>. Line 8, Col
+sem_dialeto  projeto_dbt/models/experimentos/exp_inc_com_chave.sql  FALHA Invalid expression / Unexpected token. Line 4, Col: 6.
+postgres     projeto_dbt/models/experimentos/exp_inc_com_chave.sql  FALHA Invalid expression / Unexpected token. Line 4, Col: 6.
+sem_dialeto  projeto_dbt/models/experimentos/exp_inc_sem_chave.sql  FALHA Invalid expression / Unexpected token. Line 4, Col: 6.
+postgres     projeto_dbt/models/experimentos/exp_inc_sem_chave.sql  FALHA Invalid expression / Unexpected token. Line 4, Col: 6.
+sem_dialeto  projeto_dbt/models/gold/dim_data.sql  ok
+postgres     projeto_dbt/models/gold/dim_data.sql  ok
+sem_dialeto  projeto_dbt/models/gold/dim_loja.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 6, col: 6, start: 81, end: 81, comments: []>. Line 6, Col: 
+postgres     projeto_dbt/models/gold/dim_loja.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 6, col: 6, start: 81, end: 81, comments: []>. Line 6, Col: 
+sem_dialeto  projeto_dbt/models/gold/dim_produto.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 12, col: 6, start: 457, end: 457, comments: []>. Line 12, C
+postgres     projeto_dbt/models/gold/dim_produto.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 12, col: 6, start: 457, end: 457, comments: []>. Line 12, C
+sem_dialeto  projeto_dbt/models/gold/fct_vendas.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 14, col: 6, start: 390, end: 390, comments: []>. Line 14, C
+postgres     projeto_dbt/models/gold/fct_vendas.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 14, col: 6, start: 390, end: 390, comments: []>. Line 14, C
+sem_dialeto  projeto_dbt/models/gold/obt_vendas.sql  FALHA Invalid expression / Unexpected token. Line 4, Col: 6.
+postgres     projeto_dbt/models/gold/obt_vendas.sql  FALHA Invalid expression / Unexpected token. Line 4, Col: 6.
+sem_dialeto  projeto_dbt/models/gold/vendas_por_dia.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 7, col: 6, start: 355, end: 355, comments: []>. Line 7, Col
+postgres     projeto_dbt/models/gold/vendas_por_dia.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 7, col: 6, start: 355, end: 355, comments: []>. Line 7, Col
+sem_dialeto  projeto_dbt/models/silver/foto_do_dia.sql  FALHA Invalid expression / Unexpected token. Line 5, Col: 6.
+postgres     projeto_dbt/models/silver/foto_do_dia.sql  FALHA Invalid expression / Unexpected token. Line 5, Col: 6.
+sem_dialeto  projeto_dbt/models/silver/stg_atendimentos.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 9, col: 6, start: 508, end: 508, comments: []>. Line 9, Col
+postgres     projeto_dbt/models/silver/stg_atendimentos.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 9, col: 6, start: 508, end: 508, comments: []>. Line 9, Col
+sem_dialeto  projeto_dbt/models/silver/stg_itens.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 8, col: 6, start: 139, end: 139, comments: []>. Line 8, Col
+postgres     projeto_dbt/models/silver/stg_itens.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 8, col: 6, start: 139, end: 139, comments: []>. Line 8, Col
+sem_dialeto  projeto_dbt/models/silver/stg_lojas.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 6, col: 6, start: 124, end: 124, comments: []>. Line 6, Col
+postgres     projeto_dbt/models/silver/stg_lojas.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 6, col: 6, start: 124, end: 124, comments: []>. Line 6, Col
+sem_dialeto  projeto_dbt/models/silver/stg_pedidos.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 5, col: 10, start: 135, end: 135, comments: []>. Line 5, Co
+postgres     projeto_dbt/models/silver/stg_pedidos.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 5, col: 10, start: 135, end: 135, comments: []>. Line 5, Co
+sem_dialeto  projeto_dbt/models/silver/stg_produtos.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 5, col: 10, start: 229, end: 229, comments: []>. Line 5, Co
+postgres     projeto_dbt/models/silver/stg_produtos.sql  FALHA Expected table name but got <Token token_type: TokenType.L_BRACE, text: {, line: 5, col: 10, start: 229, end: 229, comments: []>. Line 5, Co
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/_experimentos.yml/unique_exp_fct_fan_out_venda_sk.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/_experimentos.yml/unique_exp_fct_fan_out_venda_sk.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/_experimentos.yml/unique_exp_inc_com_chave_atendimento_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/_experimentos.yml/unique_exp_inc_com_chave_atendimento_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/_experimentos.yml/unique_exp_inc_sem_chave_atendimento_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/_experimentos.yml/unique_exp_inc_sem_chave_atendimento_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/exp_fct_fan_out.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/exp_fct_fan_out.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/exp_inc_com_chave.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/exp_inc_com_chave.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/exp_inc_sem_chave.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/experimentos/exp_inc_sem_chave.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_dim_data_data_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_dim_data_data_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_dim_loja_loja_sk.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_dim_loja_loja_sk.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_dim_produto_produto_sk.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_dim_produto_produto_sk.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_fct_vendas_data_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_fct_vendas_data_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_fct_vendas_loja_sk.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_fct_vendas_loja_sk.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_fct_vendas_produto_sk.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_fct_vendas_produto_sk.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_fct_vendas_venda_sk.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_fct_vendas_venda_sk.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_vendas_por_dia_dia.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/not_null_vendas_por_dia_dia.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/relationships_fct_vendas_1ef7f839f9e82fee209b5f417ea0a793.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/relationships_fct_vendas_1ef7f839f9e82fee209b5f417ea0a793.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/relationships_fct_vendas_data_id__data_id__ref_dim_data_.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/relationships_fct_vendas_data_id__data_id__ref_dim_data_.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/relationships_fct_vendas_loja_sk__loja_sk__ref_dim_loja_.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/relationships_fct_vendas_loja_sk__loja_sk__ref_dim_loja_.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_dim_data_data_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_dim_data_data_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_dim_loja_loja_sk.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_dim_loja_loja_sk.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_dim_produto_produto_sk.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_dim_produto_produto_sk.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_fct_vendas_venda_sk.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_fct_vendas_venda_sk.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_vendas_por_dia_dia.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/_gold.yml/unique_vendas_por_dia_dia.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/dim_data.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/dim_data.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/dim_loja.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/dim_loja.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/dim_produto.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/dim_produto.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/fct_vendas.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/fct_vendas.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/obt_vendas.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/obt_vendas.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/gold/vendas_por_dia.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/gold/vendas_por_dia.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/accepted_values_stg_pedidos_9ee8797de7712cc3ec6d01fa77ff344e.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/accepted_values_stg_pedidos_9ee8797de7712cc3ec6d01fa77ff344e.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_atendimentos_atendimento_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_atendimentos_atendimento_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_lojas_loja_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_lojas_loja_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_pedidos_pedido_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_pedidos_pedido_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_produtos_custo.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_produtos_custo.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_produtos_produto_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/not_null_stg_produtos_produto_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/relationships_stg_itens_pedido_id__pedido_id__ref_stg_pedidos_.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/relationships_stg_itens_pedido_id__pedido_id__ref_stg_pedidos_.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_atendimentos_atendimento_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_atendimentos_atendimento_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_itens__pedido_id_item_seq_.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_itens__pedido_id_item_seq_.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_lojas_loja_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_lojas_loja_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_pedidos_pedido_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_pedidos_pedido_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_produtos_produto_id.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/_silver.yml/unique_stg_produtos_produto_id.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/foto_do_dia.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/foto_do_dia.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_atendimentos.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_atendimentos.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_itens.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_itens.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_lojas.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_lojas.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_pedidos.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_pedidos.sql  ok
+sem_dialeto  projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_produtos.sql  ok
+postgres     projeto_dbt/target/compiled/rede_de_lojas/models/silver/stg_produtos.sql  ok
+[exit 1, 2026-11-03]
+
+$ docker compose --profile dbt run --rm --no-deps dbt python -c "import sqlglot; print('sqlglot', sqlglot.__version__)
+for d in (None, 'postgres'):
+    try:
+        sqlglot.parse('DROP TABLE IF EXISTS a, b CASCADE', read=d); print(d, 'ok')
+    except Exception as e: print(d, 'FALHA', str(e).splitlines()[0])
+"
+sqlglot 30.27.0
+None ok
+postgres ok
+[exit 0, 2026-11-03]

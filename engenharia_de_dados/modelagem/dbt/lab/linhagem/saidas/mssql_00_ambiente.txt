@@ -1,0 +1,23 @@
+
+$ docker compose exec -T mssql bash -c '/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -b -v APP_PW="$MSSQL_APP_PASSWORD" -v MON_PW="$MSSQL_MONITOR_PASSWORD" -I -i /scripts/00_cenario.sql > /dev/null && echo cenario criado'
+cenario criado
+[exit 0, 2026-11-03]
+
+$ bin/ms sa -i /scripts/01_ambiente.sql
+versao|cu|kb|edicao
+------|--|--|------
+16.0.4305.5|CU27|KB5126934|Developer Edition (64-bit)
+Changed database context to 'rede'.
+actual_state_desc|desired_state_desc|query_capture_mode_desc|size_based_cleanup_mode_desc|max_storage_size_mb|flush_interval_seconds|interval_length_minutes|stale_query_threshold_days
+-----------------|------------------|-----------------------|----------------------------|-------------------|----------------------|-----------------------|--------------------------
+READ_WRITE|READ_WRITE|AUTO|AUTO|1000|900|60|30
+[exit 0, 2026-11-03]
+
+$ bin/ms sa -i /scripts/13_xe_descricoes.sql
+evento|descricao
+------|---------
+query_post_execution_showplan|Occurs after a SQL statement is executed. This event returns an XML representation of the actual query plan. Using this event can have a significant performance overhead so it should only be used when troubleshooting or monitoring specific problems f
+rpc_completed|Occurs when a remote procedure call has completed.
+sp_statement_completed|Occurs when a statement inside a stored procedure has completed.
+sql_batch_completed|Occurs when a Transact-SQL batch has finished executing.
+[exit 0, 2026-11-03]

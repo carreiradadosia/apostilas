@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Usage: bin/pglog <postgres|replica> <since, RFC 3339> [grep -E pattern]
+# Prints the server log of one service from that moment on, without the compose prefix.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+servico="$1"; desde="$2"; padrao="${3:-.}"
+docker compose --profile replica logs --no-log-prefix --no-color --since "$desde" "$servico" 2>&1 | { grep -E "$padrao" || true; }

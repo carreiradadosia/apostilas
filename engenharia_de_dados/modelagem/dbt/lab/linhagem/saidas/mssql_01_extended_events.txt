@@ -1,0 +1,79 @@
+
+$ bin/ms sa -i /scripts/10_xe_criar.sql
+sessao|create_time
+------|-----------
+relatorio_lab|2026-11-03
+
+(1 rows affected)
+[exit 0, 2026-11-03]
+
+$ # The filtered application, then another application and another login that must stay out.
+docker compose --profile app run --rm -T --no-deps app padrao
+docker compose --profile app run --rm -T --no-deps app faturamento_cifrado >/dev/null
+docker compose --profile app run --rm -T --no-deps app faturamento_dinamico >/dev/null
+docker compose --profile app run --rm -T --no-deps app --app bi_outro padrao >/dev/null
+bin/ms sa -d rede -Q "SELECT COUNT(*) AS ruido_do_administrador FROM relatorios.vw_faturamento_itens;"
+INFO linha ('Loja Centro', '419.9')
+INFO linha ('LOJA NORTE', '344.2')
+INFO linha ('loja são joão', '72')
+INFO linha ('2026-10-21', '111.9')
+INFO linha ('2026-10-22', '293.3')
+INFO linha ('101', '120')
+INFO linha ('Loja Centro', '419.9')
+INFO linha ('LOJA NORTE', '344.2')
+INFO linha ('loja são joão', '72')
+INFO linha ('Loja Centro', '419.9')
+INFO linha ('LOJA NORTE', '344.2')
+INFO linha ('loja são joão', '72')
+INFO linha ('Loja Centro', '419.9')
+INFO linha ('LOJA NORTE', '344.2')
+INFO linha ('loja são joão', '72')
+INFO linha ('2026-10-21', '111.9')
+INFO linha ('2026-10-22', '293.3')
+INFO linha ('101', '120')
+ruido_do_administrador
+----------------------
+9
+
+(1 rows affected)
+[exit 0, 2026-11-03]
+
+$ bin/ms sa -i /scripts/11_xe_ler_arquivo.sql
+evento|aplicacao|login|objeto|texto
+------|---------|-----|------|-----
+rpc_completed|erp_relatorios|app_relatorio|faturamento_por_loja|exec relatorios.faturamento_por_loja '2026-10-20','2026-10-22'
+rpc_completed|erp_relatorios|app_relatorio|sp_executesql|exec sp_executesql N'SELECT dia, SUM(valor_item) AS total FROM relatorios.vw_faturamento_itens WHERE dia >= @P1 GROUP BY dia ORDER BY dia',N'@P1 DATE',@P1='2026-10-21'
+rpc_completed|erp_relatorios|app_relatorio|faturamento_cifrado|exec relatorios.faturamento_cifrado '2026-10-20','2026-10-22'
+rpc_completed|erp_relatorios|sa|faturamento_dinamico|exec relatorios.faturamento_dinamico '2026-10-20','2026-10-22'
+sp_statement_completed|erp_relatorios|app_relatorio||
+sp_statement_completed|erp_relatorios|app_relatorio||SELECT StatMan([SC0]) FROM (SELECT TOP 100 PERCENT [criado_em] AS [SC0] FROM [erp].[pedidos] WITH (READUNCOMMITTED)  ORDER BY [SC0] ) AS _MS_UPDSTATS_TBL  OPTION (MAXDOP 16)
+sp_statement_completed|erp_relatorios|app_relatorio||SELECT StatMan([SC0], [SC1]) FROM (SELECT TOP 100 PERCENT [pedido_id] AS [SC0], [item_seq] AS [SC1] FROM [erp].[itens_pedido] WITH (READUNCOMMITTED)  ORDER BY [SC0], [SC1] ) AS _MS_UPDSTATS_TBL  OPTIO
+sp_statement_completed|erp_relatorios|app_relatorio||
+sp_statement_completed|erp_relatorios|app_relatorio||SELECT StatMan([SC0]) FROM (SELECT TOP 100 PERCENT [loja_id] AS [SC0] FROM [erp].[pedidos] WITH (READUNCOMMITTED)  ORDER BY [SC0] ) AS _MS_UPDSTATS_TBL  OPTION (MAXDOP 16)
+sp_statement_completed|erp_relatorios|app_relatorio||SELECT StatMan([SC0]) FROM (SELECT TOP 100 PERCENT [nome] AS [SC0] FROM [erp].[lojas] WITH (READUNCOMMITTED)  ORDER BY [SC0] ) AS _MS_UPDSTATS_TBL  OPTION (MAXDOP 16)
+sp_statement_completed|erp_relatorios|app_relatorio||
+sp_statement_completed|erp_relatorios|app_relatorio||SELECT StatMan([SC0]) FROM (SELECT TOP 100 PERCENT [status] AS [SC0] FROM [erp].[pedidos] WITH (READUNCOMMITTED)  ORDER BY [SC0] ) AS _MS_UPDSTATS_TBL  OPTION (MAXDOP 16)
+sp_statement_completed|erp_relatorios|app_relatorio||
+sp_statement_completed|erp_relatorios|app_relatorio||SET NOCOUNT ON;     
+sp_statement_completed|erp_relatorios|app_relatorio||SELECT TRIM(v.loja) AS loja, CAST(SUM(v.valor_item) AS numeric(14, 2)) AS faturamento     FROM relatorios.vw_faturamento_itens AS v     WHERE v.dia BETWEEN @inicio AND @fim     GROUP BY TRIM(v.loja)  
+sp_statement_completed|erp_relatorios|app_relatorio||SELECT dia, SUM(valor_item) AS total FROM relatorios.vw_faturamento_itens WHERE dia >= @P1 GROUP BY dia ORDER BY dia
+sp_statement_completed|erp_relatorios|app_relatorio||
+sp_statement_completed|erp_relatorios|app_relatorio||SELECT StatMan([SC0]) FROM (SELECT TOP 100 PERCENT [cliente] AS [SC0] FROM [erp].[pedidos] WITH (READUNCOMMITTED)  ORDER BY [SC0] ) AS _MS_UPDSTATS_TBL  OPTION (MAXDOP 16)
+sp_statement_completed|erp_relatorios|app_relatorio||-- Encrypted text
+sp_statement_completed|erp_relatorios|app_relatorio||-- Encrypted text
+sp_statement_completed|erp_relatorios|sa||DECLARE @sql nvarchar(max) = N'SELECT TRIM(l.nome) AS loja, SUM(i.quantidade * i.preco_unitario) AS faturamento '         + N'FROM erp.pedidos AS p JOIN erp.itens_pedido AS i ON i.pedido_id = p.id '  
+sp_statement_completed|erp_relatorios|sa||SET NOCOUNT ON;     
+sp_statement_completed|erp_relatorios|sa||EXEC sys.sp_executesql @sql, N'@inicio date, @fim date', @inicio, @fim
+sp_statement_completed|erp_relatorios|sa||SELECT TRIM(l.nome) AS loja, SUM(i.quantidade * i.preco_unitario) AS faturamento FROM erp.pedidos AS p JOIN erp.itens_pedido AS i ON i.pedido_id = p.id JOIN erp.lojas AS l ON l.id = p.loja_id WHERE LO
+sql_batch_completed|erp_relatorios|app_relatorio|NULL|SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE TRIM(cliente) = N'Cliente A'
+[exit 0, 2026-11-03]
+
+$ bin/ms sa -i /scripts/12_xe_ler_ring.sql
+sessoes_ativas
+--------------
+1
+alvo|eventos_em_memoria
+----|------------------
+event_file|(arquivo)
+ring_buffer|25
+[exit 0, 2026-11-03]

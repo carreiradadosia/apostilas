@@ -1,0 +1,79 @@
+
+$ ./sq.sh dw 30_gold.sql -b
+
+(92 rows affected)
+
+(3 rows affected)
+
+(6 rows affected)
+
+(13 rows affected)
+Warning: Null value is eliminated by an aggregate or other SET operation.
+
+(3 rows affected)
+dia|pedidos|pedidos_pagos|receita_paga
+---|-------|-------------|------------
+2026-10-20|4|2|430.90
+2026-10-21|3|2|111.90
+2026-10-22|3|3|293.30
+
+(3 rows affected)
+linhas_fct|chaves_fct|itens_silver|linhas_obt|receita_obt|linhas_dim_data
+----------|----------|------------|----------|-----------|---------------
+13|13|13|13|836.10|92
+
+(1 rows affected)
+
+(1 rows affected)
+executor|linhas_bronze|linhas_silver|receita_paga
+--------|-------------|-------------|------------
+a_mao|11|10|836.10
+
+(1 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 31_fan_out.sql
+== Número certo do dia 20: um lado só, no grão do item.
+receita_paga_dia_20
+-------------------
+430.90
+
+(1 rows affected)
+== Fan-out 1: dimensão com duas linhas para a mesma chave. Sem erro nenhum.
+linhas|receita_dobrada
+------|---------------
+9|850.90
+
+(1 rows affected)
+== Fan-out 2: dois lados muitos do mesmo pedido, itens e pagamentos.
+pedido_id|linhas|soma_itens|soma_pagamentos
+---------|------|----------|---------------
+101|1|120.00|120.00
+104|4|621.80|621.80
+
+(2 rows affected)
+== SUM(DISTINCT) parece conserto: tira a repetição e leva junto a venda legítima de mesmo valor.
+receita_com_join|receita_com_sum_distinct
+----------------|------------------------
+1347.00|716.10
+
+(1 rows affected)
+receita_certa_todos_os_dias
+---------------------------
+836.10
+
+(1 rows affected)
+== O conserto: agregar cada lado no próprio grão antes de juntar.
+receita|pago|diferenca
+-------|----|---------
+836.10|836.10|.00
+
+(1 rows affected)
+== O teste do grão, em SQL puro: devolve linhas quando quebra.
+tabela|chaves_repetidas
+------|----------------
+fct_vendas|0
+itens com fornecedor|5
+
+(2 rows affected)
+[exit 0, 2026-11-03]

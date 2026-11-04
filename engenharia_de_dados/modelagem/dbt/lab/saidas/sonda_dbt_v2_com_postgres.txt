@@ -1,0 +1,186 @@
+
+$ docker run --rm --network host --env-file .env -e HOME=/tmp -e DBT_PROFILES_DIR=/proj -e DBT_SEND_ANONYMOUS_USAGE_STATS=false -v <sonda>:/proj -w /proj sonda-dbt-v2:2.0.9 bash -c "dbt --version; dbt debug; echo debug_exit=\$?; dbt parse; echo parse_exit=\$?"
+dbt 2.0.9
+       dbt 2.0.9
+   Loading profiles.yml
+
+=================== Errors and Warnings ====================
+[error] [InvalidConfig (dbt1005)]: Configuration Error: The 'postgres' adapter is not yet supported by dbt. Supported adapters: snowflake, bigquery, databricks, redshift, duckdb, salesforce, clickhouse. To use an experimental adapter, set the environment variable DBT_ALLOW_EXPERIMENTAL_ADAPTERS=true. Note that experimental adapters may be unstable and are not yet recommended for production use.
+
+==================== Execution Summary =====================
+Finished 'debug' with 1 error [33ms]
+debug_exit=1
+       dbt 2.0.9
+   Loading profiles.yml
+
+=================== Errors and Warnings ====================
+[error] [InvalidConfig (dbt1005)]: Configuration Error: The 'postgres' adapter is not yet supported by dbt. Supported adapters: snowflake, bigquery, databricks, redshift, duckdb, salesforce, clickhouse. To use an experimental adapter, set the environment variable DBT_ALLOW_EXPERIMENTAL_ADAPTERS=true. Note that experimental adapters may be unstable and are not yet recommended for production use.
+
+==================== Execution Summary =====================
+Finished 'parse' with 1 error [1ms]
+parse_exit=1
+[exit 0, 2026-11-03]
+
+$ docker run --rm --network host --env-file .env -e HOME=/tmp -e DBT_PROFILES_DIR=/proj -e DBT_SEND_ANONYMOUS_USAGE_STATS=false -e DBT_ALLOW_EXPERIMENTAL_ADAPTERS=true -v <sonda>:/proj -w /proj sonda-dbt-v2:2.0.9 bash -c "dbt debug; echo debug_exit=\$?; dbt parse; echo parse_exit=\$?; dbt build; echo build_exit=\$?"
+       dbt 2.0.9
+   Loading profiles.yml
+ Debugging profile: dev
+ Debugging dbt version: 2.0.9
+ Debugging platform: linux x86_64 (unix)
+ Debugging adapter type: postgres (remote)
+ Debugging dependencies:
+  git: ERROR
+ Debugging connection:
+  "port": 5432,
+  "database": "dw",
+  "schema": "dbt_v2",
+  "host": "172.30.0.2",
+  "user": "dw"
+ Debugging connection test: ERROR
+
+=================== Errors and Warnings ====================
+[error] [AuthenticationFailed (dbt1011)]: dbt was unable to connect to the database configured for the `postgres` adapter.
+The following error was returned:
+
+Error with dynamic library: libpq.so.5: cannot open shared object file: No such file or directory
+
+Check your database credentials and try again. For more information, visit:
+https://docs.getdbt.com/docs/core/connect-data-platform/connection-profiles
+
+==================== Execution Summary =====================
+Finished 'debug' with 1 error for target 'dev' [807ms]
+debug_exit=1
+       dbt 2.0.9
+   Loading profiles.yml
+
+==================== Execution Summary =====================
+Finished 'parse' successfully for target 'dev' [811ms]
+parse_exit=0
+       dbt 2.0.9
+   Loading profiles.yml
+
+=================== Errors and Warnings ====================
+[error] [DbDriverFailed (dbt1308)]: Failed to create schema 'dbt_v2_gold' in database 'dw' in remote for model.rede_de_lojas.vendas_por_dia: Error with dynamic library: libpq.so.5: cannot open shared object file: No such file or directory
+
+==================== Execution Summary =====================
+Finished 'build' with 1 error for target 'dev' [713ms]
+Processed: 12 models | 32 tests | 2 snapshots | 1 seed
+build_exit=1
+[exit 0, 2026-11-03]
+
+[terceira sonda: a mesma imagem com libpq5 e git instalados por apt, porque o driver baixado sob demanda pede a biblioteca do sistema]
+
+$ docker run --rm --network host --env-file .env -e HOME=/tmp -e DBT_PROFILES_DIR=/proj -e DBT_SEND_ANONYMOUS_USAGE_STATS=false -e DBT_ALLOW_EXPERIMENTAL_ADAPTERS=true -v <sonda>:/proj -w /proj sonda-dbt-v2:2.0.9-libpq bash -c "dbt debug; echo debug_exit=\$?; dbt build; echo build_exit=\$?"
+       dbt 2.0.9
+   Loading profiles.yml
+ Debugging profile: dev
+ Debugging dbt version: 2.0.9
+ Debugging platform: linux x86_64 (unix)
+ Debugging adapter type: postgres (remote)
+ Debugging dependencies:
+  git: OK
+ Debugging connection:
+  "port": 5432,
+  "database": "dw",
+  "schema": "dbt_v2",
+  "host": "172.30.0.2",
+  "user": "dw"
+ Debugging connection test: OK
+  Debugged All checks passed!
+
+==================== Execution Summary =====================
+Finished 'debug' successfully for target 'dev' [557ms]
+debug_exit=0
+       dbt 2.0.9
+   Loading profiles.yml
+ Succeeded model dbt_v2_silver.stg_itens (view) [3 of 46 in 0.11s]
+ Succeeded seed  dbt_v2_silver.de_para_categoria (table) [4 of 46 in 0.12s]
+ Succeeded model dbt_v2_silver.stg_pedidos (view) [2 of 46 in 0.13s]
+ Succeeded model dbt_v2_gold.dim_data (table) [6 of 46 in 0.15s]
+ Succeeded model dbt_v2_silver.stg_atendimentos (view) [1 of 46 in 0.15s]
+ Succeeded model dbt_v2_silver.stg_lojas (view) [5 of 46 in 0.17s]
+    Passed test  unique_stg_itens__pedido_id_item_seq_ [7 of 46 in 0.07s]
+    Passed test  relationships_stg_itens_pedido_id__pedido_id__ref_stg_pedidos_ [9 of 46 in 0.07s]
+    Passed test  accepted_values_stg_pedidos_status__pago__cancelado__pendente__desconhecido [10 of 46 in 0.11s]
+    Passed test  not_null_stg_pedidos_pedido_id [11 of 46 in 0.12s]
+ Succeeded model dbt_v2_silver.stg_produtos (view) [8 of 46 in 0.14s]
+    Passed test  assert_itens_batem_com_pedido [12 of 46 in 0.12s]
+    Passed test  unique_stg_pedidos_pedido_id [14 of 46 in 0.13s]
+    Warned test  assert_status_desconhecido (tests/assert_status_desconhecido.sql) [13 of 46 in 0.13s]
+    Passed test  unique_dim_data_data_id [15 of 46 in 0.12s]
+    Passed test  not_null_dim_data_data_id [16 of 46 in 0.12s]
+    Passed test  not_null_stg_atendimentos_atendimento_id [17 of 46 in 0.12s]
+    Passed test  unique_stg_atendimentos_atendimento_id [18 of 46 in 0.12s]
+ Succeeded snapshot dbt_v2_snapshots.snap_produtos_preco (snapshot) [19 of 46 in 0.15s]
+ Succeeded snapshot dbt_v2_snapshots.snap_produtos_por_timestamp (snapshot) [20 of 46 in 0.15s]
+    Passed test  not_null_stg_lojas_loja_id [23 of 46 in 0.14s]
+    Passed test  unique_stg_lojas_loja_id [22 of 46 in 0.14s]
+    Warned test  not_null_stg_produtos_custo (models/silver/_silver.yml:15:13) [26 of 46 in 0.06s]
+    Passed test  not_null_stg_produtos_produto_id [24 of 46 in 0.07s]
+    Passed test  unique_stg_produtos_produto_id [25 of 46 in 0.07s]
+ Succeeded model dbt_v2_gold.dim_produto (table) [27 of 46 in 0.03s]
+ Succeeded model dbt_v2_gold.dim_loja (table) [21 of 46 in 0.17s]
+    Passed test  not_null_dim_produto_produto_sk [28 of 46 in 0.01s]
+    Passed test  unique_dim_produto_produto_sk [29 of 46 in 0.01s]
+    Passed test  not_null_dim_loja_loja_sk [30 of 46 in 0.01s]
+    Passed test  unique_dim_loja_loja_sk [32 of 46 in 0.01s]
+ Succeeded model dbt_v2_gold.fct_vendas (table) [31 of 46 in 0.04s]
+    Passed test  not_null_fct_vendas_venda_sk [34 of 46 in 0.02s]
+    Warned test  assert_vendas_sem_versao (tests/assert_vendas_sem_versao.sql) [33 of 46 in 0.02s]
+    Passed test  not_null_fct_vendas_loja_sk [36 of 46 in 0.02s]
+    Passed test  not_null_fct_vendas_produto_sk [37 of 46 in 0.02s]
+    Passed test  relationships_fct_vendas_loja_sk__loja_sk__ref_dim_loja_ [38 of 46 in 0.03s]
+    Passed test  relationships_fct_vendas_produto_sk__produto_sk__ref_dim_produto_ [35 of 46 in 0.03s]
+    Passed test  relationships_fct_vendas_data_id__data_id__ref_dim_data_ [40 of 46 in 0.03s]
+    Passed test  unique_fct_vendas_venda_sk [41 of 46 in 0.03s]
+    Passed test  not_null_fct_vendas_data_id [42 of 46 in 0.03s]
+ Succeeded model dbt_v2_gold.obt_vendas (view) [43 of 46 in 0.03s]
+ Succeeded model dbt_v2_gold.vendas_por_dia (table) [39 of 46 in 0.03s]
+    Passed test  unique_vendas_por_dia_dia [45 of 46 in 0.00s]
+    Passed test  assert_receita_igual_a_do_piloto [44 of 46 in 0.00s]
+    Passed test  not_null_vendas_por_dia_dia [46 of 46 in 0.01s]
+
+==================== Execution Summary =====================
+Finished 'build' with 3 warnings for target 'dev' [1.1s]
+Processed: 12 models | 32 tests | 2 snapshots | 1 seed
+Summary: 47 total | 43 success | 3 warn | 1 no-op
+build_exit=0
+[exit 0, 2026-11-03]
+
+[a rodada acima é a lição do snapshot que começa tarde: no schema novo do v2 só existe a foto do dia 22, e as vendas dos dias 20 e 21 ficam sem versão de preço. Com o membro '-1' o build não para mais: essas vendas vão para o membro, a receita fica, not_null e relationships passam, e quem conta é o assert_vendas_sem_versao, em WARN. Abaixo, o snapshot do v2 é refeito a partir das fotos da bronze, dia a dia, e o build roda de novo]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "drop schema dbt_v2_snapshots cascade"
+NOTICE:  drop cascades to 2 other objects
+DETAIL:  drop cascades to table dbt_v2_snapshots.snap_produtos_preco
+drop cascades to table dbt_v2_snapshots.snap_produtos_por_timestamp
+DROP SCHEMA
+[exit 0, 2026-11-03]
+
+$ docker run --rm --network host --env-file .env -e HOME=/tmp -e DBT_PROFILES_DIR=/proj -e DBT_SEND_ANONYMOUS_USAGE_STATS=false -e DBT_ALLOW_EXPERIMENTAL_ADAPTERS=true -v <sonda>:/proj -w /proj sonda-dbt-v2:2.0.9-libpq bash -c "for d in 2026-10-20 2026-10-21 2026-10-22; do dbt snapshot --vars \"{dia_foto: \\\"\$d\\\"}\" | tail -3; done; dbt build | tail -6; echo build_exit=\${PIPESTATUS[0]}"
+Finished 'snapshot' successfully for target 'dev' [890ms]
+Processed: 1 model | 2 snapshots
+Summary: 3 total | 2 success | 1 no-op
+Finished 'snapshot' successfully for target 'dev' [766ms]
+Processed: 1 model | 2 snapshots
+Summary: 3 total | 2 success | 1 no-op
+Finished 'snapshot' successfully for target 'dev' [712ms]
+Processed: 1 model | 2 snapshots
+Summary: 3 total | 2 success | 1 no-op
+    Passed test  unique_vendas_por_dia_dia [46 of 46 in 0.01s]
+
+==================== Execution Summary =====================
+Finished 'build' with 2 warnings for target 'dev' [1.5s]
+Processed: 12 models | 32 tests | 2 snapshots | 1 seed
+Summary: 47 total | 44 success | 2 warn | 1 no-op
+build_exit=0
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -c "select 'v1 contra v2, vendas_por_dia' as comparacao, (select count(*) from (select * from dbt_gold.vendas_por_dia except select * from dbt_v2_gold.vendas_por_dia) x) as so_v1, (select count(*) from (select * from dbt_v2_gold.vendas_por_dia except select * from dbt_gold.vendas_por_dia) x) as so_v2 union all select 'v1 contra v2, dim_produto', (select count(*) from (select * from dbt_gold.dim_produto except select * from dbt_v2_gold.dim_produto) x), (select count(*) from (select * from dbt_v2_gold.dim_produto except select * from dbt_gold.dim_produto) x) union all select 'v1 contra v2, fct_vendas', (select count(*) from (select * from dbt_gold.fct_vendas except select * from dbt_v2_gold.fct_vendas) x), (select count(*) from (select * from dbt_v2_gold.fct_vendas except select * from dbt_gold.fct_vendas) x)"
+          comparacao          | so_v1 | so_v2 
+------------------------------+-------+-------
+ v1 contra v2, vendas_por_dia |     0 |     0
+ v1 contra v2, dim_produto    |     0 |     0
+ v1 contra v2, fct_vendas     |     0 |     0
+(3 rows)
+
+[exit 0, 2026-11-03]

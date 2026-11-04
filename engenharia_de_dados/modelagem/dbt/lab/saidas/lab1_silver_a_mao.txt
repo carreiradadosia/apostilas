@@ -1,0 +1,168 @@
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/10_bronze_carga.sql
+TRUNCATE TABLE
+INSERT 0 1
+INSERT 0 3
+INSERT 0 10
+INSERT 0 13
+INSERT 0 9
+INSERT 0 6
+INSERT 0 4
+     tabela      | linhas 
+-----------------+--------
+ bronze.pedidos  |     11
+ replica.pedidos |     10
+(2 rows)
+
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -v dia=2026-10-20 -f /sql/11_bronze_foto_precos.sql
+DELETE 0
+INSERT 0 5
+ _dia_referencia | linhas 
+-----------------+--------
+ 2026-10-20      |      5
+(1 row)
+
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -v ON_ERROR_STOP=1 -f /sql/20_silver.sql
+psql:/sql/20_silver.sql:3: NOTICE:  table "lojas" does not exist, skipping
+psql:/sql/20_silver.sql:3: NOTICE:  table "de_para_categoria" does not exist, skipping
+psql:/sql/20_silver.sql:3: NOTICE:  table "produtos" does not exist, skipping
+psql:/sql/20_silver.sql:3: NOTICE:  table "produtos_vigencia" does not exist, skipping
+psql:/sql/20_silver.sql:3: NOTICE:  table "pedidos" does not exist, skipping
+psql:/sql/20_silver.sql:3: NOTICE:  table "itens" does not exist, skipping
+psql:/sql/20_silver.sql:3: NOTICE:  table "atendimentos" does not exist, skipping
+DROP TABLE
+SELECT 3
+CREATE TABLE
+INSERT 0 1
+SELECT 5
+SELECT 5
+SELECT 10
+SELECT 13
+SELECT 4
+          tabela          | linhas 
+--------------------------+--------
+ silver.pedidos           |     10
+ silver.itens             |     13
+ silver.lojas             |      3
+ silver.produtos          |      5
+ silver.produtos_vigencia |      5
+ silver.atendimentos      |      4
+(6 rows)
+
+[exit 0, 2026-11-03]
+
+$ docker compose exec -T postgres psql -U dw -d dw -f /sql/21_silver_antes_depois.sql
+Border style is 1.
+== Texto: TRIM, caixa e acento. O erro de digitação continua até o de-para.
+    antes     |  so_limpeza  
+--------------+--------------
+ [Vestuário]  | [vestuario]
+ [mercearia]  | [mercearia]
+ [UTILIDADES] | [utilidades]
+ [Papelaria]  | [papelaria]
+ [Papelria ]  | [papelria]
+(5 rows)
+
+ produto_id |        nome        | categoria  
+------------+--------------------+------------
+         10 | Camiseta Básica    | vestuario
+         20 | Café Torrado 500g  | mercearia
+         30 | Caneca De Cerâmica | utilidades
+         40 | Caderno            | papelaria
+         50 | Lápis              | papelaria
+(5 rows)
+
+== Cidade: as duas grafias viram uma, ao custo do acento.
+ id |     antes     |   depois    
+----+---------------+-------------
+  1 | [São Paulo]   | Sao Paulo
+  2 | [SAO PAULO ]  | Sao Paulo
+  3 | [Santo André] | Santo Andre
+(3 rows)
+
+== Cliente: nulo e texto vazio caem no mesmo rótulo. Campo de texto pode ter rótulo.
+ id  |     antes      |    depois     
+-----+----------------+---------------
+ 101 | [  Cliente A ] | Cliente A
+ 103 | [cliente c]    | Cliente C
+ 105 |                | Não informado
+ 107 | [cliente f ]   | Cliente F
+ 110 | []             | Não informado
+(5 rows)
+
+== Status: CASE WHEN com ELSE. O nulo vira desconhecido e continua visível.
+ id  |   antes    |    depois    
+-----+------------+--------------
+ 101 | [PAGO]     | pago
+ 102 | [NULL]     | desconhecido
+ 107 | [pendente] | pendente
+ 109 | [ Pago ]   | pago
+(4 rows)
+
+    status    | pedidos | valor  
+--------------+---------+--------
+ cancelado    |       1 |  45.00
+ desconhecido |       1 |  80.50
+ pago         |       7 | 836.10
+ pendente     |       1 |  15.00
+(4 rows)
+
+== CASE sem ELSE: o status novo vira NULL sem aviso nenhum.
+ status_novo | sem_else |   com_else   
+-------------+----------+--------------
+ pago        | pago     | pago
+ estornado   |          | desconhecido
+(2 rows)
+
+== COALESCE com critério: custo nulo não é custo zero. A margem muda.
+ produto_id | custo_silver | venda  | margem_com_nulo | margem_com_zero 
+------------+--------------+--------+-----------------+-----------------
+         10 |        30.00 | 600.00 |          300.00 |          300.00
+         20 |        20.00 | 133.20 |           53.20 |           53.20
+         30 |         7.00 |  10.90 |            3.90 |            3.90
+         40 |        10.00 |  80.00 |           40.00 |           40.00
+         50 |              |  12.00 |                 |           12.00
+(5 rows)
+
+ margem_soma_ignora_nulo | margem_com_zero | itens_sem_custo 
+-------------------------+-----------------+-----------------
+                  397.10 |          409.10 |               1
+(1 row)
+
+== COALESCE para juntar duas colunas de data: atendido_em, senão criado_em.
+ id |    criado_em_utc    |   atendido_em_utc   |    inicio_local     | sem_atendido_em 
+----+---------------------+---------------------+---------------------+-----------------
+  1 | 2026-10-20 13:15:00 | 2026-10-20 13:20:00 | 2026-10-20 10:20:00 | f
+  2 | 2026-10-21 00:25:00 | 2026-10-21 00:30:00 | 2026-10-20 21:30:00 | f
+  3 | 2026-10-21 00:50:00 |                     | 2026-10-20 21:50:00 | t
+  4 | 2026-10-21 12:00:00 | 2026-10-21 12:05:00 | 2026-10-21 09:05:00 | f
+(4 rows)
+
+== Coluna redundante: valor_texto concorda com valor? Só então ela pode sair.
+ linhas | divergentes 
+--------+-------------
+     11 |           0
+(1 row)
+
+== Duplicata: DISTINCT não resolve, porque as linhas não são iguais.
+ bronze | com_distinct | ids_distintos | silver_row_number 
+--------+--------------+---------------+-------------------
+     11 |           11 |            10 |                10
+(1 row)
+
+ id  |  status   |    atualizado_em    | carregado_utc 
+-----+-----------+---------------------+---------------
+ 103 | pendente  | 2026-10-20 18:05:00 | 2026-10-20
+ 103 | cancelado | 2026-10-20 19:00:00 | 2026-11-03
+(2 rows)
+
+ pedido_id |  status   
+-----------+-----------
+       103 | cancelado
+(1 row)
+
+[exit 0, 2026-11-03]

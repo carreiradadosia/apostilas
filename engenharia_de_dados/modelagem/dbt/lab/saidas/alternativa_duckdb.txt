@@ -1,0 +1,337 @@
+
+$ docker build --network host --progress=plain -t modelagem-lab-dbt-duckdb:local alternativa_duckdb
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 254B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.13.15-slim-bookworm
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/3] FROM docker.io/library/python:3.13.15-slim-bookworm
+#4 CACHED
+
+#5 [internal] load build context
+#5 transferring context: 1.26kB done
+#5 DONE 0.0s
+
+#6 [2/3] COPY requirements.lock /tmp/requirements.lock
+#6 DONE 0.0s
+
+#7 [3/3] RUN pip install --no-cache-dir -r /tmp/requirements.lock
+#7 2.198 Collecting agate==1.9.1 (from -r /tmp/requirements.lock (line 2))
+#7 2.313   Downloading agate-1.9.1-py2.py3-none-any.whl.metadata (3.2 kB)
+#7 2.336 Collecting annotated-types==0.8.0 (from -r /tmp/requirements.lock (line 3))
+#7 2.343   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+#7 2.373 Collecting attrs==26.1.0 (from -r /tmp/requirements.lock (line 4))
+#7 2.383   Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+#7 2.406 Collecting babel==2.18.0 (from -r /tmp/requirements.lock (line 5))
+#7 2.416   Downloading babel-2.18.0-py3-none-any.whl.metadata (2.2 kB)
+#7 2.446 Collecting certifi==2026.10.23 (from -r /tmp/requirements.lock (line 6))
+#7 2.455   Downloading certifi-2026.10.23-py3-none-any.whl.metadata (2.5 kB)
+#7 2.650 Collecting charset-normalizer==3.5.2 (from -r /tmp/requirements.lock (line 7))
+#7 2.657   Downloading charset_normalizer-3.5.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+#7 2.688 Collecting click==8.5.0 (from -r /tmp/requirements.lock (line 8))
+#7 2.696   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+#7 2.717 Collecting colorama==0.4.6 (from -r /tmp/requirements.lock (line 9))
+#7 2.726   Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+#7 2.746 Collecting daff==1.4.2 (from -r /tmp/requirements.lock (line 10))
+#7 2.758   Downloading daff-1.4.2-py3-none-any.whl.metadata (10 kB)
+#7 2.780 Collecting dbt-adapters==1.24.5 (from -r /tmp/requirements.lock (line 11))
+#7 2.791   Downloading dbt_adapters-1.24.5-py3-none-any.whl.metadata (4.6 kB)
+#7 2.816 Collecting dbt-common==1.39.0 (from -r /tmp/requirements.lock (line 12))
+#7 2.826   Downloading dbt_common-1.39.0-py3-none-any.whl.metadata (5.1 kB)
+#7 2.886 Collecting dbt-core==1.12.6 (from -r /tmp/requirements.lock (line 13))
+#7 2.896   Downloading dbt_core-1.12.6-py3-none-any.whl.metadata (5.3 kB)
+#7 2.920 Collecting dbt-core-experimental-parser==2.0.11 (from -r /tmp/requirements.lock (line 14))
+#7 2.931   Downloading dbt_core_experimental_parser-2.0.11.tar.gz (4.7 kB)
+#7 2.942   Installing build dependencies: started
+#7 4.461   Installing build dependencies: finished with status 'done'
+#7 4.462   Getting requirements to build wheel: started
+#7 4.590   Getting requirements to build wheel: finished with status 'done'
+#7 4.591   Preparing metadata (pyproject.toml): started
+#7 7.249   Preparing metadata (pyproject.toml): finished with status 'done'
+#7 7.266 Collecting dbt-duckdb==1.11.1 (from -r /tmp/requirements.lock (line 15))
+#7 7.278   Downloading dbt_duckdb-1.11.1-py3-none-any.whl.metadata (48 kB)
+#7 7.332 Collecting dbt-extractor==0.6.0 (from -r /tmp/requirements.lock (line 16))
+#7 7.341   Downloading dbt_extractor-0.6.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.6 kB)
+#7 7.373 Collecting dbt-protos==1.0.615 (from -r /tmp/requirements.lock (line 17))
+#7 7.383   Downloading dbt_protos-1.0.615-py3-none-any.whl.metadata (859 bytes)
+#7 7.401 Collecting deepdiff==8.6.2 (from -r /tmp/requirements.lock (line 18))
+#7 7.409   Downloading deepdiff-8.6.2-py3-none-any.whl.metadata (8.8 kB)
+#7 7.667 Collecting duckdb==2.0.0 (from -r /tmp/requirements.lock (line 19))
+#7 7.678   Downloading duckdb-2.0.0-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (4.1 kB)
+#7 7.718 Collecting idna==3.20 (from -r /tmp/requirements.lock (line 20))
+#7 7.728   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+#7 7.756 Collecting importlib-metadata==10.1.0 (from -r /tmp/requirements.lock (line 21))
+#7 7.767   Downloading importlib_metadata-10.1.0-py3-none-any.whl.metadata (4.5 kB)
+#7 7.784 Collecting isodate==0.7.2 (from -r /tmp/requirements.lock (line 22))
+#7 7.794   Downloading isodate-0.7.2-py3-none-any.whl.metadata (11 kB)
+#7 7.809 Collecting jinja2==3.1.6 (from -r /tmp/requirements.lock (line 23))
+#7 7.815   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+#7 7.835 Collecting jsonschema==4.26.0 (from -r /tmp/requirements.lock (line 24))
+#7 7.843   Downloading jsonschema-4.26.0-py3-none-any.whl.metadata (7.6 kB)
+#7 7.864 Collecting jsonschema-specifications==2025.9.1 (from -r /tmp/requirements.lock (line 25))
+#7 7.875   Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)
+#7 7.892 Collecting leather==0.4.1 (from -r /tmp/requirements.lock (line 26))
+#7 7.900   Downloading leather-0.4.1-py3-none-any.whl.metadata (3.0 kB)
+#7 7.949 Collecting markupsafe==3.0.4 (from -r /tmp/requirements.lock (line 27))
+#7 7.956   Downloading markupsafe-3.0.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+#7 7.976 Collecting mashumaro==3.17 (from -r /tmp/requirements.lock (line 28))
+#7 7.990   Downloading mashumaro-3.17-py3-none-any.whl.metadata (118 kB)
+#7 8.028 Collecting metricflow==0.213.0 (from -r /tmp/requirements.lock (line 29))
+#7 8.041   Downloading metricflow-0.213.0-py3-none-any.whl.metadata (23 kB)
+#7 8.083 Collecting more-itertools==10.8.0 (from -r /tmp/requirements.lock (line 30))
+#7 8.095   Downloading more_itertools-10.8.0-py3-none-any.whl.metadata (39 kB)
+#7 8.195 Collecting msgpack==1.2.4 (from -r /tmp/requirements.lock (line 31))
+#7 8.206   Downloading msgpack-1.2.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.3 kB)
+#7 8.227 Collecting networkx==3.7 (from -r /tmp/requirements.lock (line 32))
+#7 8.236   Downloading networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+#7 8.267 Collecting opentelemetry-api==1.45.2 (from -r /tmp/requirements.lock (line 33))
+#7 8.275   Downloading opentelemetry_api-1.45.2-py3-none-any.whl.metadata (1.4 kB)
+#7 8.289 Collecting orderly-set==5.5.0 (from -r /tmp/requirements.lock (line 34))
+#7 8.298   Downloading orderly_set-5.5.0-py3-none-any.whl.metadata (6.6 kB)
+#7 8.334 Collecting packaging==26.3 (from -r /tmp/requirements.lock (line 35))
+#7 8.344   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+#7 8.356 Collecting parsedatetime==2.6 (from -r /tmp/requirements.lock (line 36))
+#7 8.365   Downloading parsedatetime-2.6-py3-none-any.whl.metadata (4.7 kB)
+#7 8.385 Collecting pathspec==1.0.4 (from -r /tmp/requirements.lock (line 37))
+#7 8.393   Downloading pathspec-1.0.4-py3-none-any.whl.metadata (13 kB)
+#7 8.517 Collecting protobuf==6.33.6 (from -r /tmp/requirements.lock (line 38))
+#7 8.524   Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+#7 8.651 Collecting pydantic==2.14.2 (from -r /tmp/requirements.lock (line 39))
+#7 8.662   Downloading pydantic-2.14.2-py3-none-any.whl.metadata (137 kB)
+#7 9.555 Collecting pydantic-core==2.50.2 (from -r /tmp/requirements.lock (line 40))
+#7 9.564   Downloading pydantic_core-2.50.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.5 kB)
+#7 9.580 Collecting python-dateutil==2.9.0.post0 (from -r /tmp/requirements.lock (line 41))
+#7 9.591   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+#7 9.607 Collecting python-dotenv==1.2.4 (from -r /tmp/requirements.lock (line 42))
+#7 9.616   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+#7 9.635 Collecting python-slugify==9.1.3 (from -r /tmp/requirements.lock (line 43))
+#7 9.642   Downloading python_slugify-9.1.3-py3-none-any.whl.metadata (12 kB)
+#7 9.656 Collecting pytimeparse==1.1.10 (from -r /tmp/requirements.lock (line 44))
+#7 9.664   Downloading pytimeparse-1.1.10-py3-none-any.whl.metadata (3.6 kB)
+#7 9.705 Collecting pytz==2026.6 (from -r /tmp/requirements.lock (line 45))
+#7 9.715   Downloading pytz-2026.6-py2.py3-none-any.whl.metadata (22 kB)
+#7 9.751 Collecting pyyaml==6.0.3 (from -r /tmp/requirements.lock (line 46))
+#7 9.788   Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+#7 10.32 Collecting rapidfuzz==3.14.6 (from -r /tmp/requirements.lock (line 47))
+#7 10.33   Downloading rapidfuzz-3.14.6-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (12 kB)
+#7 10.36 Collecting referencing==0.37.0 (from -r /tmp/requirements.lock (line 48))
+#7 10.37   Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)
+#7 10.40 Collecting requests==2.34.2 (from -r /tmp/requirements.lock (line 49))
+#7 10.41   Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+#7 10.71 Collecting rpds-py==2026.9.1 (from -r /tmp/requirements.lock (line 50))
+#7 10.72   Downloading rpds_py-2026.9.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)
+#7 10.74 Collecting six==1.17.0 (from -r /tmp/requirements.lock (line 51))
+#7 10.75   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+#7 10.76 Collecting snowplow-tracker==1.1.0 (from -r /tmp/requirements.lock (line 52))
+#7 10.77   Downloading snowplow_tracker-1.1.0-py3-none-any.whl.metadata (5.7 kB)
+#7 10.84 Collecting sqlglot==30.27.0 (from -r /tmp/requirements.lock (line 53))
+#7 10.85   Downloading sqlglot-30.27.0-py3-none-any.whl.metadata (25 kB)
+#7 10.87 Collecting sqlparse==0.6.1 (from -r /tmp/requirements.lock (line 54))
+#7 10.88   Downloading sqlparse-0.6.1-py3-none-any.whl.metadata (6.9 kB)
+#7 10.90 Collecting tabulate==0.10.0 (from -r /tmp/requirements.lock (line 55))
+#7 10.91   Downloading tabulate-0.10.0-py3-none-any.whl.metadata (40 kB)
+#7 10.92 Collecting text-unidecode==1.3 (from -r /tmp/requirements.lock (line 56))
+#7 10.93   Downloading text_unidecode-1.3-py2.py3-none-any.whl.metadata (2.4 kB)
+#7 10.95 Collecting typing-extensions==4.16.0 (from -r /tmp/requirements.lock (line 57))
+#7 10.96   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#7 10.97 Collecting typing-inspection==0.4.4 (from -r /tmp/requirements.lock (line 58))
+#7 10.98   Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+#7 11.00 Collecting urllib3==2.8.0 (from -r /tmp/requirements.lock (line 59))
+#7 11.01   Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+#7 11.03 Collecting zipp==4.1.2 (from -r /tmp/requirements.lock (line 60))
+#7 11.03   Downloading zipp-4.1.2-py3-none-any.whl.metadata (3.6 kB)
+#7 11.14 Downloading agate-1.9.1-py2.py3-none-any.whl (95 kB)
+#7 11.15 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#7 11.16 Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+#7 11.17 Downloading babel-2.18.0-py3-none-any.whl (10.2 MB)
+#7 11.63    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.2/10.2 MB 22.5 MB/s  0:00:00
+#7 11.65 Downloading certifi-2026.10.23-py3-none-any.whl (135 kB)
+#7 11.66 Downloading charset_normalizer-3.5.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (254 kB)
+#7 11.67 Downloading click-8.5.0-py3-none-any.whl (125 kB)
+#7 11.68 Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+#7 11.70 Downloading daff-1.4.2-py3-none-any.whl (144 kB)
+#7 11.71 Downloading dbt_adapters-1.24.5-py3-none-any.whl (177 kB)
+#7 11.73 Downloading dbt_common-1.39.0-py3-none-any.whl (89 kB)
+#7 11.74 Downloading dbt_protos-1.0.615-py3-none-any.whl (303 kB)
+#7 11.76 Downloading deepdiff-8.6.2-py3-none-any.whl (91 kB)
+#7 11.77 Downloading isodate-0.7.2-py3-none-any.whl (22 kB)
+#7 11.78 Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+#7 11.79 Downloading jsonschema-4.26.0-py3-none-any.whl (90 kB)
+#7 11.80 Downloading mashumaro-3.17-py3-none-any.whl (94 kB)
+#7 11.82 Downloading opentelemetry_api-1.45.2-py3-none-any.whl (60 kB)
+#7 11.82 Downloading orderly_set-5.5.0-py3-none-any.whl (13 kB)
+#7 11.84 Downloading pathspec-1.0.4-py3-none-any.whl (55 kB)
+#7 11.84 Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)
+#7 11.87 Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+#7 11.88 Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+#7 11.90 Downloading idna-3.20-py3-none-any.whl (69 kB)
+#7 11.91 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#7 11.92 Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+#7 11.93 Downloading dbt_core-1.12.6-py3-none-any.whl (1.1 MB)
+#7 11.97    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 25.8 MB/s  0:00:00
+#7 11.98 Downloading dbt_extractor-0.6.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (442 kB)
+#7 12.01 Downloading metricflow-0.213.0-py3-none-any.whl (999 kB)
+#7 12.04    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 999.5/999.5 kB 29.2 MB/s  0:00:00
+#7 12.05 Downloading more_itertools-10.8.0-py3-none-any.whl (69 kB)
+#7 12.06 Downloading networkx-3.7-py3-none-any.whl (2.1 MB)
+#7 12.15    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 25.5 MB/s  0:00:00
+#7 12.16 Downloading pydantic-2.14.2-py3-none-any.whl (490 kB)
+#7 12.19 Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (801 kB)
+#7 12.22    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 801.6/801.6 kB 34.1 MB/s  0:00:00
+#7 12.22 Downloading rapidfuzz-3.14.6-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (3.2 MB)
+#7 12.33    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.2/3.2 MB 31.5 MB/s  0:00:00
+#7 12.33 Downloading snowplow_tracker-1.1.0-py3-none-any.whl (44 kB)
+#7 12.34 Downloading sqlparse-0.6.1-py3-none-any.whl (51 kB)
+#7 12.36 Downloading dbt_duckdb-1.11.1-py3-none-any.whl (109 kB)
+#7 12.37 Downloading duckdb-2.0.0-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (24.4 MB)
+#7 13.45    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 24.4/24.4 MB 22.5 MB/s  0:00:01
+#7 13.47 Downloading importlib_metadata-10.1.0-py3-none-any.whl (32 kB)
+#7 13.48 Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+#7 13.49 Downloading leather-0.4.1-py3-none-any.whl (30 kB)
+#7 13.50 Downloading markupsafe-3.0.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (23 kB)
+#7 13.51 Downloading msgpack-1.2.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (469 kB)
+#7 13.53 Downloading packaging-26.3-py3-none-any.whl (129 kB)
+#7 13.54 Downloading parsedatetime-2.6-py3-none-any.whl (42 kB)
+#7 13.56 Downloading pydantic_core-2.50.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.2 MB)
+#7 13.71    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 13.9 MB/s  0:00:00
+#7 13.72 Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+#7 13.73 Downloading python_slugify-9.1.3-py3-none-any.whl (16 kB)
+#7 13.74 Downloading pytimeparse-1.1.10-py3-none-any.whl (10 kB)
+#7 13.76 Downloading pytz-2026.6-py2.py3-none-any.whl (506 kB)
+#7 13.78 Downloading referencing-0.37.0-py3-none-any.whl (26 kB)
+#7 13.79 Downloading rpds_py-2026.9.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (370 kB)
+#7 13.81 Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+#7 13.82 Downloading sqlglot-30.27.0-py3-none-any.whl (801 kB)
+#7 13.85    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 802.0/802.0 kB 26.7 MB/s  0:00:00
+#7 13.86 Downloading tabulate-0.10.0-py3-none-any.whl (39 kB)
+#7 13.92 Downloading text_unidecode-1.3-py2.py3-none-any.whl (78 kB)
+#7 13.93 Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+#7 13.95 Downloading zipp-4.1.2-py3-none-any.whl (10 kB)
+#7 14.18 Building wheels for collected packages: dbt-core-experimental-parser
+#7 14.18   Building wheel for dbt-core-experimental-parser (pyproject.toml): started
+#7 14.24   Building wheel for dbt-core-experimental-parser (pyproject.toml): finished with status 'done'
+#7 14.28   Created wheel for dbt-core-experimental-parser: filename=dbt_core_experimental_parser-2.0.11-py3-none-manylinux_2_28_x86_64.whl size=55793119 sha256=49472e49985e747ff08769cc39e5efb9ad796e6a95e78430c96f6ad0ce0aad67
+#7 14.28   Stored in directory: /tmp/pip-ephem-wheel-cache-o01f8w6t/wheels/62/50/db/e2d76031844c1bc262e3f3c94c1b2224683fd6576e2aa124c8
+#7 14.29 Successfully built dbt-core-experimental-parser
+#7 14.45 Installing collected packages: text-unidecode, pytz, parsedatetime, leather, daff, zipp, urllib3, typing-extensions, tabulate, sqlparse, sqlglot, six, rpds-py, rapidfuzz, pyyaml, pytimeparse, python-slugify, python-dotenv, protobuf, pathspec, packaging, orderly-set, networkx, msgpack, more-itertools, markupsafe, isodate, idna, duckdb, dbt-extractor, dbt-core-experimental-parser, colorama, click, charset-normalizer, certifi, babel, attrs, annotated-types, typing-inspection, requests, referencing, python-dateutil, pydantic-core, opentelemetry-api, mashumaro, jinja2, importlib-metadata, deepdiff, dbt-protos, agate, snowplow-tracker, pydantic, jsonschema-specifications, jsonschema, metricflow, dbt-common, dbt-adapters, dbt-core, dbt-duckdb
+#7 32.76 
+#7 32.77 Successfully installed agate-1.9.1 annotated-types-0.8.0 attrs-26.1.0 babel-2.18.0 certifi-2026.10.23 charset-normalizer-3.5.2 click-8.5.0 colorama-0.4.6 daff-1.4.2 dbt-adapters-1.24.5 dbt-common-1.39.0 dbt-core-1.12.6 dbt-core-experimental-parser-2.0.11 dbt-duckdb-1.11.1 dbt-extractor-0.6.0 dbt-protos-1.0.615 deepdiff-8.6.2 duckdb-2.0.0 idna-3.20 importlib-metadata-10.1.0 isodate-0.7.2 jinja2-3.1.6 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 leather-0.4.1 markupsafe-3.0.4 mashumaro-3.17 metricflow-0.213.0 more-itertools-10.8.0 msgpack-1.2.4 networkx-3.7 opentelemetry-api-1.45.2 orderly-set-5.5.0 packaging-26.3 parsedatetime-2.6 pathspec-1.0.4 protobuf-6.33.6 pydantic-2.14.2 pydantic-core-2.50.2 python-dateutil-2.9.0.post0 python-dotenv-1.2.4 python-slugify-9.1.3 pytimeparse-1.1.10 pytz-2026.6 pyyaml-6.0.3 rapidfuzz-3.14.6 referencing-0.37.0 requests-2.34.2 rpds-py-2026.9.1 six-1.17.0 snowplow-tracker-1.1.0 sqlglot-30.27.0 sqlparse-0.6.1 tabulate-0.10.0 text-unidecode-1.3 typing-extensions-4.16.0 typing-inspection-0.4.4 urllib3-2.8.0 zipp-4.1.2
+#7 32.77 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#7 32.77 
+#7 32.77 [notice] A new release of pip is available: 26.2.1 -> 26.3
+#7 32.77 [notice] To update, run: pip install --upgrade pip
+#7 DONE 33.3s
+
+#8 exporting to image
+#8 exporting layers
+#8 exporting layers 2.1s done
+#8 writing image sha256:021026e724f02c92259f3d985943d8b4b863bed241a7c33c6b0948284b0524f8 done
+#8 naming to docker.io/library/modelagem-lab-dbt-duckdb:local 0.0s done
+#8 DONE 2.2s
+[exit 0, 2026-11-03]
+
+$ docker run --rm --network none -u "$(id -u):$(id -g)" -e HOME=/tmp -e DBT_PROFILES_DIR=/lab -e DBT_USE_COLORS=false -e DBT_SEND_ANONYMOUS_USAGE_STATS=false -v "$PWD/alternativa_duckdb/projeto:/lab" -w /lab modelagem-lab-dbt-duckdb:local bash -c "dbt --version && dbt build && python -c \"import duckdb; c = duckdb.connect(\x27/tmp/lab.duckdb\x27); print(duckdb.__version__); print(c.sql(\x27select * from vendas_por_dia order by dia\x27)); print(c.sql(\x27select pedido_id, cliente, status from stg_pedidos where pedido_id in (101, 102, 105, 110) order by 1\x27))\""
+Core:
+  - installed: 1.12.6
+
+  The latest version of dbt-core could not be determined!
+  Make sure that the following URL is accessible:
+  https://pypi.org/pypi/dbt-core/json
+
+Plugins:
+  - duckdb: 1.11.1 - Could not determine latest version
+
+
+11:03:00  dbt v2 is available, and is the default for new installations. This is dbt Core v1.
+          New project - install v2: https://docs.getdbt.com/docs/local/install-dbt?utm_source=dbt-cli
+          Existing v1 project - upgrade guide: https://docs.getdbt.com/docs/dbt-versions/dbt-upgrade/upgrading-to-v2?utm_source=dbt-cli
+11:03:02  Running with dbt=1.12.6
+11:03:02  Registered adapter: duckdb=1.11.1
+11:03:02  Unable to do partial parsing because saved manifest not found. Starting full parse.
+11:03:04  Found 2 models, 6 data tests, 1 seed, 511 macros
+11:03:04  
+11:03:04  Concurrency: 1 threads (target='dev')
+11:03:04  
+11:03:05  1 of 9 START seed file main.bronze_pedidos ..................................... [RUN]
+11:03:05  1 of 9 OK loaded seed file main.bronze_pedidos ................................. [INSERT 11 in 0.08s]
+11:03:05  2 of 9 START sql table model main.stg_pedidos .................................. [RUN]
+11:03:05  2 of 9 OK created sql table model main.stg_pedidos ............................. [OK in 0.11s]
+11:03:05  3 of 9 START test accepted_values_stg_pedidos_status__pago__cancelado__pendente__desconhecido  [RUN]
+11:03:05  3 of 9 PASS accepted_values_stg_pedidos_status__pago__cancelado__pendente__desconhecido  [PASS in 0.05s]
+11:03:05  4 of 9 START test not_null_stg_pedidos_pedido_id ............................... [RUN]
+11:03:05  4 of 9 PASS not_null_stg_pedidos_pedido_id ..................................... [PASS in 0.02s]
+11:03:05  5 of 9 START test unique_stg_pedidos_pedido_id ................................. [RUN]
+11:03:05  5 of 9 PASS unique_stg_pedidos_pedido_id ....................................... [PASS in 0.02s]
+11:03:05  6 of 9 START sql table model main.vendas_por_dia ............................... [RUN]
+11:03:05  6 of 9 OK created sql table model main.vendas_por_dia .......................... [OK in 0.03s]
+11:03:05  7 of 9 START test assert_receita_igual_a_do_piloto ............................. [RUN]
+11:03:05  7 of 9 PASS assert_receita_igual_a_do_piloto ................................... [PASS in 0.02s]
+11:03:05  8 of 9 START test not_null_vendas_por_dia_dia .................................. [RUN]
+11:03:05  8 of 9 PASS not_null_vendas_por_dia_dia ........................................ [PASS in 0.02s]
+11:03:05  9 of 9 START test unique_vendas_por_dia_dia .................................... [RUN]
+11:03:05  9 of 9 PASS unique_vendas_por_dia_dia .......................................... [PASS in 0.02s]
+11:03:05  
+11:03:05  Finished running 1 seed, 2 table models, 6 data tests in 0 hours 0 minutes and 0.58 seconds (0.58s).
+11:03:05  
+11:03:05  Completed successfully
+11:03:05  
+11:03:05  Done. PASS=9 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=9
+  File "<string>", line 1
+    import duckdb; c = duckdb.connect(\x27/tmp/lab.duckdb\x27); print(duckdb.__version__); print(c.sql(\x27select * from vendas_por_dia order by dia\x27)); print(c.sql(\x27select pedido_id, cliente, status from stg_pedidos where pedido_id in (101, 102, 105, 110) order by 1\x27))
+                                       ^
+SyntaxError: unexpected character after line continuation character
+[exit 1, 2026-11-03]
+
+$ docker run --rm --network none -u "$(id -u):$(id -g)" -e HOME=/tmp -e DBT_PROFILES_DIR=/lab -e DBT_USE_COLORS=false -e DBT_SEND_ANONYMOUS_USAGE_STATS=false -v "$PWD/alternativa_duckdb/projeto:/lab" -w /lab modelagem-lab-dbt-duckdb:local bash -c "dbt build --quiet && python -I conferir.py"
+duckdb 2.0.0
+┌────────────┬─────────┬──────────────┐
+│    dia     │ pedidos │ receita_paga │
+│    date    │  int64  │    double    │
+├────────────┼─────────┼──────────────┤
+│ 2026-10-20 │       4 │        430.9 │
+│ 2026-10-21 │       3 │        111.9 │
+│ 2026-10-22 │       3 │        293.3 │
+└────────────┴─────────┴──────────────┘
+
+┌───────────┬─────────────────┬──────────────┐
+│ pedido_id │     cliente     │    status    │
+│   int32   │     varchar     │   varchar    │
+├───────────┼─────────────────┼──────────────┤
+│       101 │ [Cliente A]     │ pago         │
+│       102 │ [Cliente B]     │ desconhecido │
+│       105 │ [Não informado] │ pago         │
+│       110 │ [Não informado] │ pago         │
+└───────────┴─────────────────┴──────────────┘
+
+┌───────┬─────────────────┐
+│  id   │ cliente_na_seed │
+│ int32 │     varchar     │
+├───────┼─────────────────┤
+│   101 │ [  Cliente A ]  │
+│   105 │ NULL            │
+│   107 │ [cliente f ]    │
+│   110 │ NULL            │
+└───────┴─────────────────┘
+
+[exit 0, 2026-11-03]
+
+$ grep 'Resource report' alternativa_duckdb/projeto/logs/dbt.log | grep -o '{.*}' | python3 -c 'import sys, json
+for l in sys.stdin:
+    d = json.loads(l)
+    print(d["command_name"], "ok" if d["command_success"] else "falhou", round(d["command_wall_clock_time"], 1), "s", round(int(d["process_mem_max_rss"]) / 1024), "MiB pico do processo dbt")'
+build ok 3.4 s 202 MiB pico do processo dbt
+build ok 1.5 s 192 MiB pico do processo dbt
+[exit 0, 2026-11-03]
+
+$ docker image ls --format "{{.Repository}}:{{.Tag}} {{.Size}}" | grep -E "^modelagem-lab-dbt(-duckdb)?:local "
+modelagem-lab-dbt-duckdb:local 497MB
+modelagem-lab-dbt:local 531MB
+[exit 0, 2026-11-03]

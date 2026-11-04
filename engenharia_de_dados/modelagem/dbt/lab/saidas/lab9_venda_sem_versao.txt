@@ -1,0 +1,55 @@
+# 2026-11-04. postgres:16.15-alpine (PostgreSQL 16.15, psql 16.15). Projeto Compose modelagem-provas.
+# Banco no estado do Lab 4 (três fotos, silver e gold refeitas), montado por lab9_preparo.txt.
+# As quatro vendas sintéticas ficam só no schema ensaio_sem_versao; bronze e silver não mudam.
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -v ON_ERROR_STOP=1 -q -f /sql/75_venda_sem_versao.sql
+psql:/sql/75_venda_sem_versao.sql:7: NOTICE:  schema "ensaio_sem_versao" does not exist, skipping
+== Referência: 13 itens reais e 4 sintéticos; a receita paga certa é 836,10 + 110,00.
+ itens | receita_paga 
+-------+--------------
+    17 |       946.10
+(1 row)
+
+== As cinco opções, com o que not_null e relationships contariam em cada uma.
+           opcao            | linhas | receita_paga | nulos_not_null | orfas_relationships | sem_preco_tabela 
+----------------------------+--------+--------------+----------------+---------------------+------------------
+ A. JOIN: a venda some      |     15 |       877.10 |              0 |                   0 |                0
+ B. LEFT JOIN: chave nula   |     17 |       946.10 |              2 |                   0 |                2
+ C. membro desconhecido     |     17 |       946.10 |              0 |                   0 |                2
+ D. primeira versão recuada |     17 |       946.10 |              1 |                   0 |                1
+ E. versão zero, preço nulo |     17 |       946.10 |              1 |                   0 |                2
+(5 rows)
+
+== relationships pela chave natural, na opção B: acusa só o produto que nenhuma foto viu.
+ orfas_pela_chave_natural 
+--------------------------
+                        1
+(1 row)
+
+== O que cada opção lê para as duas vendas sem versão.
+ pedido_id | produto_vendido | opcao |      nome       | preco_unitario | preco_tabela 
+-----------+-----------------+-------+-----------------+----------------+--------------
+       900 |              10 | B     | <nulo>          |          60.00 |       <nulo>
+       900 |              10 | C     | Desconhecido    |          60.00 |       <nulo>
+       900 |              10 | D     | Camiseta Básica |          60.00 |        60.00
+       900 |              10 | E     | Camiseta Básica |          60.00 |       <nulo>
+       903 |              60 | B     | <nulo>          |           9.00 |       <nulo>
+       903 |              60 | C     | Desconhecido    |           9.00 |       <nulo>
+       903 |              60 | D     | <nulo>          |           9.00 |       <nulo>
+       903 |              60 | E     | <nulo>          |           9.00 |       <nulo>
+(8 rows)
+
+== Mesmo relógio: a venda das 22h30 do dia 21 pelo dia local e pelo dia em UTC.
+ pedido_id | preco_unitario | calendario |    dia     | preco_tabela 
+-----------+----------------+------------+------------+--------------
+       901 |          20.50 | local      | 2026-10-21 |        20.50
+       901 |          20.50 | UTC        | 2026-10-22 |        20.00
+(2 rows)
+
+== Limite da foto diária: venda à 1h do dia 22, antes da rotina das 3h. A vigência já marca o preço novo.
+ pedido_id | dia_local  | praticado | tabela_do_dia | diferenca 
+-----------+------------+-----------+---------------+-----------
+       902 | 2026-10-22 |     20.50 |         20.00 |      0.50
+(1 row)
+
+[exit 0, 2026-11-04]

@@ -1,0 +1,45 @@
+models:
+  - name: dim_data
+    columns:
+      - name: data_id
+        data_tests: [unique, not_null]
+  - name: dim_loja
+    columns:
+      - name: loja_sk
+        data_tests: [unique, not_null]
+  - name: dim_produto
+    columns:
+      - name: produto_sk
+        data_tests: [unique, not_null]
+  - name: fct_vendas
+    description: One row per order item.
+    columns:
+      - name: venda_sk
+        description: The grain test. If a join multiplies rows, this fails.
+        data_tests: [unique, not_null]
+      - name: produto_sk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_produto')
+                field: produto_sk
+      - name: loja_sk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_loja')
+                field: loja_sk
+      - name: data_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_data')
+                field: data_id
+  - name: vendas_por_dia
+    description: One row per day.
+    columns:
+      - name: dia
+        data_tests: [unique, not_null]

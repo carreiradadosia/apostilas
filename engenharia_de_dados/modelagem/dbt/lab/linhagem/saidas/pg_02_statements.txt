@@ -1,0 +1,154 @@
+
+$ bin/pg postgres admin_lab lab -a <<'SQL'
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+SELECT count(*) AS colunas, string_agg(attname, ', ' ORDER BY attnum) AS nomes
+FROM pg_attribute
+WHERE attrelid = 'pg_stat_statements'::regclass AND attnum > 0
+  AND attname ~ '(user|role|app|host|client|plan$|param|literal|time$|stats_since)';
+SELECT pg_stat_statements_reset() IS NOT NULL AS zerado;
+SQL
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+CREATE EXTENSION
+SELECT count(*) AS colunas, string_agg(attname, ', ' ORDER BY attnum) AS nomes
+FROM pg_attribute
+WHERE attrelid = 'pg_stat_statements'::regclass AND attnum > 0
+  AND attname ~ '(user|role|app|host|client|plan$|param|literal|time$|stats_since)';
+ colunas |                                                                                                                                                               nomes                                                                                                                                                                
+---------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      19 | userid, total_plan_time, min_plan_time, max_plan_time, mean_plan_time, stddev_plan_time, total_exec_time, min_exec_time, max_exec_time, mean_exec_time, stddev_exec_time, blk_read_time, blk_write_time, temp_blk_read_time, temp_blk_write_time, jit_generation_time, jit_inlining_time, jit_optimization_time, jit_emission_time
+(1 row)
+
+SELECT pg_stat_statements_reset() IS NOT NULL AS zerado;
+ zerado 
+--------
+ t
+(1 row)
+
+[exit 0, 2026-11-03]
+
+$ # The application runs the report twice, with different literals.
+bin/pg postgres app_relatorio erp_relatorios -q -f /cenario/app_relatorio.sql
+bin/pg postgres app_relatorio erp_relatorios -q -f /cenario/app_relatorio_2.sql
+     loja      | faturamento 
+---------------+-------------
+ LOJA NORTE    |      344.20
+ Loja Centro   |      419.90
+ loja são joão |       72.00
+(3 rows)
+
+    dia     | total  
+------------+--------
+ 2026-10-21 | 111.90
+ 2026-10-22 | 293.30
+(2 rows)
+
+ pedido_id | valor_item 
+-----------+------------
+       101 |     120.00
+(1 row)
+
+     loja      | faturamento 
+---------------+-------------
+ Loja Centro   |       99.90
+ loja são joão |       12.00
+(2 rows)
+
+    dia     | total  
+------------+--------
+ 2026-10-22 | 293.30
+(1 row)
+
+ pedido_id | valor_item 
+-----------+------------
+       106 |      99.90
+(1 row)
+
+[exit 0, 2026-11-03]
+
+$ bin/pg postgres admin_lab lab -f /cenario/ver_statements.sql
+     papel     |       queryid        | calls | rows | toplevel |                                                          query                                                           
+---------------+----------------------+-------+------+----------+--------------------------------------------------------------------------------------------------------------------------
+ app_relatorio |  6373311547144384952 |     2 |    3 | t        | SELECT dia, sum(valor_item) AS total FROM relatorios.vw_faturamento_itens WHERE dia >= DATE $1 GROUP BY dia ORDER BY dia
+ app_relatorio | -1234613963579190824 |     2 |    5 | t        | SELECT loja, faturamento FROM relatorios.faturamento_por_loja($1, $2)
+ app_relatorio | -3418423842587297862 |     2 |    2 | t        | SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = $1
+(3 rows)
+
+[exit 0, 2026-11-03]
+
+$ # A role with no extra privilege sees the numbers, not the text.
+bin/pg postgres monitor_lab lab -f /cenario/ver_statements.sql
+     papel     | queryid | calls | rows | toplevel |          query           
+---------------+---------+-------+------+----------+--------------------------
+ app_relatorio |         |     2 |    3 | t        | <insufficient privilege>
+ app_relatorio |         |     2 |    5 | t        | <insufficient privilege>
+ app_relatorio |         |     2 |    2 | t        | <insufficient privilege>
+(3 rows)
+
+[exit 0, 2026-11-03]
+
+$ bin/pg postgres admin_lab lab -a -c "GRANT pg_read_all_stats TO monitor_lab;"
+bin/pg postgres monitor_lab lab -f /cenario/ver_statements.sql
+bin/pg postgres admin_lab lab -a -c "REVOKE pg_read_all_stats FROM monitor_lab;"
+GRANT pg_read_all_stats TO monitor_lab;
+GRANT ROLE
+     papel     |       queryid        | calls | rows | toplevel |                                                          query                                                           
+---------------+----------------------+-------+------+----------+--------------------------------------------------------------------------------------------------------------------------
+ app_relatorio |  6373311547144384952 |     2 |    3 | t        | SELECT dia, sum(valor_item) AS total FROM relatorios.vw_faturamento_itens WHERE dia >= DATE $1 GROUP BY dia ORDER BY dia
+ app_relatorio | -1234613963579190824 |     2 |    5 | t        | SELECT loja, faturamento FROM relatorios.faturamento_por_loja($1, $2)
+ app_relatorio | -3418423842587297862 |     2 |    2 | t        | SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = $1
+(3 rows)
+
+REVOKE pg_read_all_stats FROM monitor_lab;
+REVOKE ROLE
+[exit 0, 2026-11-03]
+
+$ # Default track = top: nothing inside the function. With track = all the inner statement appears.
+bin/pg postgres admin_lab lab -a <<'SQL'
+ALTER SYSTEM SET pg_stat_statements.track = 'all';
+SELECT pg_reload_conf();
+SELECT pg_sleep(1);
+SELECT pg_stat_statements_reset() IS NOT NULL AS zerado;
+SQL
+bin/pg postgres app_relatorio erp_relatorios -q -f /cenario/app_relatorio.sql >/dev/null
+bin/pg postgres admin_lab lab -f /cenario/ver_statements.sql
+bin/pg postgres admin_lab lab -a <<'SQL'
+ALTER SYSTEM RESET pg_stat_statements.track;
+SELECT pg_reload_conf();
+SQL
+ALTER SYSTEM SET pg_stat_statements.track = 'all';
+ALTER SYSTEM
+SELECT pg_reload_conf();
+ pg_reload_conf 
+----------------
+ t
+(1 row)
+
+SELECT pg_sleep(1);
+ pg_sleep 
+----------
+ 
+(1 row)
+
+SELECT pg_stat_statements_reset() IS NOT NULL AS zerado;
+ zerado 
+--------
+ t
+(1 row)
+
+     papel     |       queryid        | calls | rows | toplevel |                                                                         query                                                                          
+---------------+----------------------+-------+------+----------+--------------------------------------------------------------------------------------------------------------------------------------------------------
+ app_relatorio |  6373311547144384952 |     1 |    2 | t        | SELECT dia, sum(valor_item) AS total FROM relatorios.vw_faturamento_itens WHERE dia >= DATE $1 GROUP BY dia ORDER BY dia
+ app_relatorio | -1234613963579190824 |     1 |    3 | t        | SELECT loja, faturamento FROM relatorios.faturamento_por_loja($1, $2)
+ app_relatorio | -3418423842587297862 |     1 |    1 | t        | SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = $1
+ app_relatorio | -6135430015717666352 |     1 |    3 | f        | SELECT trim(v.loja), sum(v.valor_item)::numeric(14, 2) FROM relatorios.vw_faturamento_itens v WHERE v.dia BETWEEN p_inicio AND p_fim GROUP BY trim(v.l
+(4 rows)
+
+ALTER SYSTEM RESET pg_stat_statements.track;
+ALTER SYSTEM
+SELECT pg_reload_conf();
+ pg_reload_conf 
+----------------
+ t
+(1 row)
+
+[exit 0, 2026-11-03]

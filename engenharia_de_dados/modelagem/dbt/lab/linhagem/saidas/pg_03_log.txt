@@ -1,0 +1,101 @@
+
+$ # Threshold of 250 ms: the fast report does not reach the log, a slow one does, with its literal.
+d=$(date -u +%Y-%m-%dT%H:%M:%S.%NZ)
+bin/pg postgres admin_lab lab -Atc "SHOW log_min_duration_statement;"
+bin/pg postgres app_relatorio erp_relatorios -q -f /cenario/app_relatorio.sql >/dev/null
+bin/pg postgres app_relatorio erp_relatorios -q -c "SELECT pg_sleep(0.4), count(*) FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = 'Cliente A';" >/dev/null
+sleep 1
+bin/pglog postgres "$d" 'app=erp_relatorios'
+250ms
+2026-11-03 UTC [320] app=erp_relatorios user=app_relatorio db=rede LOG:  duration: 405.792 ms  statement: SELECT pg_sleep(0.4), count(*) FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = 'Cliente A';
+[exit 0, 2026-11-03]
+
+$ # Narrow capture: threshold zero for one role, applied to its new sessions, with no restart.
+bin/pg postgres admin_lab lab -a -c "ALTER ROLE app_relatorio SET log_min_duration_statement = 0;"
+d=$(date -u +%Y-%m-%dT%H:%M:%S.%NZ)
+bin/pg postgres app_relatorio erp_relatorios -q -f /cenario/app_relatorio.sql >/dev/null
+bin/pg postgres monitor_lab outra_aplicacao -q -c "SELECT 1 AS de_outro_papel;" >/dev/null
+sleep 1
+bin/pglog postgres "$d" 'app=(erp_relatorios|outra_aplicacao)'
+bin/pg postgres admin_lab lab -a -c "ALTER ROLE app_relatorio RESET log_min_duration_statement;"
+ALTER ROLE app_relatorio SET log_min_duration_statement = 0;
+ALTER ROLE
+2026-11-03 UTC [341] app=erp_relatorios user=app_relatorio db=rede LOG:  duration: 4.924 ms  statement: SELECT loja, faturamento FROM relatorios.faturamento_por_loja('2026-10-20', '2026-10-22');
+2026-11-03 UTC [341] app=erp_relatorios user=app_relatorio db=rede LOG:  duration: 0.900 ms  statement: SELECT dia, sum(valor_item) AS total FROM relatorios.vw_faturamento_itens WHERE dia >= DATE '2026-10-21' GROUP BY dia ORDER BY dia;
+2026-11-03 UTC [341] app=erp_relatorios user=app_relatorio db=rede LOG:  duration: 0.457 ms  statement: SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = 'Cliente A';
+ALTER ROLE app_relatorio RESET log_min_duration_statement;
+ALTER ROLE
+[exit 0, 2026-11-03]
+
+$ # Who may change it: an ordinary role is refused until it receives SET on that parameter.
+bin/pg postgres monitor_lab lab -c "SET log_min_duration_statement = 0;"
+bin/pg postgres admin_lab lab -a -c "GRANT SET ON PARAMETER log_min_duration_statement TO monitor_lab;"
+bin/pg postgres monitor_lab lab -c "SET log_min_duration_statement = 0;"
+bin/pg postgres admin_lab lab -a -c "REVOKE SET ON PARAMETER log_min_duration_statement FROM monitor_lab;"
+ERROR:  permission denied to set parameter "log_min_duration_statement"
+GRANT SET ON PARAMETER log_min_duration_statement TO monitor_lab;
+GRANT
+SET
+REVOKE SET ON PARAMETER log_min_duration_statement FROM monitor_lab;
+REVOKE
+[exit 0, 2026-11-03]
+
+$ # Bind parameters are logged too, unless log_parameter_max_length says otherwise.
+bin/pg postgres admin_lab lab -a <<'SQL'
+ALTER ROLE app_relatorio SET log_statement = 'all';
+SQL
+d=$(date -u +%Y-%m-%dT%H:%M:%S.%NZ)
+bin/pg postgres app_relatorio erp_relatorios -q <<'SQL' >/dev/null
+SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = $1 \bind 'Cliente A' \g
+SQL
+sleep 1
+bin/pglog postgres "$d" 'app=erp_relatorios'
+bin/pg postgres admin_lab lab -a <<'SQL'
+ALTER ROLE app_relatorio SET log_parameter_max_length = 0;
+SQL
+d=$(date -u +%Y-%m-%dT%H:%M:%S.%NZ)
+bin/pg postgres app_relatorio erp_relatorios -q <<'SQL' >/dev/null
+SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = $1 \bind 'Cliente A' \g
+SQL
+sleep 1
+bin/pglog postgres "$d" 'app=erp_relatorios'
+bin/pg postgres admin_lab lab -a <<'SQL'
+ALTER ROLE app_relatorio RESET log_statement;
+ALTER ROLE app_relatorio RESET log_parameter_max_length;
+SQL
+ALTER ROLE app_relatorio SET log_statement = 'all';
+ALTER ROLE
+2026-11-03 UTC [405] app=erp_relatorios user=app_relatorio db=rede LOG:  execute <unnamed>: SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = $1 
+2026-11-03 UTC [405] app=erp_relatorios user=app_relatorio db=rede DETAIL:  parameters: $1 = 'Cliente A'
+ALTER ROLE app_relatorio SET log_parameter_max_length = 0;
+ALTER ROLE
+2026-11-03 UTC [419] app=erp_relatorios user=app_relatorio db=rede LOG:  execute <unnamed>: SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = $1 
+ALTER ROLE app_relatorio RESET log_statement;
+ALTER ROLE
+ALTER ROLE app_relatorio RESET log_parameter_max_length;
+ALTER ROLE
+[exit 0, 2026-11-03]
+
+$ # Sampling: 200 statements at a rate of 0.1. The count changes on each run.
+bin/pg postgres admin_lab lab -a <<'SQL'
+ALTER ROLE app_relatorio SET log_min_duration_sample = 0;
+ALTER ROLE app_relatorio SET log_statement_sample_rate = 0.1;
+SQL
+d=$(date -u +%Y-%m-%dT%H:%M:%S.%NZ)
+seq 1 200 | sed 's/.*/SELECT count(*) FROM relatorios.vw_faturamento_itens WHERE pedido_id = &;/' | bin/pg postgres app_relatorio erp_relatorios -q >/dev/null
+sleep 1
+bin/pglog postgres "$d" 'app=erp_relatorios' | grep -c 'duration:'
+bin/pg postgres admin_lab lab -a <<'SQL'
+ALTER ROLE app_relatorio RESET log_min_duration_sample;
+ALTER ROLE app_relatorio RESET log_statement_sample_rate;
+SQL
+ALTER ROLE app_relatorio SET log_min_duration_sample = 0;
+ALTER ROLE
+ALTER ROLE app_relatorio SET log_statement_sample_rate = 0.1;
+ALTER ROLE
+19
+ALTER ROLE app_relatorio RESET log_min_duration_sample;
+ALTER ROLE
+ALTER ROLE app_relatorio RESET log_statement_sample_rate;
+ALTER ROLE
+[exit 0, 2026-11-03]

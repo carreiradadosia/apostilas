@@ -1,0 +1,9 @@
+.env
+projeto_dbt/target/
+projeto_dbt/logs/
+projeto_dbt/dbt_packages/
+**/__pycache__/
+**/*.duckdb
+**/*.duckdb.wal
+alternativa_duckdb/projeto/target/
+alternativa_duckdb/projeto/logs/

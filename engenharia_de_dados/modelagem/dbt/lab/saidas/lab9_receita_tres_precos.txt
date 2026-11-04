@@ -1,0 +1,40 @@
+# 2026-11-04. postgres:16.15-alpine (PostgreSQL 16.15, psql 16.15). Projeto Compose modelagem-provas.
+# Banco no estado do Lab 4 (três fotos, silver e gold refeitas), montado por lab9_preparo.txt.
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -v ON_ERROR_STOP=1 -q -f /sql/74_receita_tres_precos.sql
+== Que colunas de preço, valor e quantidade existem na bronze. Não há coluna de desconto nem de promoção.
+  table_name   |  column_name   | data_type 
+---------------+----------------+-----------
+ itens_pedido  | preco_unitario | numeric
+ itens_pedido  | quantidade     | integer
+ pedidos       | valor          | numeric
+ pedidos       | valor_texto    | text
+ produtos_foto | custo          | numeric
+ produtos_foto | preco          | numeric
+(6 rows)
+
+== Três números de receita paga, três perguntas.
+                        conta                        | receita_paga 
+-----------------------------------------------------+--------------
+ praticado: quantidade * preco_unitario do item      |       836.10
+ tabela na data: quantidade * preco_tabela da versão |       840.20
+ tabela de hoje: quantidade * preço da versão aberta |       842.20
+ conferência: soma de pedidos.valor pagos na silver  |       836.10
+(4 rows)
+
+== As linhas em que os três preços diferem, com todos os status.
+ pedido_id | item_seq |    status    |  data_id   | produto_id | quantidade | praticado | tabela_na_data | tabela_de_hoje 
+-----------+----------+--------------+------------+------------+------------+-----------+----------------+----------------
+       102 |        2 | desconhecido | 2026-10-20 |         40 |          1 |     20.50 |          20.50 |          20.00
+       103 |        1 | cancelado    | 2026-10-20 |         30 |          3 |     15.00 |          15.00 |          17.00
+       104 |        2 | pago         | 2026-10-20 |         30 |          1 |     10.90 |          15.00 |          17.00
+       107 |        1 | pendente     | 2026-10-21 |         30 |          1 |     15.00 |          15.00 |          17.00
+(4 rows)
+
+== Preço unitário não soma: média simples e média ponderada da caneca.
+ produto_id | itens | unidades | media_simples | media_ponderada 
+------------+-------+----------+---------------+-----------------
+         30 |     3 |        5 |         13.63 |           14.18
+(1 row)
+
+[exit 0, 2026-11-04]

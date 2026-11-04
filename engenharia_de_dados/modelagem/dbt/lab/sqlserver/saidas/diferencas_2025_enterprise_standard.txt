@@ -1,0 +1,25 @@
+Comparação da execução completa na 2025 com MSSQL_PID=EnterpriseDeveloper (saidas/2025) e com MSSQL_PID=StandardDeveloper, sem data da captura, id do contêiner e nome gerado de restrição.
+=== lab0_ambiente.txt: diferente
+--- enterprise
++++ standard
+-	Enterprise Developer Edition (64-bit) on Linux (Ubuntu 24.04.5 LTS) <X64>
+-Enterprise Developer Edition (64-bit)
++	Standard Developer Edition (64-bit) on Linux (Ubuntu 24.04.5 LTS) <X64>
++Standard Developer Edition (64-bit)
+=== lab10_merge_e_recarga.txt: igual
+=== lab11_chave_substituta.txt: igual
+=== lab12_versoes.txt: diferente
+--- enterprise
++++ standard
+-17.0.5035.5|CU10|Enterprise Developer Edition (64-bit)|3|170
++17.0.5035.5|CU10|Standard Developer Edition (64-bit)|2|170
+=== lab13_sintaxe_do_postgres.txt: igual
+=== lab1_silver_a_mao.txt: igual
+=== lab2_fuso_e_datas.txt: igual
+=== lab3_gold_estrela_e_fan_out.txt: igual
+=== lab4_preco_update_e_scd2.txt: igual
+=== lab5_conferencia_postgres.txt: igual
+=== lab6_texto_e_collation.txt: igual
+=== lab7_datas_em_texto.txt: igual
+=== lab8_nulos.txt: igual
+=== lab9_dedup.txt: igual

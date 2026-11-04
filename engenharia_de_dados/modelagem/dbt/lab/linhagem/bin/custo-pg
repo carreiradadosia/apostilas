@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# Rough read-only pgbench comparison of the capture settings, interleaved rounds, median per scenario.
+# Valid only for this lab: small data set, shared machine, no replication and no real load.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+RODADAS=3
+SEGUNDOS=8
+CENARIOS=(base top log_tudo log_amostra)
+
+admin() { bin/pg postgres admin_lab custo -q "$@" >/dev/null; }
+
+aplicar() {
+  admin <<SQL
+ALTER SYSTEM SET pg_stat_statements.track = '$1';
+ALTER SYSTEM SET log_min_duration_statement = $2;
+ALTER SYSTEM SET log_min_duration_sample = $3;
+ALTER SYSTEM SET log_statement_sample_rate = $4;
+SELECT pg_reload_conf();
+SQL
+}
+
+configurar() {
+  case "$1" in
+    base)        aplicar none -1 -1 1.0 ;;
+    top)         aplicar top -1 -1 1.0 ;;
+    log_tudo)    aplicar none 0 -1 1.0 ;;
+    log_amostra) aplicar none -1 0 0.01 ;;
+  esac
+}
+
+docker compose exec -T postgres pgbench -i -s 5 -q -U admin_lab rede >/dev/null 2>&1
+
+# Warm-up so the first round does not pay for a cold cache.
+docker compose exec -T postgres pgbench -n -S -T 15 -c 4 -j 2 -U admin_lab rede >/dev/null 2>&1
+
+resultados="$(mktemp)"
+for rodada in $(seq 1 "$RODADAS"); do
+  for cenario in "${CENARIOS[@]}"; do
+    configurar "$cenario"
+    tps="$(docker compose exec -T postgres pgbench -n -S -T "$SEGUNDOS" -c 4 -j 2 -U admin_lab rede \
+      | awk '/^tps = /{print int($3)}')"
+    echo "$cenario $rodada $tps" | tee -a "$resultados"
+  done
+done
+
+echo "mediana de transações por segundo, somente leitura, só neste laboratório:"
+for cenario in "${CENARIOS[@]}"; do
+  mediana="$(awk -v c="$cenario" '$1==c{print $3}' "$resultados" | sort -n | sed -n 2p)"
+  echo "$cenario $mediana"
+done
+rm -f "$resultados"
+
+admin <<SQL
+ALTER SYSTEM RESET pg_stat_statements.track;
+ALTER SYSTEM SET log_min_duration_statement = 250;
+ALTER SYSTEM RESET log_min_duration_sample;
+ALTER SYSTEM RESET log_statement_sample_rate;
+SELECT pg_reload_conf();
+SQL

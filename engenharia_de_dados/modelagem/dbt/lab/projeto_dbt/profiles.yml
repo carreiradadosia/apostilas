@@ -1,0 +1,12 @@
+rede_de_lojas:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: postgres
+      port: 5432
+      user: dw
+      password: "{{ env_var('DW_DB_PASSWORD') }}"
+      dbname: dw
+      schema: dbt
+      threads: 2

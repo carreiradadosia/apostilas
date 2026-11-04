@@ -1,0 +1,32 @@
+# Copy of the lab dbt_project.yml with one change: var('experimentos') without a default value.
+# Used only to show that var() inside this file does not see its own vars block.
+name: rede_de_lojas
+version: "1.0.0"
+config-version: 2
+profile: rede_de_lojas
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+test-paths: ["tests"]
+
+vars:
+  dia_foto: "2026-10-22"
+  experimentos: false
+
+seeds:
+  rede_de_lojas:
+    +schema: silver
+
+models:
+  rede_de_lojas:
+    silver:
+      +schema: silver
+      +materialized: view
+    gold:
+      +schema: gold
+      +materialized: table
+    experimentos:
+      +schema: experimentos
+      +enabled: "{{ var('experimentos') }}"
+      +tags: ["experimento"]

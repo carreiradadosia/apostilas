@@ -1,0 +1,99 @@
+# 2026-11-04. postgres:16.15-alpine (PostgreSQL 16.15, psql 16.15). Projeto Compose modelagem-provas.
+# Banco no estado do Lab 4 (três fotos, silver e gold refeitas), montado por lab9_preparo.txt.
+# Sem ON_ERROR_STOP: o caso da chave estrangeira termina em erro de propósito.
+
+$ docker compose exec -T postgres psql -U dw -d dw -X -q -f /sql/73_chave_identidade_reconstrucao.sql
+psql:/sql/73_chave_identidade_reconstrucao.sql:7: NOTICE:  schema "ensaio_chave" does not exist, skipping
+== 1. Dimensão no fim do dia 21: cinco versões, chaves de 1 a 5.
+ produto_sk | produto_id |        nome        | preco_tabela | valido_de  | valido_ate 
+------------+------------+--------------------+--------------+------------+------------
+          1 |         10 | Camiseta Básica    |        60.00 | 2026-10-20 | <nulo>
+          2 |         20 | Café Torrado 500g  |        33.30 | 2026-10-20 | <nulo>
+          3 |         30 | Caneca De Cerâmica |        15.00 | 2026-10-20 | <nulo>
+          4 |         40 | Caderno            |        20.50 | 2026-10-20 | <nulo>
+          5 |         50 | Lápis              |        12.00 | 2026-10-20 | <nulo>
+(5 rows)
+
+== 2. Fato guardada no dia 21, lida pela dimensão do dia 21.
+        nome        | itens | valor  
+--------------------+-------+--------
+ Caderno            |     1 |  20.50
+ Café Torrado 500g  |     1 |  99.90
+ Camiseta Básica    |     3 | 480.00
+ Caneca De Cerâmica |     3 |  70.90
+ Lápis              |     1 |  12.00
+(5 rows)
+
+ itens_guardados | valor_total 
+-----------------+-------------
+               9 |      683.30
+(1 row)
+
+== 3. TRUNCATE padrão (CONTINUE IDENTITY) e recarga com as versões do dia 22, desfeito no fim.
+ menor_chave | maior_chave | versoes 
+-------------+-------------+---------
+           6 |          12 |       7
+(1 row)
+
+ orfas_relationships 
+---------------------
+                   9
+(1 row)
+
+== 4. Com chave estrangeira declarada, o banco recusa o TRUNCATE da dimensão.
+psql:/sql/73_chave_identidade_reconstrucao.sql:73: ERROR:  cannot truncate a table referenced in a foreign key constraint
+DETAIL:  Table "fct_id" references "dim_id".
+HINT:  Truncate table "fct_id" at the same time, or use TRUNCATE ... CASCADE.
+== 5. TRUNCATE com RESTART IDENTITY e recarga com as versões do dia 22: a numeração recomeça do 1.
+ produto_sk | produto_id |        nome        | preco_tabela | valido_de  | valido_ate 
+------------+------------+--------------------+--------------+------------+------------
+          1 |         10 | Camiseta Básica    |        60.00 | 2026-10-20 | <nulo>
+          2 |         20 | Café Torrado 500g  |        33.30 | 2026-10-20 | <nulo>
+          3 |         30 | Caneca De Cerâmica |        15.00 | 2026-10-20 | 2026-10-22
+          4 |         30 | Caneca De Cerâmica |        17.00 | 2026-10-22 | <nulo>
+          5 |         40 | Caderno            |        20.50 | 2026-10-20 | 2026-10-22
+          6 |         40 | Caderno            |        20.00 | 2026-10-22 | <nulo>
+          7 |         50 | Lápis              |        12.00 | 2026-10-20 | <nulo>
+(7 rows)
+
+== 6. A mesma chave guardada na fato, antes e depois da reconstrução.
+ produto_sk |           antes           |          depois           | mudou 
+------------+---------------------------+---------------------------+-------
+          1 | Camiseta Básica, 60.00    | Camiseta Básica, 60.00    | f
+          2 | Café Torrado 500g, 33.30  | Café Torrado 500g, 33.30  | f
+          3 | Caneca De Cerâmica, 15.00 | Caneca De Cerâmica, 15.00 | f
+          4 | Caderno, 20.50            | Caneca De Cerâmica, 17.00 | t
+          5 | Lápis, 12.00              | Caderno, 20.50            | t
+(5 rows)
+
+== 7. Itens lidos errado, relatório por produto, total, órfãs e nulos.
+ itens | lidos_errado 
+-------+--------------
+     9 |            2
+(1 row)
+
+        nome        | itens | valor  
+--------------------+-------+--------
+ Caderno            |     1 |  12.00
+ Café Torrado 500g  |     1 |  99.90
+ Camiseta Básica    |     3 | 480.00
+ Caneca De Cerâmica |     4 |  91.40
+(4 rows)
+
+ itens_guardados | valor_total 
+-----------------+-------------
+               9 |      683.30
+(1 row)
+
+ orfas_relationships | nulos_not_null 
+---------------------+----------------
+                   0 |              0
+(1 row)
+
+== 8. Os mesmos dados em ordem inversa de carga, desfeito no fim.
+ itens | lidos_errado 
+-------+--------------
+     9 |            9
+(1 row)
+
+[exit 0, 2026-11-04]

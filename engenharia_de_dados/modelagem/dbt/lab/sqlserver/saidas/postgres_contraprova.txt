@@ -1,0 +1,18 @@
+
+$ docker exec -i tsql-pg psql -U postgres -X -v ON_ERROR_STOP=1 < sql/postgres_contraprova.sql
+ distinct_categorias 
+---------------------
+                   4
+(1 row)
+
+ igual_com_espaco | igual_com_caixa 
+------------------+-----------------
+ f                | f
+(1 row)
+
+    initcap_pg     
+-------------------
+ Caixa-D'Água 500g
+(1 row)
+
+[exit 0, 2026-11-03]

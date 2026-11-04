@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Clean stop through T-SQL. SHUTDOWN returns before the process ends, so this waits for the container
+# to stop; starting it again too early would race with the shutdown still in progress.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+bin/ms sa -Q "SHUTDOWN;"
+timeout 60 bash -c 'until [ -z "$(docker compose ps --status running -q mssql)" ]; do sleep 1; done'

@@ -1,0 +1,50 @@
+
+$ # While the report runs: the text carries the literal value, for whoever can see it.
+bin/pg postgres app_relatorio erp_relatorios -q -c "SELECT pg_sleep(5), count(*) FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = 'Cliente A';" >/dev/null &
+bin/esperar-sessao postgres active
+bin/pg postgres admin_lab lab -f /cenario/ver_activity.sql
+bin/pg postgres monitor_lab lab -f /cenario/ver_activity.sql
+wait
+    usename    | application_name | state  |                                                query                                                 | bytes_do_texto 
+---------------+------------------+--------+------------------------------------------------------------------------------------------------------+----------------
+ app_relatorio | erp_relatorios   | active | SELECT pg_sleep(5), count(*) FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = 'Cliente A'; |            100
+(1 row)
+
+    usename    | application_name | state |          query           | bytes_do_texto 
+---------------+------------------+-------+--------------------------+----------------
+ app_relatorio | erp_relatorios   |       | <insufficient privilege> |             24
+(1 row)
+
+[exit 0, 2026-11-03]
+
+$ # After the session closes there is nothing left to read.
+bin/pg postgres admin_lab lab -f /cenario/ver_activity.sql
+ usename | application_name | state | query | bytes_do_texto 
+---------+------------------+-------+-------+----------------
+(0 rows)
+
+[exit 0, 2026-11-03]
+
+$ # An idle session still shows its last statement.
+{ echo "SELECT 'ultima consulta da sessao' AS marcador;"; sleep 4; } | bin/pg postgres app_relatorio erp_relatorios -q >/dev/null &
+bin/esperar-sessao postgres idle
+bin/pg postgres admin_lab lab -f /cenario/ver_activity.sql
+wait
+    usename    | application_name | state |                      query                      | bytes_do_texto 
+---------------+------------------+-------+-------------------------------------------------+----------------
+ app_relatorio | erp_relatorios   | idle  | SELECT 'ultima consulta da sessao' AS marcador; |             47
+(1 row)
+
+[exit 0, 2026-11-03]
+
+$ # A statement longer than track_activity_query_size is cut.
+{ printf "SELECT pg_sleep(4), '"; head -c 1500 /dev/zero | tr '\0' x; printf "' AS texto_longo;\n"; } | bin/pg postgres app_relatorio erp_relatorios -q >/dev/null &
+bin/esperar-sessao postgres active
+bin/pg postgres admin_lab lab -f /cenario/ver_activity.sql
+wait
+    usename    | application_name | state  |                                                               query                                                                | bytes_do_texto 
+---------------+------------------+--------+------------------------------------------------------------------------------------------------------------------------------------+----------------
+ app_relatorio | erp_relatorios   | active | SELECT pg_sleep(4), 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |           1023
+(1 row)
+
+[exit 0, 2026-11-03]

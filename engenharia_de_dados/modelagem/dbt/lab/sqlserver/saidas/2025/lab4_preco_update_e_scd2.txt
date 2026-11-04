@@ -1,0 +1,187 @@
+
+$ ./sq.sh erp erp_noite_21.sql -b
+
+(5 rows affected)
+id|preco|atualizado_em
+--|-----|-------------
+10|60.00|2026-10-21 03:00:00
+20|33.30|2026-10-21 03:00:00
+30|15.00|2026-10-21 03:00:00
+40|20.50|2026-10-21 03:00:00
+50|12.00|2026-10-21 03:00:00
+
+(5 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 11_bronze_foto_precos.sql -b -v dia=2026-10-21
+
+(0 rows affected)
+
+(5 rows affected)
+_dia_referencia|linhas
+---------------|------
+2026-10-20|5
+2026-10-21|5
+
+(2 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh erp erp_noite_22.sql -b
+
+(5 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+id|preco|atualizado_em
+--|-----|-------------
+10|60.00|2026-10-22 03:00:00
+20|33.30|2026-10-22 03:00:00
+30|17.00|2026-10-22 03:00:00
+40|20.00|2026-10-22 03:00:00
+50|12.00|2026-10-22 03:00:00
+
+(5 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 11_bronze_foto_precos.sql -b -v dia=2026-10-22
+
+(0 rows affected)
+
+(5 rows affected)
+_dia_referencia|linhas
+---------------|------
+2026-10-20|5
+2026-10-21|5
+2026-10-22|5
+
+(3 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 20_silver.sql -b
+
+(3 rows affected)
+
+(1 rows affected)
+
+(5 rows affected)
+
+(7 rows affected)
+
+(10 rows affected)
+
+(13 rows affected)
+
+(4 rows affected)
+tabela|linhas
+------|------
+silver.pedidos|10
+silver.itens|13
+silver.lojas|3
+silver.produtos|5
+silver.produtos_vigencia|7
+silver.atendimentos|4
+
+(6 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 30_gold.sql -b
+
+(92 rows affected)
+
+(3 rows affected)
+
+(8 rows affected)
+
+(13 rows affected)
+Warning: Null value is eliminated by an aggregate or other SET operation.
+
+(3 rows affected)
+dia|pedidos|pedidos_pagos|receita_paga
+---|-------|-------------|------------
+2026-10-20|4|2|430.90
+2026-10-21|3|2|111.90
+2026-10-22|3|3|293.30
+
+(3 rows affected)
+linhas_fct|chaves_fct|itens_silver|linhas_obt|receita_obt|linhas_dim_data
+----------|----------|------------|----------|-----------|---------------
+13|13|13|13|836.10|92
+
+(1 rows affected)
+
+(1 rows affected)
+executor|linhas_bronze|linhas_silver|receita_paga
+--------|-------------|-------------|------------
+a_mao|11|10|836.10
+a_mao|11|10|836.10
+
+(2 rows affected)
+[exit 0, 2026-11-03]
+
+$ ./sq.sh dw 40_preco_update_apaga.sql
+== O que sobra na origem: só o preço de hoje. Não há como pedir o de ontem.
+id|preco|atualizado_em
+--|-----|-------------
+30|17.00|2026-10-22 03:00:00
+40|20.00|2026-10-22 03:00:00
+
+(2 rows affected)
+== O pedido 102, do dia 20, vendeu o caderno a 20,50. A origem diz outra coisa agora.
+pedido_id|preco_unitario|preco_na_origem_hoje
+---------|--------------|--------------------
+102|20.50|20.00
+
+(1 rows affected)
+== As fotos guardam os três dias.
+_dia_referencia|id|preco
+---------------|--|-----
+2026-10-20|30|15.00
+2026-10-21|30|15.00
+2026-10-22|30|17.00
+2026-10-20|40|20.50
+2026-10-21|40|20.50
+2026-10-22|40|20.00
+
+(6 rows affected)
+== SCD tipo 2 derivado das fotos, por vigência.
+produto_id|preco|valido_de|valido_ate
+----------|-----|---------|----------
+10|60.00|2026-10-20|NULL
+20|33.30|2026-10-20|NULL
+30|15.00|2026-10-20|2026-10-22
+30|17.00|2026-10-22|NULL
+40|20.50|2026-10-20|2026-10-22
+40|20.00|2026-10-22|NULL
+50|12.00|2026-10-20|NULL
+
+(7 rows affected)
+== Custo de cada caminho: linhas guardadas.
+linhas_nas_fotos|linhas_no_tipo_2
+----------------|----------------
+15|7
+
+(1 rows affected)
+== Cada venda encontra uma versão só, sem fan-out.
+pedido_id|item_seq|data_id|produto_id|preco_unitario|preco_tabela|desconto
+---------|--------|-------|----------|--------------|------------|--------
+102|2|2026-10-20|40|20.50|20.50|.00
+103|1|2026-10-20|30|15.00|15.00|.00
+104|2|2026-10-20|30|10.90|15.00|-4.10
+107|1|2026-10-21|30|15.00|15.00|.00
+108|2|2026-10-22|40|20.00|20.00|.00
+
+(5 rows affected)
+== BETWEEN com limites fechados: a venda no dia da troca casa com duas versões.
+pedido_id|item_seq|dia_local|versoes_casadas|valor_somado
+---------|--------|---------|---------------|------------
+108|2|2026-10-22|2|160.00
+
+(1 rows affected)
+== Venda anterior à primeira foto: o preço de tabela daquele dia não existe em lugar nenhum.
+produto_id|dia|preco_tabela
+----------|---|------------
+10|2026-10-19|NULL
+
+(1 rows affected)
+[exit 0, 2026-11-03]

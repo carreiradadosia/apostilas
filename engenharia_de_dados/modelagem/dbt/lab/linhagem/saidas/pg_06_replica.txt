@@ -1,0 +1,155 @@
+
+$ timeout 120 docker compose --profile replica up -d --wait --quiet-pull replica 2>&1 | grep -E 'Healthy|Error|error' || true
+bin/pg postgres admin_lab lab -Atc "SELECT 'primario em recuperacao: ' || pg_is_in_recovery();"
+bin/pg replica admin_lab lab -Atc "SELECT 'replica em recuperacao: ' || pg_is_in_recovery();"
+bin/pg replica admin_lab lab -Atc "SHOW shared_preload_libraries;"
+bin/pg replica admin_lab lab -Atc "SELECT pg_stat_statements_reset() IS NOT NULL AS zerado_na_replica;"
+bin/pg postgres admin_lab lab -Atc "SELECT pg_stat_statements_reset() IS NOT NULL AS zerado_no_primario;"
+ Container linhagem-lab-postgres-1  Healthy
+ Container linhagem-lab-postgres-1  Healthy
+ Container linhagem-lab-replica-1  Healthy
+primario em recuperacao: false
+replica em recuperacao: true
+pg_stat_statements
+t
+t
+[exit 0, 2026-11-03]
+
+$ # The report runs on the primary. Who counted it?
+bin/pg postgres app_relatorio erp_relatorios -q -f /cenario/app_relatorio.sql >/dev/null
+echo "--- primario"; bin/pg postgres admin_lab lab -f /cenario/ver_statements.sql
+echo "--- replica"; bin/pg replica admin_lab lab -f /cenario/ver_statements.sql
+--- primario
+     papel     |       queryid        | calls | rows | toplevel |                                                          query                                                           
+---------------+----------------------+-------+------+----------+--------------------------------------------------------------------------------------------------------------------------
+ app_relatorio |  6373311547144384952 |     1 |    2 | t        | SELECT dia, sum(valor_item) AS total FROM relatorios.vw_faturamento_itens WHERE dia >= DATE $1 GROUP BY dia ORDER BY dia
+ app_relatorio | -1234613963579190824 |     1 |    3 | t        | SELECT loja, faturamento FROM relatorios.faturamento_por_loja($1, $2)
+ app_relatorio | -3418423842587297862 |     1 |    1 | t        | SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = $1
+(3 rows)
+
+--- replica
+ papel | queryid | calls | rows | toplevel | query 
+-------+---------+-------+------+----------+-------
+(0 rows)
+
+[exit 0, 2026-11-03]
+
+$ # Now it runs on the replica: its entries show up there, the primary stays as it was.
+bin/pg replica app_relatorio erp_relatorios -q -f /cenario/app_relatorio.sql >/dev/null
+echo "--- primario"; bin/pg postgres admin_lab lab -f /cenario/ver_statements.sql
+echo "--- replica"; bin/pg replica admin_lab lab -f /cenario/ver_statements.sql
+--- primario
+     papel     |       queryid        | calls | rows | toplevel |                                                          query                                                           
+---------------+----------------------+-------+------+----------+--------------------------------------------------------------------------------------------------------------------------
+ app_relatorio |  6373311547144384952 |     1 |    2 | t        | SELECT dia, sum(valor_item) AS total FROM relatorios.vw_faturamento_itens WHERE dia >= DATE $1 GROUP BY dia ORDER BY dia
+ app_relatorio | -1234613963579190824 |     1 |    3 | t        | SELECT loja, faturamento FROM relatorios.faturamento_por_loja($1, $2)
+ app_relatorio | -3418423842587297862 |     1 |    1 | t        | SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = $1
+(3 rows)
+
+--- replica
+     papel     |       queryid        | calls | rows | toplevel |                                                          query                                                           
+---------------+----------------------+-------+------+----------+--------------------------------------------------------------------------------------------------------------------------
+ app_relatorio |  6373311547144384952 |     1 |    2 | t        | SELECT dia, sum(valor_item) AS total FROM relatorios.vw_faturamento_itens WHERE dia >= DATE $1 GROUP BY dia ORDER BY dia
+ app_relatorio | -1234613963579190824 |     1 |    3 | t        | SELECT loja, faturamento FROM relatorios.faturamento_por_loja($1, $2)
+ app_relatorio | -3418423842587297862 |     1 |    1 | t        | SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = $1
+(3 rows)
+
+[exit 0, 2026-11-03]
+
+$ # pg_stat_activity is per server as well.
+bin/pg replica app_relatorio erp_relatorios -q -c "SELECT pg_sleep(4), count(*) FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = 'Cliente A';" >/dev/null &
+bin/esperar-sessao replica active
+echo "--- primario"; bin/pg postgres admin_lab lab -f /cenario/ver_activity.sql
+echo "--- replica"; bin/pg replica admin_lab lab -f /cenario/ver_activity.sql
+wait
+--- primario
+ usename | application_name | state | query | bytes_do_texto 
+---------+------------------+-------+-------+----------------
+(0 rows)
+
+--- replica
+    usename    | application_name | state  |                                                query                                                 | bytes_do_texto 
+---------------+------------------+--------+------------------------------------------------------------------------------------------------------+----------------
+ app_relatorio | erp_relatorios   | active | SELECT pg_sleep(4), count(*) FROM relatorios.vw_faturamento_itens WHERE trim(cliente) = 'Cliente A'; |            100
+(1 row)
+
+[exit 0, 2026-11-03]
+
+$ # Log configuration on the replica: ALTER SYSTEM and reload work, ALTER ROLE and CREATE EXTENSION do not.
+bin/pg replica admin_lab lab -a <<'SQL'
+ALTER ROLE app_relatorio SET log_min_duration_statement = 0;
+CREATE EXTENSION IF NOT EXISTS pg_buffercache;
+ALTER SYSTEM SET log_min_duration_statement = 0;
+SELECT pg_reload_conf();
+SELECT pg_sleep(1);
+SQL
+d=$(date -u +%Y-%m-%dT%H:%M:%S.%NZ)
+bin/pg replica app_relatorio erp_relatorios -q -f /cenario/app_relatorio.sql >/dev/null
+sleep 1
+echo "--- log da replica"; bin/pglog replica "$d" 'app=erp_relatorios' | cut -c1-200
+echo "--- log do primario"; bin/pglog postgres "$d" 'app=erp_relatorios' | cut -c1-200
+bin/pg replica admin_lab lab -a <<'SQL'
+ALTER SYSTEM RESET log_min_duration_statement;
+SELECT pg_reload_conf();
+SQL
+ALTER ROLE app_relatorio SET log_min_duration_statement = 0;
+ERROR:  cannot execute ALTER ROLE in a read-only transaction
+CREATE EXTENSION IF NOT EXISTS pg_buffercache;
+ERROR:  cannot execute CREATE EXTENSION in a read-only transaction
+ALTER SYSTEM SET log_min_duration_statement = 0;
+ALTER SYSTEM
+SELECT pg_reload_conf();
+ pg_reload_conf 
+----------------
+ t
+(1 row)
+
+SELECT pg_sleep(1);
+ pg_sleep 
+----------
+ 
+(1 row)
+
+--- log da replica
+2026-11-03 UTC [129] app=erp_relatorios user=app_relatorio db=rede LOG:  duration: 5.879 ms  statement: SELECT loja, faturamento FROM relatorios.faturamento_por_loja('2026-10-20', '2026-1
+2026-11-03 UTC [129] app=erp_relatorios user=app_relatorio db=rede LOG:  duration: 1.184 ms  statement: SELECT dia, sum(valor_item) AS total FROM relatorios.vw_faturamento_itens WHERE dia
+2026-11-03 UTC [129] app=erp_relatorios user=app_relatorio db=rede LOG:  duration: 0.462 ms  statement: SELECT pedido_id, valor_item FROM relatorios.vw_faturamento_itens WHERE trim(client
+--- log do primario
+ALTER SYSTEM RESET log_min_duration_statement;
+ALTER SYSTEM
+SELECT pg_reload_conf();
+ pg_reload_conf 
+----------------
+ t
+(1 row)
+
+[exit 0, 2026-11-03]
+
+$ # The catalog answers on the replica too, without touching the primary.
+bin/pg replica monitor_lab lab -f /cenario/catalogo.sql | head -12
+                         definicao                          
+------------------------------------------------------------
+  SELECT p.id AS pedido_id,                                +
+     p.loja_id,                                            +
+     l.nome AS loja,                                       +
+     p.cliente,                                            +
+     p.criado_em::date AS dia,                             +
+     i.quantidade::numeric * i.preco_unitario AS valor_item+
+    FROM erp.pedidos p                                     +
+      JOIN erp.itens_pedido i ON i.pedido_id = p.id        +
+      JOIN erp.lojas l ON l.id = p.loja_id                 +
+   WHERE lower(TRIM(BOTH FROM p.status)) = 'pago'::text;
+[exit 0, 2026-11-03]
+
+$ # The replica loads its own libraries: without the preload there, the view fails on it.
+REPLICA_PRELOAD= timeout 120 docker compose --profile replica up -d --wait --force-recreate --no-deps replica 2>&1 | grep -E 'Healthy|rror' || true
+bin/pg replica admin_lab lab -c "SELECT count(*) FROM pg_stat_statements;"
+bin/pg postgres admin_lab lab -Atc "SELECT 'primario segue contando: ' || count(*) FROM pg_stat_statements;"
+ Container linhagem-lab-replica-1  Healthy
+ERROR:  pg_stat_statements must be loaded via shared_preload_libraries
+primario segue contando: 6
+[exit 0, 2026-11-03]
+
+$ timeout 60 docker compose --profile replica stop replica 2>&1 | grep -E 'Stopped|rror' || true
+ Container linhagem-lab-replica-1  Stopped
+[exit 0, 2026-11-03]

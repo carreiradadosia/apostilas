@@ -1,0 +1,13 @@
+models:
+  - name: exp_inc_sem_chave
+    columns:
+      - name: atendimento_id
+        data_tests: [unique]
+  - name: exp_inc_com_chave
+    columns:
+      - name: atendimento_id
+        data_tests: [unique]
+  - name: exp_fct_fan_out
+    columns:
+      - name: venda_sk
+        data_tests: [unique]

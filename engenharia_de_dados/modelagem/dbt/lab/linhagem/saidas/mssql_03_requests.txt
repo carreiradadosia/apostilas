@@ -1,0 +1,21 @@
+
+$ docker compose --profile app run --rm -T --no-deps app faturamento_lento >/dev/null &
+timeout 20 bash -c 'until bin/ms sa -h -1 -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.dm_exec_sessions WHERE program_name = N'"'"'erp_relatorios'"'"' AND status = N'"'"'running'"'"';" | grep -q "^1"; do sleep 0.3; done'
+bin/ms sa -i /scripts/21_dmv_requests.sql
+bin/ms leitor_monitor -i /scripts/21_dmv_requests.sql
+wait
+aplicacao|login|comando|status|objeto|comando_atual
+---------|-----|-------|------|------|-------------
+erp_relatorios|app_relatorio|WAITFOR|suspended|faturamento_lento|WAITFOR DELAY '00:00:06';     
+Msg 300, Level 14, State 1, Server 689066e2005f, Line 3
+VIEW SERVER PERFORMANCE STATE permission was denied on object 'server', database 'master'.
+Msg 297, Level 16, State 1, Server 689066e2005f, Line 3
+The user does not have permission to perform this action.
+INFO linha ('9',)
+[exit 0, 2026-11-03]
+
+$ # After it ends there is nothing left in this view.
+bin/ms sa -i /scripts/21_dmv_requests.sql
+aplicacao|login|comando|status|objeto|comando_atual
+---------|-----|-------|------|------|-------------
+[exit 0, 2026-11-03]

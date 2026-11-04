@@ -1,0 +1,63 @@
+name: modelagem-lab
+
+services:
+  postgres:
+    image: postgres:16.15-alpine
+    environment:
+      POSTGRES_USER: admin_lab
+      POSTGRES_PASSWORD: ${ADMIN_DB_PASSWORD:?run ./preparar.sh first}
+      POSTGRES_DB: postgres
+      ERP_DB_PASSWORD: ${ERP_DB_PASSWORD:?run ./preparar.sh first}
+      REPLICA_DB_PASSWORD: ${REPLICA_DB_PASSWORD:?run ./preparar.sh first}
+      DW_DB_PASSWORD: ${DW_DB_PASSWORD:?run ./preparar.sh first}
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+      - ./sql:/sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "admin_lab"]
+      interval: 5s
+      retries: 10
+      start_period: 5s
+
+  dbt:
+    build: ./runner
+    image: modelagem-lab-dbt:local
+    profiles: ["dbt"]
+    user: "${DBT_UID:-1000}:${DBT_GID:-1000}"
+    working_dir: /lab/projeto_dbt
+    environment:
+      HOME: /tmp
+      DBT_PROFILES_DIR: /lab/projeto_dbt
+      DBT_USE_COLORS: "false"
+      DBT_SEND_ANONYMOUS_USAGE_STATS: "false"
+      DW_DB_PASSWORD: ${DW_DB_PASSWORD:?run ./preparar.sh first}
+    volumes:
+      - ./projeto_dbt:/lab/projeto_dbt
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  airflow-teste:
+    build:
+      context: .
+      dockerfile: orquestrador/Dockerfile
+    image: modelagem-lab-airflow-dbt:local
+    profiles: ["orquestrador"]
+    user: "${DBT_UID:-1000}:0"
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_FOLDER: /lab/orquestrador/dags
+      DBT_PROFILES_DIR: /lab/projeto_dbt
+      DBT_USE_COLORS: "false"
+      DBT_SEND_ANONYMOUS_USAGE_STATS: "false"
+      DW_DB_PASSWORD: ${DW_DB_PASSWORD:?run ./preparar.sh first}
+    volumes:
+      - ./orquestrador/dags:/lab/orquestrador/dags:ro
+      - ./projeto_dbt:/lab/projeto_dbt:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-db-volume:
