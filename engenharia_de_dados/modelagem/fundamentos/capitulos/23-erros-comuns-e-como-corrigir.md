@@ -42,7 +42,7 @@ A prova de cada causa está na verificação da seção. A coluna de correção 
 | `dbt debug` falha com `Required var 'experimentos' not found in config`, mesmo com a variável no bloco `vars`. | `var()` usado no `dbt_project.yml` não enxerga o bloco `vars` do próprio arquivo. | Dê um valor padrão: `var('experimentos', false)`. | 15 |
 | `sqlcmd` termina com `certificate verify failed` e saída 1. | Sem `-C`, ele recusa o certificado autoassinado do contêiner. | No contêiner do laboratório, use `-C`, com a senha em `SQLCMDPASSWORD`. A doc chama `-P` de inseguro. | 17 |
 
-> Verificação: nível 3, em 2026-11-03. `var()`: `dbt debug`, `dbt-core` 1.12.6, `dbt-postgres` 1.11.0, numa cópia descartável do projeto, sem o valor padrão; `lab/saidas/lab5_projeto_dbt.txt` mostra o projeto com o valor padrão. `sqlcmd`: com e sem `-C`, SQL Server 2022 Developer, saída em `lab/sqlserver/saidas/2022/lab0_ambiente.txt`.
+> Verificação: nível 3. `var()`: em 2026-11-04, `dbt debug`, `dbt-core` 1.12.6, `dbt-postgres` 1.11.0, numa cópia que só tira o valor padrão (`lab/checagens/var_sem_padrao/dbt_project.yml`), saída em `lab/saidas/lab9_dbt_var_e_full_refresh.txt`; `lab/saidas/lab5_projeto_dbt.txt` mostra o projeto com o valor padrão. `sqlcmd`: em 2026-11-03, com e sem `-C`, SQL Server 2022 Developer, saída em `lab/sqlserver/saidas/2022/lab0_ambiente.txt`.
 
 ### 23.2 Na silver
 
