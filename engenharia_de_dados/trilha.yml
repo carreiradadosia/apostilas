@@ -10,9 +10,15 @@
 
 trilha: engenharia_de_dados
 titulo: "Engenharia de Dados"
-atualizado_em: 2026-10-30
+atualizado_em: 2026-11-04
 
 blocos:
+  - id: modelagem
+    nome: Modelagem e transformação
+    modulos:
+      - modelagem/fundamentos
+      - modelagem/dbt
+
   - id: orquestracao
     nome: Orquestração
     modulos:
@@ -20,6 +26,22 @@ blocos:
       - orquestracao/airflow
 
 modulos:
+  modelagem/fundamentos:
+    titulo: "Fundamentos de modelagem e transformação"
+    tipo: conteudo
+    status: rascunho
+    lab: false
+    relacionado:
+      - modelagem/dbt
+
+  modelagem/dbt:
+    titulo: "Laboratório de modelagem e transformação com dbt"
+    tipo: laboratorio
+    status: rascunho
+    lab: true
+    relacionado:
+      - modelagem/fundamentos
+
   orquestracao/fundamentos:
     titulo: "Fundamentos de orquestração"
     tipo: conteudo
