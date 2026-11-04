@@ -1,6 +1,6 @@
 ---
 title: "Engenharia de Dados"
-date: 2026-10-30
+date: 2026-11-04
 type: trilha
 status: active
 tags: [mentoria, trilha]
@@ -10,11 +10,18 @@ tags: [mentoria, trilha]
 
 > Arquivo gerado a partir do `trilha.yml`. Não edite à mão: rode `gerar_trilha.py` novamente, senão a edição se perde e o documento diverge.
 
-2 de 2 módulos publicados.
+4 de 4 módulos publicados.
 
 A ordem abaixo é a recomendada. Ela não é obrigação de percurso: cada
 mentorado tem um roteiro próprio, que seleciona e reordena módulos sem
 alterar este repositório.
+
+## Modelagem e transformação
+
+| Módulo | Status | Lab |
+|---|---|---|
+| [Fundamentos de modelagem e transformação](modelagem/fundamentos/) | publicado | não |
+| [Laboratório de modelagem e transformação com dbt](modelagem/dbt/) | publicado | sim |
 
 ## Orquestração
 

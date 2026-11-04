@@ -29,7 +29,7 @@ modulos:
   modelagem/fundamentos:
     titulo: "Fundamentos de modelagem e transformação"
     tipo: conteudo
-    status: rascunho
+    status: publicado
     lab: false
     relacionado:
       - modelagem/dbt
@@ -37,7 +37,7 @@ modulos:
   modelagem/dbt:
     titulo: "Laboratório de modelagem e transformação com dbt"
     tipo: laboratorio
-    status: rascunho
+    status: publicado
     lab: true
     relacionado:
       - modelagem/fundamentos
